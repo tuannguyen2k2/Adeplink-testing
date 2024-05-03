@@ -43,7 +43,7 @@ const Footer = () => {
                   fontFamily: theme.fontFamily.secondary,
                 }}
               >
-                Adeplink
+                Adeptlink
               </Typography>
             </Box>
             <Box
@@ -65,7 +65,7 @@ const Footer = () => {
                     pb: 1,
                   }}
                 >
-                  {translate("about")} Adeplink
+                  {translate("about")} Adeptlink
                 </Typography>
 
                 <Box

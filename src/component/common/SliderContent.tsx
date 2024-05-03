@@ -15,6 +15,8 @@ type SettingsType = {
   arrows?: boolean;
   prevArrow?: JSX.Element;
   nextArrow?: JSX.Element;
+  autoplay?: boolean,
+  autoplaySpeed?: number,
 };
 
 type SliderContentType = {
