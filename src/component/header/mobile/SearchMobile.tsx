@@ -35,16 +35,16 @@ const SearchMobile = () => {
             width: "100%",
             height: "100%",
             bgcolor: theme.blue[100],
-            p: "30px 10px",
+            p: "30px 6px",
           }}
         >
-          <Box display={"flex"}>
-            <Search />
+          <Box display={"flex"} flexDirection={"column"}>
             <Box
               component={"button"}
               onClick={handleClose}
-              ml={"1%"}
-              p={"15px"}
+              mb={"4%"}
+              p={"8px"}
+              alignSelf={"end"}
               bgcolor={"common.white"}
               width={"fit-content"}
               height={"fit-content"}
@@ -55,6 +55,7 @@ const SearchMobile = () => {
             >
               <IoMdClose size={26} color={"#0C71B9"} />
             </Box>
+            <Search />
           </Box>
         </Box>
       </Modal>

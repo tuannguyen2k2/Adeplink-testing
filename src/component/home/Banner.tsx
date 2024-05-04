@@ -5,30 +5,31 @@ import "slick-carousel/slick/slick-theme.css";
 import { ReactNode, useState } from "react";
 import { Box, Typography } from "@mui/material";
 import SliderContent from "../common/SliderContent";
+import useDevices from "@/hook/useDevices";
+var settings = {
+  dots: true,
+  infinite: true,
+  speed: 500,
+  slidesToShow: 1,
+  slidesToScroll: 1,
+  arrows: false,
+  autoplay: true,
+  autoplaySpeed: 5000,
+  appendDots: (dots: ReactNode) => <ul className="bottom-[-50px]">{dots}</ul>,
+  customPaging: (i: number) => (
+    <div
+      style={{
+        width: "8px",
+        height: "8px",
+        borderRadius: "50%",
+        margin: "0 5px",
+        backgroundColor: "#E6EFFB",
+      }}
+    ></div>
+  ),
+};
 const Banner = () => {
-  var settings = {
-    dots: true,
-    infinite: true,
-    speed: 500,
-    slidesToShow: 1,
-    slidesToScroll: 1,
-    arrows: false,
-    autoplay: true,
-    autoplaySpeed: 5000,
-    appendDots: (dots: ReactNode) => <ul className="bottom-[-50px]">{dots}</ul>,
-    customPaging: (i: number) => (
-      <div
-        style={{
-          width: "8px",
-          height: "8px",
-          borderRadius: "50%",
-          margin: "0 5px",
-          backgroundColor: "#E6EFFB",
-        }}
-      ></div>
-    ),
-  };
-
+  const { isMobile } = useDevices();
   return (
     <Box
       sx={{
@@ -51,7 +52,11 @@ const Banner = () => {
           }}
         >
           <Typography
-            sx={{ fontSize: "96px", color: "white", fontWeight: "700" }}
+            sx={{
+              fontSize: isMobile ? "80px" : "96px",
+              color: "white",
+              fontWeight: "700",
+            }}
           >
             BANNER
           </Typography>
@@ -68,7 +73,11 @@ const Banner = () => {
           }}
         >
           <Typography
-            sx={{ fontSize: "96px", color: "white", fontWeight: "700" }}
+            sx={{
+              fontSize: isMobile ? "80px" : "96px",
+              color: "white",
+              fontWeight: "700",
+            }}
           >
             BANNER
           </Typography>
@@ -86,7 +95,11 @@ const Banner = () => {
           }}
         >
           <Typography
-            sx={{ fontSize: "96px", color: "white", fontWeight: "700" }}
+            sx={{
+              fontSize: isMobile ? "80px" : "96px",
+              color: "white",
+              fontWeight: "700",
+            }}
           >
             BANNER
           </Typography>

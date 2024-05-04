@@ -4,12 +4,7 @@ import Facebook from "@/assets/icons/facebook.svg";
 import Instagram from "@/assets/icons/instagram.svg";
 import Youtube from "@/assets/icons/youtube.svg";
 import useDevices from "@/hook/useDevices";
-import {
-  Box,
-  Link,
-  Typography,
-  useTheme
-} from "@mui/material";
+import { Box, Link, Typography, useTheme } from "@mui/material";
 import { useTranslations } from "next-intl";
 import Image from "next/image";
 
@@ -34,7 +29,7 @@ const Footer = () => {
           sx={{
             display: "flex",
             width: "100%",
-            p: "30px 50px 0 50px",
+            p: isMobile ? "30px 30px 0 30px" : "30px 50px 0 50px",
             flexDirection: "column",
           }}
         >
@@ -233,12 +228,12 @@ const Footer = () => {
           />
           <Box
             mb={isMobile ? "60px" : 0}
-            flexDirection={isMobile ?"column" : "row"}
+            flexDirection={isMobile ? "column" : "row"}
             gap={isMobile ? "20px" : 0}
             alignItems={isMobile ? "start" : "center"}
             display={"flex"}
             justifyContent={"space-between"}
-            p={"20px 36px 20px 52px"}
+            p={isMobile ? "20px 36px 20px 30px" : "20px 36px 20px 52px"}
             width={"100%"}
             maxWidth={1240}
           >
