@@ -1,5 +1,12 @@
 "use client";
-import { AppBar, Box, Hidden, Typography, useTheme } from "@mui/material";
+import {
+  AppBar,
+  Box,
+  Hidden,
+  Typography,
+  useMediaQuery,
+  useTheme,
+} from "@mui/material";
 import Personal from "./Personal";
 import { MAX_WIDTH_APP } from "@/constant/css";
 import Search from "./Search";
@@ -10,11 +17,11 @@ import { IoMdSearch } from "react-icons/io";
 import { makeStyles } from "@mui/styles";
 
 const useStyles = makeStyles({
-  box1: {
-    "@media (max-width: 600px)": {
-      padding: " 0 24px",
-    },
-  },
+  // box1: {
+  //   "@media (max-width: 600px)": {
+  //     padding: " 0 24px",
+  //   },
+  // },
   box2: {
     "@media (max-width: 600px)": {
       padding: "0",
@@ -22,8 +29,10 @@ const useStyles = makeStyles({
     },
   },
 });
+
 const Header = () => {
   const theme = useTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
   const router = useRouter();
   const translate = useTranslations();
   const classes = useStyles();
@@ -47,13 +56,13 @@ const Header = () => {
         justifyContent={"center"}
       >
         <Box
-          className={classes.box1}
+          // className={classes.box1}
           display={"flex"}
           maxWidth={MAX_WIDTH_APP}
           width={"100%"}
           alignItems={"center"}
           justifyContent={"space-between"}
-          pl={"56px"}
+          pl={isMobile ? "24px" : "56px"}
           pr={"24px"}
         >
           <Box
