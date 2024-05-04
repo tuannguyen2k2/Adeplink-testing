@@ -7,7 +7,7 @@ import { makeStyles } from "@mui/styles";
 
 const useStyles = makeStyles({
   box1: {
-    "@media (max-width: 980px)": {
+    "@media (max-width: 960px)": {
       flexDirection: "column",
       gap: 20,
     },
