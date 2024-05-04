@@ -1,41 +1,22 @@
 "use client";
-import { Box, Button, Link, Typography, useTheme } from "@mui/material";
-import Logo from "@/assets/icons/logo.svg";
 import CopyRight from "@/assets/icons/copyright.svg";
 import Facebook from "@/assets/icons/facebook.svg";
 import Instagram from "@/assets/icons/instagram.svg";
 import Youtube from "@/assets/icons/youtube.svg";
-import Image from "next/image";
+import useDevices from "@/hook/useDevices";
+import {
+  Box,
+  Link,
+  Typography,
+  useTheme
+} from "@mui/material";
 import { useTranslations } from "next-intl";
-import { makeStyles } from "@mui/styles";
+import Image from "next/image";
 
-const useStyles = makeStyles({
-  box1: {
-    "@media (max-width: 1120px)": {
-      flexDirection: "column",
-      gap: 20,
-    },
-  },
-  box2: {
-    "@media (max-width: 800px)": {
-      flexDirection: "column",
-    },
-  },
-  box3: {
-    "@media (max-width: 600px)": {
-      marginBottom: "60px",
-    },
-    "@media (max-width: 500px)": {
-      flexDirection: "column",
-      gap: "20px",
-      alignItems: "start",
-    },
-  },
-});
 const Footer = () => {
   const theme = useTheme();
+  const { isLaptop, isTablet, isMobile } = useDevices();
   const translate = useTranslations();
-  const classes = useStyles();
   return (
     <footer style={{ marginTop: "100px" }}>
       <Box
@@ -57,9 +38,15 @@ const Footer = () => {
             flexDirection: "column",
           }}
         >
-          <Box className={classes.box1} sx={{ display: "flex", width: "100%" }}>
+          <Box
+            sx={{
+              display: "flex",
+              width: "100%",
+              flexDirection: isLaptop ? "column" : "row",
+              gap: isLaptop ? "20px" : 0,
+            }}
+          >
             <Box display={"flex"} alignItems={"center"} flex={"55%"}>
-              {/* <Image src={Logo} alt="logo" width={100} height={75} /> */}
               <Typography
                 sx={{
                   color: theme.palette.primary.main,
@@ -72,10 +59,10 @@ const Footer = () => {
               </Typography>
             </Box>
             <Box
-              className={classes.box2}
               sx={{
                 display: "flex",
                 width: "100%",
+                flexDirection: isTablet ? "column" : "row",
                 justifyContent: "space-between",
               }}
             >
@@ -245,9 +232,11 @@ const Footer = () => {
             })}
           />
           <Box
-            className={classes.box3}
+            mb={isMobile ? "60px" : 0}
+            flexDirection={isMobile ?"column" : "row"}
+            gap={isMobile ? "20px" : 0}
+            alignItems={isMobile ? "start" : "center"}
             display={"flex"}
-            alignItems={"center"}
             justifyContent={"space-between"}
             p={"20px 36px 20px 52px"}
             width={"100%"}

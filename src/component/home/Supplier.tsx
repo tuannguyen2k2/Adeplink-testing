@@ -1,37 +1,26 @@
 "use client";
+import SupplierIcon from "@/assets/icons/supplier.svg";
+import useDevices from "@/hook/useDevices";
 import { Box, Button, Grid, Typography, useTheme } from "@mui/material";
 import Image from "next/image";
-import SupplierIcon from "@/assets/icons/supplier.svg";
 import { MdArrowForward } from "react-icons/md";
-import { makeStyles } from "@mui/styles";
 
-const useStyles = makeStyles({
-  box1: {
-    "@media (max-width: 960px)": {
-      flexDirection: "column",
-      gap: 20,
-    },
-  },
-  typographyTitle: {
-    "@media (max-width: 980px)": {
-      textAlign: "center",
-    },
-  },
-});
+
 
 const Supplier = () => {
   const theme = useTheme();
-  const classes = useStyles();
+  const { isTablet } = useDevices();
   return (
     <Box
-      className={classes.box1}
       display={"flex"}
       alignItems={"center"}
+      flexDirection={isTablet ? "column" : "row"}
+      gap={isTablet ? "20px" : 0}
       mt={"105px"}
       width={"100%"}
     >
       <Typography
-       className={classes.typographyTitle}
+        textAlign={isTablet ? "center" : "start"}
         color={theme.black[200]}
         fontSize={16}
         fontWeight={theme.fontWeight.bold}

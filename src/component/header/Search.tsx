@@ -1,36 +1,27 @@
 "use client";
 import { useClickOutside } from "@/hook/useClickOutside";
+import useDevices from "@/hook/useDevices";
 import { Box, MenuItem, Select, TextField, useTheme } from "@mui/material";
-import { makeStyles } from "@mui/styles";
 import { useTranslations } from "next-intl";
 import { useRef, useState } from "react";
-import { IoMdSearch } from "react-icons/io";
-import { IoIosArrowDown } from "react-icons/io";
-import { IoIosArrowUp } from "react-icons/io";
+import { IoIosArrowDown, IoIosArrowUp, IoMdSearch } from "react-icons/io";
 
-const useStyles = makeStyles({
-  box1: {
-    "@media (max-width: 900px)": {
-      width: "100%",
-    },
-  },
-});
+
 const Search = () => {
   const theme = useTheme();
-  const classes = useStyles();
   const translate = useTranslations();
+  const { isTablet } = useDevices();
   const [openSelect, setOpenSelect] = useState<boolean>(false);
   const [isFocusInput, setIsFocusInput] = useState<boolean>(false);
   const searchBoxRef = useRef<HTMLElement | null>(null);
   useClickOutside(searchBoxRef, () => setIsFocusInput(false));
   return (
     <Box
-      className={classes.box1}
       ref={searchBoxRef}
       bgcolor={"common.white"}
       display={"flex"}
       alignItems={"center"}
-      width={"40%"}
+      width={isTablet ? "100%" : "40%"}
       borderRadius={"10px"}
       border={
         isFocusInput

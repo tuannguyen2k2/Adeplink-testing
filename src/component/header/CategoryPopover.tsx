@@ -8,6 +8,7 @@ import {
   MenuItem,
   Popover,
   Typography,
+  useMediaQuery,
   useTheme,
 } from "@mui/material";
 import { makeStyles } from "@mui/styles";
@@ -428,11 +429,6 @@ const categoryFake = [
 ];
 
 const useStyles = makeStyles({
-  list1: {
-    "@media (max-width: 600px)": {
-      width: "60%",
-    },
-  },
   popover: {
     pointerEvents: "none",
   },
@@ -442,6 +438,7 @@ const useStyles = makeStyles({
 });
 const CategoryPopover = () => {
   const theme = useTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
   const classes = useStyles();
   const translate = useTranslations();
   const [categoryLevel1Selected, setCategoryLevel1Selected] = useState(0);
@@ -456,7 +453,6 @@ const CategoryPopover = () => {
   const popoverLeave = () => {
     setOpenedPopover(false);
   };
-
 
   useEffect(() => {
     categoryFake.map((category) => {
@@ -515,8 +511,12 @@ const CategoryPopover = () => {
         <Box width={"100%"} display={"flex"} maxHeight={"100%"} p={2} pl={0}>
           <List
             component="nav"
-            className={classes.list1}
-            sx={{ width: "25%", p: 0, maxHeight: "400px", overflowY: "auto" }}
+            sx={{
+              width: isMobile ? "60%" : "25%",
+              p: 0,
+              maxHeight: "400px",
+              overflowY: "auto",
+            }}
           >
             {Array(10)
               .fill(null)

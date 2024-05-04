@@ -1,4 +1,5 @@
 "use client";
+import { MAX_WIDTH_APP } from "@/constant/css";
 import {
   AppBar,
   Box,
@@ -7,35 +8,18 @@ import {
   useMediaQuery,
   useTheme,
 } from "@mui/material";
-import Personal from "./Personal";
-import { MAX_WIDTH_APP } from "@/constant/css";
-import Search from "./Search";
-import { useRouter } from "next/navigation";
 import { useTranslations } from "next-intl";
+import { useRouter } from "next/navigation";
 import CategoryPopover from "./CategoryPopover";
-import { IoMdSearch } from "react-icons/io";
-import { makeStyles } from "@mui/styles";
+import Personal from "./Personal";
+import Search from "./Search";
 
-const useStyles = makeStyles({
-  // box1: {
-  //   "@media (max-width: 600px)": {
-  //     padding: " 0 24px",
-  //   },
-  // },
-  box2: {
-    "@media (max-width: 600px)": {
-      padding: "0",
-      justifyContent: "center",
-    },
-  },
-});
 
 const Header = () => {
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
   const router = useRouter();
   const translate = useTranslations();
-  const classes = useStyles();
   return (
     <AppBar
       sx={{
