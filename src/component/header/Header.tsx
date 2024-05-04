@@ -95,12 +95,12 @@ const Header = () => {
         mt={"-1px"}
       >
         <Box
-          className={classes.box2}
           height={"100%"}
           width={"100%"}
           maxWidth={MAX_WIDTH_APP}
           bgcolor={"white"}
-          px={"88px"}
+          p={isMobile ? 0 : "0 88px"}
+          justifyContent={isMobile ? "center" : "start"}
           mx={"36px"}
           display={"flex"}
           gap={"6%"}
