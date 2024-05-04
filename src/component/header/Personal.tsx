@@ -1,14 +1,22 @@
 "use client";
-import { Badge, Box, Button, IconButton, useTheme } from "@mui/material";
+import {
+  Badge,
+  Box,
+  Button,
+  Hidden,
+  IconButton,
+  useTheme,
+} from "@mui/material";
 import React from "react";
 import { GrLanguage } from "react-icons/gr";
-import { IoMdNotificationsOutline } from "react-icons/io";
+import { IoMdNotificationsOutline, IoMdSearch } from "react-icons/io";
 import { MdOutlineMessage, MdOutlineShoppingCart } from "react-icons/md";
 import AccountMenu from "./AccountMenu";
 import Image from "next/image";
 import User from "@/assets/icons/user.svg";
 import { UserCircle } from "@phosphor-icons/react";
 import { useTranslations } from "next-intl";
+import SearchMobile from "./mobile/SearchMobile";
 
 const Personal = () => {
   const theme = useTheme();
@@ -24,30 +32,37 @@ const Personal = () => {
   return (
     <>
       <Box display={"flex"} alignItems={"center"} gap={1} height={"100%"}>
+        <SearchMobile />
         <IconButton>
           <GrLanguage size={23} color={"#0C71BA"} />
         </IconButton>
-        <IconButton>
-          <MdOutlineMessage size={24} color={"#0C71BA"} />
-        </IconButton>
-        <IconButton>
-          <Badge
-            badgeContent={45}
-            sx={{
-              "& .MuiBadge-badge": {
-                bgcolor: theme.red[100],
-                color: "white",
-                fontSize: "10px",
-                p: 0,
-              },
-            }}
-          >
-            <IoMdNotificationsOutline size={24} color={"#0C71BA"} />
-          </Badge>
-        </IconButton>
-        <IconButton>
-          <MdOutlineShoppingCart size={24} color={"#0C71BA"} />
-        </IconButton>
+        <Hidden smDown>
+          <IconButton>
+            <MdOutlineMessage size={24} color={"#0C71BA"} />
+          </IconButton>
+        </Hidden>
+        <Hidden smDown>
+          <IconButton>
+            <Badge
+              badgeContent={45}
+              sx={{
+                "& .MuiBadge-badge": {
+                  bgcolor: theme.red[100],
+                  color: "white",
+                  fontSize: "10px",
+                  p: 0,
+                },
+              }}
+            >
+              <IoMdNotificationsOutline size={24} color={"#0C71BA"} />
+            </Badge>
+          </IconButton>
+        </Hidden>
+        <Hidden smDown>
+          <IconButton>
+            <MdOutlineShoppingCart size={24} color={"#0C71BA"} />
+          </IconButton>
+        </Hidden>
         <AccountMenu
           open={open}
           handleCloseMenu={handleCloseMenu}

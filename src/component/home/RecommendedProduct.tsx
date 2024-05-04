@@ -2,10 +2,19 @@
 import { Box, Grid, Typography, useTheme } from "@mui/material";
 import Image from "next/image";
 import { MdArrowForwardIos } from "react-icons/md";
-import Product from "@/assets/icons/product.svg";
+import Product2 from "@/assets/images/product2.jpg";
 import { MAX_WIDTH_APP } from "@/constant/css";
+import { makeStyles } from "@mui/styles";
+const useStyles = makeStyles({
+  box1: {
+    "@media (max-width: 600px)": {
+      padding: "0 20px 20px",
+    },
+  },
+});
 const RecommendedProduct = () => {
   const theme = useTheme();
+  const classes = useStyles();
   return (
     <Box
       bgcolor={theme.blue[100]}
@@ -13,7 +22,12 @@ const RecommendedProduct = () => {
       justifyContent={"center"}
       mt={"100px"}
     >
-      <Box px={"88px"} py={"24px"} maxWidth={MAX_WIDTH_APP}>
+      <Box
+        className={classes.box1}
+        px={"88px"}
+        py={"24px"}
+        maxWidth={MAX_WIDTH_APP}
+      >
         <Box
           display={"flex"}
           justifyContent={"space-between"}
@@ -77,7 +91,7 @@ const RecommendedProduct = () => {
                   p={"16px"}
                   borderRadius={"10px"}
                 >
-                  <Image src={Product} alt="product" width={210} height={210} />
+                  <Image src={Product2} alt="product" width={210} height={210} />
                   <Box>
                     <Typography
                       color={theme.blue[500]}

@@ -10,6 +10,7 @@ import {
   Typography,
   useTheme,
 } from "@mui/material";
+import { makeStyles } from "@mui/styles";
 import { useTranslations } from "next-intl";
 import {
   AwaitedReactNode,
@@ -18,6 +19,7 @@ import {
   ReactNode,
   ReactPortal,
   useEffect,
+  useRef,
   useState,
 } from "react";
 import { MdOutlineArrowRight } from "react-icons/md";
@@ -425,22 +427,36 @@ const categoryFake = [
   },
 ];
 
+const useStyles = makeStyles({
+  list1: {
+    "@media (max-width: 600px)": {
+      width: "60%",
+    },
+  },
+  popover: {
+    pointerEvents: "none",
+  },
+  popoverContent: {
+    pointerEvents: "auto",
+  },
+});
 const CategoryPopover = () => {
   const theme = useTheme();
+  const classes = useStyles();
   const translate = useTranslations();
-  const [anchorEl, setAnchorEl] = useState<HTMLButtonElement | null>(null);
   const [categoryLevel1Selected, setCategoryLevel1Selected] = useState(0);
   const [listCategoryLevel2, setListCategoryLevel2] = useState<any>([]);
-  const handleHover = (event: React.MouseEvent<HTMLButtonElement>) => {
-    setAnchorEl(event.currentTarget);
+  const [openedPopover, setOpenedPopover] = useState(false);
+  const popoverAnchor = useRef(null);
+
+  const popoverEnter = () => {
+    setOpenedPopover(true);
   };
 
-  const handleClose = () => {
-    setAnchorEl(null);
+  const popoverLeave = () => {
+    setOpenedPopover(false);
   };
 
-  const open = Boolean(anchorEl);
-  const id = open ? "category-popover" : undefined;
 
   useEffect(() => {
     categoryFake.map((category) => {
@@ -449,37 +465,45 @@ const CategoryPopover = () => {
       }
     });
   }, [categoryLevel1Selected]);
-  console.log(listCategoryLevel2);
   return (
     <>
       <Box
         component={"button"}
-        aria-describedby={id}
+        ref={popoverAnchor}
+        aria-describedby={"category-popover"}
         fontWeight={theme.fontWeight.bold}
         fontFamily={theme.fontFamily.secondary}
         fontSize={12}
-        color={open ? theme.blue[500] : theme.black[100]}
+        color={openedPopover ? theme.blue[500] : theme.black[100]}
         textTransform={"uppercase"}
+        pt={"8px"}
+        pb={"7px"}
         sx={{
           "&:hover": {
             color: theme.blue[500],
           },
         }}
-        onMouseEnter={handleHover}
+        onMouseEnter={popoverEnter}
+        onMouseLeave={popoverLeave}
       >
         {translate("category")}
       </Box>
       <Popover
-        id={id}
-        open={open}
-        anchorEl={anchorEl}
+        className={classes.popover}
+        classes={{
+          paper: classes.popoverContent,
+        }}
+        id={"category-popover"}
+        open={openedPopover}
+        anchorEl={popoverAnchor.current}
         disableRestoreFocus
         hideBackdrop
         disableScrollLock
         PaperProps={{
-          onMouseLeave: handleClose,
+          onMouseEnter: popoverEnter,
+          onMouseLeave: popoverLeave,
           sx: {
-            top: "120px!important",
+            // top: "120px!important",
             width: "100vw",
           },
         }}
@@ -491,6 +515,7 @@ const CategoryPopover = () => {
         <Box width={"100%"} display={"flex"} maxHeight={"100%"} p={2} pl={0}>
           <List
             component="nav"
+            className={classes.list1}
             sx={{ width: "25%", p: 0, maxHeight: "400px", overflowY: "auto" }}
           >
             {Array(10)

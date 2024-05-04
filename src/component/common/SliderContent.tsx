@@ -1,8 +1,9 @@
 "use client";
 import { ReactNode } from "react";
-import Slider from "react-slick";
+import Slider, { ResponsiveObject } from "react-slick";
 import "slick-carousel/slick/slick-theme.css";
 import "slick-carousel/slick/slick.css";
+
 
 type SettingsType = {
   dots?: boolean;
@@ -15,8 +16,9 @@ type SettingsType = {
   arrows?: boolean;
   prevArrow?: JSX.Element;
   nextArrow?: JSX.Element;
-  autoplay?: boolean,
-  autoplaySpeed?: number,
+  autoplay?: boolean;
+  autoplaySpeed?: number;
+  responsive?: ResponsiveObject[];
 };
 
 type SliderContentType = {

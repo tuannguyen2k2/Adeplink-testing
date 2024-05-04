@@ -1,15 +1,32 @@
 "use client";
-import { AppBar, Box, Typography, useTheme } from "@mui/material";
+import { AppBar, Box, Hidden, Typography, useTheme } from "@mui/material";
 import Personal from "./Personal";
 import { MAX_WIDTH_APP } from "@/constant/css";
 import Search from "./Search";
 import { useRouter } from "next/navigation";
 import { useTranslations } from "next-intl";
 import CategoryPopover from "./CategoryPopover";
+import { IoMdSearch } from "react-icons/io";
+import { makeStyles } from "@mui/styles";
+
+const useStyles = makeStyles({
+  box1: {
+    "@media (max-width: 600px)": {
+      padding: " 0 24px",
+    },
+  },
+  box2: {
+    "@media (max-width: 600px)": {
+      padding: "0",
+      justifyContent: "center",
+    },
+  },
+});
 const Header = () => {
   const theme = useTheme();
   const router = useRouter();
   const translate = useTranslations();
+  const classes = useStyles();
   return (
     <AppBar
       sx={{
@@ -30,6 +47,7 @@ const Header = () => {
         justifyContent={"center"}
       >
         <Box
+          className={classes.box1}
           display={"flex"}
           maxWidth={MAX_WIDTH_APP}
           width={"100%"}
@@ -52,7 +70,9 @@ const Header = () => {
               Adeptlink
             </Typography>
           </Box>
-          <Search />
+          <Hidden mdDown>
+            <Search />
+          </Hidden>
           <Personal />
         </Box>
       </Box>
@@ -60,13 +80,13 @@ const Header = () => {
         width={"100%"}
         height={"100%"}
         bgcolor={"common.white"}
-        pt={"8px"}
-        pb={"7px"}
         display={"flex"}
         justifyContent={"center"}
         alignItems={"center"}
+        mt={"-1px"}
       >
         <Box
+          className={classes.box2}
           height={"100%"}
           width={"100%"}
           maxWidth={MAX_WIDTH_APP}
@@ -74,7 +94,7 @@ const Header = () => {
           px={"88px"}
           mx={"36px"}
           display={"flex"}
-          gap={"64px"}
+          gap={"6%"}
         >
           <CategoryPopover />
           <Box
@@ -84,6 +104,8 @@ const Header = () => {
             fontSize={12}
             color={theme.black[100]}
             textTransform={"uppercase"}
+            pt={"8px"}
+            pb={"7px"}
             sx={{
               "&:hover": {
                 color: theme.blue[500],
@@ -98,6 +120,8 @@ const Header = () => {
             fontFamily={theme.fontFamily.secondary}
             fontSize={12}
             color={theme.black[100]}
+            pt={"8px"}
+            pb={"7px"}
             textTransform={"uppercase"}
             sx={{
               "&:hover": {

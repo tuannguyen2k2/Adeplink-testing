@@ -7,10 +7,35 @@ import Instagram from "@/assets/icons/instagram.svg";
 import Youtube from "@/assets/icons/youtube.svg";
 import Image from "next/image";
 import { useTranslations } from "next-intl";
+import { makeStyles } from "@mui/styles";
 
+const useStyles = makeStyles({
+  box1: {
+    "@media (max-width: 1120px)": {
+      flexDirection: "column",
+      gap: 20,
+    },
+  },
+  box2: {
+    "@media (max-width: 800px)": {
+      flexDirection: "column",
+    },
+  },
+  box3: {
+    "@media (max-width: 600px)": {
+      marginBottom: "60px",
+    },
+    "@media (max-width: 500px)": {
+      flexDirection: "column",
+      gap: "20px",
+      alignItems: "start",
+    },
+  },
+});
 const Footer = () => {
   const theme = useTheme();
   const translate = useTranslations();
+  const classes = useStyles();
   return (
     <footer style={{ marginTop: "100px" }}>
       <Box
@@ -28,11 +53,11 @@ const Footer = () => {
           sx={{
             display: "flex",
             width: "100%",
-            p: "30px 50px",
+            p: "30px 50px 0 50px",
             flexDirection: "column",
           }}
         >
-          <Box sx={{ display: "flex", width: "100%" }}>
+          <Box className={classes.box1} sx={{ display: "flex", width: "100%" }}>
             <Box display={"flex"} alignItems={"center"} flex={"55%"}>
               {/* <Image src={Logo} alt="logo" width={100} height={75} /> */}
               <Typography
@@ -47,13 +72,16 @@ const Footer = () => {
               </Typography>
             </Box>
             <Box
+              className={classes.box2}
               sx={{
                 display: "flex",
                 width: "100%",
                 justifyContent: "space-between",
               }}
             >
-              <Box sx={{ display: "flex", flexDirection: "column" }}>
+              <Box
+                sx={{ display: "flex", flexDirection: "column", mb: "30px" }}
+              >
                 <Typography
                   sx={{
                     fontWeight: "600",
@@ -63,6 +91,7 @@ const Footer = () => {
                     textTransform: "capitalize",
                     pr: 2,
                     pb: 1,
+                    width: "fit-content",
                   }}
                 >
                   {translate("about")} Adeptlink
@@ -111,7 +140,9 @@ const Footer = () => {
                   </Link>
                 </Box>
               </Box>
-              <Box sx={{ display: "flex", flexDirection: "column" }}>
+              <Box
+                sx={{ display: "flex", flexDirection: "column", mb: "30px" }}
+              >
                 <Typography
                   sx={{
                     fontWeight: "600",
@@ -120,6 +151,7 @@ const Footer = () => {
                     borderBottom: `2px solid ${theme.palette.primary.main}`,
                     pr: 2,
                     pb: 1,
+                    width: "fit-content",
                   }}
                 >
                   {translate("newTo")}
@@ -152,7 +184,9 @@ const Footer = () => {
                   </Link>
                 </Box>
               </Box>
-              <Box sx={{ display: "flex", flexDirection: "column" }}>
+              <Box
+                sx={{ display: "flex", flexDirection: "column", mb: "30px" }}
+              >
                 <Typography
                   sx={{
                     fontWeight: "600",
@@ -211,6 +245,7 @@ const Footer = () => {
             })}
           />
           <Box
+            className={classes.box3}
             display={"flex"}
             alignItems={"center"}
             justifyContent={"space-between"}

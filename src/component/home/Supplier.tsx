@@ -3,11 +3,35 @@ import { Box, Button, Grid, Typography, useTheme } from "@mui/material";
 import Image from "next/image";
 import SupplierIcon from "@/assets/icons/supplier.svg";
 import { MdArrowForward } from "react-icons/md";
+import { makeStyles } from "@mui/styles";
+
+const useStyles = makeStyles({
+  box1: {
+    "@media (max-width: 980px)": {
+      flexDirection: "column",
+      gap: 20,
+    },
+  },
+  typographyTitle: {
+    "@media (max-width: 980px)": {
+      textAlign: "center",
+    },
+  },
+});
+
 const Supplier = () => {
   const theme = useTheme();
+  const classes = useStyles();
   return (
-    <Box display={"flex"} alignItems={"center"} mt={"105px"} width={"100%"}>
+    <Box
+      className={classes.box1}
+      display={"flex"}
+      alignItems={"center"}
+      mt={"105px"}
+      width={"100%"}
+    >
       <Typography
+       className={classes.typographyTitle}
         color={theme.black[200]}
         fontSize={16}
         fontWeight={theme.fontWeight.bold}
@@ -15,15 +39,18 @@ const Supplier = () => {
         {"Trusted by the World's Top Customers & Suppliers"}
       </Typography>
       <Box width={"100%"}>
-        <Grid
-          container
-          spacing={{ xs: 2, md: 3 }}
-          columns={{ xs: 4, sm: 8, md: 12 }}
-          width={"calc(100% + 64px)"}
-          ml={"-64px"}
-        >
+        <Grid container spacing={2}>
           {Array.from(Array(5)).map((_, index) => (
-            <Grid item xs={2} sm={4} md={4} key={index} pt={"16px!important"}>
+            <Grid
+              item
+              xs={12}
+              sm={6}
+              md={6}
+              lg={4}
+              key={index}
+              pt={"16px!important"}
+              pl={"24px!important"}
+            >
               <Box
                 display={"flex"}
                 bgcolor={theme.blue[100]}
@@ -83,9 +110,10 @@ const Supplier = () => {
           ))}
           <Grid
             item
-            xs={2}
-            sm={4}
-            md={4}
+            xs={12}
+            sm={6}
+            md={6}
+            lg={4}
             key={"last-item"}
             sx={{ cursor: "pointer" }}
             pt={"16px!important"}

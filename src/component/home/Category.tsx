@@ -52,6 +52,29 @@ const Category = () => {
     ),
     prevArrow: <PrevArrow />,
     nextArrow: <NextArrow />,
+    responsive: [
+      {
+        breakpoint: 1440,
+        settings: {
+          slidesToShow: 3,
+          slidesToScroll: 3,
+        },
+      },
+      {
+        breakpoint: 1140,
+        settings: {
+          slidesToShow: 2,
+          slidesToScroll: 2,
+        },
+      },
+      {
+        breakpoint: 840,
+        settings: {
+          slidesToShow: 1,
+          slidesToScroll: 1,
+        },
+      },
+    ],
   };
   const theme = useTheme();
 
@@ -89,7 +112,7 @@ const Category = () => {
                 }}
               >
                 <Box
-                  width={"100%"}
+                  width={"280px"}
                   m={"10px"}
                   height={"100%"}
                   bgcolor={theme.blue[300]}
