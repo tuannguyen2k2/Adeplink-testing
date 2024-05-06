@@ -11,6 +11,7 @@ const themeColors = {
     600: "#E6EFFB",
     700: "#DBE9FE",
     800: "#0C71B9",
+    900: "#9FC9ED",
   },
   black: {
     main: "#000",

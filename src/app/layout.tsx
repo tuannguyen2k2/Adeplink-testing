@@ -1,12 +1,10 @@
 import type { Metadata } from "next";
 import { NextIntlClientProvider, useMessages } from "next-intl";
-import { Inter } from "next/font/google";
+
 import { cookies } from "next/headers";
 import AppProvider from "./AppProvider";
 import "./globals.css";
 import ReactQueryProvider from "./provider";
-
-const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
   title: "AdeptLink",
@@ -35,14 +33,14 @@ export default function RootLayout({
           rel="stylesheet"
         />
       </head>
-      <body className={`${inter.className} bg-white h-screen`}>
-       <NextIntlClientProvider locale={locale} messages={messages}>
+      <body className={` bg-white h-screen`}>
+        <NextIntlClientProvider locale={locale} messages={messages}>
           <ReactQueryProvider>
             <AppProvider initialSessionToken={sessionToken?.value as string}>
               {children}
             </AppProvider>
           </ReactQueryProvider>
-       </NextIntlClientProvider>
+        </NextIntlClientProvider>
       </body>
     </html>
   );

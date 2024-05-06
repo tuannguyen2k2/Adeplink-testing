@@ -3,7 +3,7 @@ import React, { useState } from "react";
 import { SubmitHandler, useForm } from "react-hook-form";
 import { SignupForm } from "@/model/form/AuthForm";
 import Image from "next/image";
-import AppLogo from "@/assets/images/app-logo.png";
+import AppLogo from "@/assets/icons/logo.svg";
 import { Autocomplete, Icon, TextField } from "@mui/material";
 import {
   VisibilityOff,
@@ -26,6 +26,7 @@ import {
 import { selectedTabType } from "./page";
 import GoogleIcon from "@/assets/icons/google-icon.png";
 import { sentOtpDto } from "@/interface/user";
+import { MdOutlineKeyboardArrowDown } from "react-icons/md";
 
 type InputComponentProps = {
   title: string;
@@ -40,12 +41,12 @@ const InputComponent = ({
   className,
   error,
 }: InputComponentProps) => (
-  <div className={`my-2 mr-2 h-[5rem] ${className}`}>
-    <h4>
-      <span className="text-red-500">*</span>
-      {title}
+  <div className={`my-1 h-[5rem] ${className} `}>
+    <h4 className="mb-1">
+      <span className="text-red-500 mr-1">*</span>
+      <span className="font-medium">{title}</span>
     </h4>
-    <div className="border-2 border-gray-300 rounded w-full px-3 py-2">
+    <div className="border-[1px] border-solid border-gray-400 rounded-lg w-full px-3 py-2">
       {children}
     </div>
     {error && <div className="text-red-500">{error}</div>}
@@ -155,19 +156,22 @@ const SignupFormPage = ({ setSelectedTab }: selectedTabType) => {
   return (
     <React.Fragment>
       <div className="bg-white h-full w-4/5 mx-auto">
-        <div className="flex justify-center mt-8">
+        <div className="flex justify-center mt-[20px] mr-7">
           <Image src={AppLogo} alt={""} />
+          <span className="text-[#0B7ECA] text-[48px] font-bold">
+            Adeptlink
+          </span>
         </div>
 
         <h3 className="font-bold text-2xl text-center">
-          <span className="text-blue-400">Create</span>&nbsp;account
+          <span className="text-blue-400">Create</span>&nbsp;a new account
         </h3>
         <h4 className="text-center">
           Create your account to explore B2B Marketplace and more.
           <br />
           Already have an account?
           <span
-            className="text-[#4285F4] underline hover:cursor-pointer"
+            className="text-[#0C71BA] underline hover:cursor-pointer"
             title="Sign up"
             onClick={() => setSelectedTab("login")}
           >
@@ -177,16 +181,19 @@ const SignupFormPage = ({ setSelectedTab }: selectedTabType) => {
 
         <form onSubmit={handleSubmit(onSubmit)}>
           <div className="grid grid-cols-12">
-            <h4>
-              <span className="text-red-500">*</span>
-              Country
+            <h4 className="mb-1">
+              <span className="text-red-500 mr-1">*</span>
+              <span className="font-medium">Country/Region</span>
             </h4>
             <div className="col-span-12 h-12">
               <Autocomplete
-                className="col-span-12"
+                className="col-span-12 border-[1px] border-solid border-gray-400 rounded-lg"
                 options={countryData}
                 size="small"
                 renderInput={(params) => <TextField {...params} label="" />}
+                popupIcon={
+                  <MdOutlineKeyboardArrowDown size={18} color="black" />
+                }
                 {...register("country", {
                   required: "Country is require",
                 })}
@@ -200,12 +207,12 @@ const SignupFormPage = ({ setSelectedTab }: selectedTabType) => {
             </div>
             <InputComponent
               title="Full name"
-              className="col-span-6"
+              className="col-span-6 mr-3"
               error={formState.errors.fullname?.message}
             >
               <input
                 placeholder="An Nguyen"
-                className="focus:outline-none"
+                className="focus:outline-none "
                 {...register("fullname", {
                   required: "Full name is require",
                 })}
@@ -213,7 +220,7 @@ const SignupFormPage = ({ setSelectedTab }: selectedTabType) => {
             </InputComponent>
             <InputComponent
               title="Company Name"
-              className="col-span-6"
+              className="col-span-6 ml-3"
               error={formState.errors.companyName?.message}
             >
               <input
@@ -226,7 +233,7 @@ const SignupFormPage = ({ setSelectedTab }: selectedTabType) => {
             </InputComponent>
             <InputComponent
               title="Business email address"
-              className="col-span-6"
+              className="col-span-6 mr-3"
               error={formState.errors.email?.message}
             >
               <input
@@ -239,13 +246,13 @@ const SignupFormPage = ({ setSelectedTab }: selectedTabType) => {
                 })}
               />
             </InputComponent>
-            <div className="col-span-6 pt-2">
-              <h4>
+            <div className="col-span-6">
+              {/* <h4>
                 <span className="text-red-500">*</span>
                 Phone number
-              </h4>
-              <div className="flex items-center">
-                <Select
+              </h4> */}
+              {/* <div className="flex items-center"> */}
+              {/* <Select
                   defaultValue="+84"
                   options={phoneNumberData}
                   className="w-20 h-11 border-2 border-gray-300 rounded-lg"
@@ -253,11 +260,16 @@ const SignupFormPage = ({ setSelectedTab }: selectedTabType) => {
                     console.log("locale", value.value)
                   }
                   // onChange={(event, value) => setValue("locale", value.value)}
-                />
+                /> */}
+              <InputComponent
+                title="Phone number"
+                className="col-span-6 ml-3"
+                error={formState.errors.phoneNumber?.message}
+              >
                 <input
                   size={14}
                   placeholder="Phone number"
-                  className="focus:outline-none border-2 border-gray-300 px-3 py-2 rounded-lg"
+                  className="focus:outline-none"
                   {...register("phoneNumber", {
                     required: "Phone number is require",
                     pattern: {
@@ -266,7 +278,8 @@ const SignupFormPage = ({ setSelectedTab }: selectedTabType) => {
                     },
                   })}
                 />
-                {/* <Input
+              </InputComponent>
+              {/* <Input
                   {...register("phoneNumber", {
                     required: "Phone is require",
                     // pattern: {value: new RegExp(/^[0-9]{9}$/), message: "Phone number invalid"}
@@ -274,11 +287,11 @@ const SignupFormPage = ({ setSelectedTab }: selectedTabType) => {
                   placeholder="123456789"
                   className="w-48 h-11 border-2 border-gray-300 rounded-md"
                 /> */}
-              </div>
+              {/* </div> */}
             </div>
             <InputComponent
               title="Password"
-              className="col-span-6 relative"
+              className="col-span-6 relative mr-3"
               error={formState.errors.password?.message}
             >
               <Tooltip
@@ -308,7 +321,7 @@ const SignupFormPage = ({ setSelectedTab }: selectedTabType) => {
                 }
                 fontSize="small"
                 component={showPassword.password ? Visibility : VisibilityOff}
-                className="absolute right-3 hover:cursor-pointer"
+                className="absolute right-3 top-[40px] hover:cursor-pointer"
                 onClick={() =>
                   setShowPassword({
                     ...showPassword,
@@ -319,7 +332,7 @@ const SignupFormPage = ({ setSelectedTab }: selectedTabType) => {
             </InputComponent>
             <InputComponent
               title="Confirm password"
-              className="col-span-6 relative"
+              className="col-span-6 relative ml-3"
               error={formState.errors.confirm?.message}
             >
               <input
@@ -338,7 +351,7 @@ const SignupFormPage = ({ setSelectedTab }: selectedTabType) => {
                 }
                 fontSize="small"
                 component={showPassword.confirm ? Visibility : VisibilityOff}
-                className="absolute right-3"
+                className="absolute right-3 top-[40px]"
                 onClick={() =>
                   setShowPassword({
                     ...showPassword,
@@ -349,11 +362,14 @@ const SignupFormPage = ({ setSelectedTab }: selectedTabType) => {
             </InputComponent>
           </div>
 
-          <div>
-            <input type="checkbox" />
-            &nbsp; I agree to your{" "}
-            <span className="text-blue-400">Terms of Service</span> and{" "}
-            <span className="text-blue-400">Privacy Policy</span>
+          <div className="flex items-center">
+            <input
+              type="checkbox"
+              className="w-[18px] h-[18px] cursor-pointer"
+            />
+            &nbsp; I agree to your&nbsp;
+            <span className="text-[#0C71BA] cursor-pointer">Terms of Service</span>&nbsp;and&nbsp;
+            <span className="text-[#0C71BA] cursor-pointer">Privacy Policy</span>
           </div>
 
           <button

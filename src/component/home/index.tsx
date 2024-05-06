@@ -1,6 +1,6 @@
 "use client";
 import Banner from "@/component/home/Banner";
-import Category from "@/component/home/Category";
+import Category from "@/component/home/category/Category";
 import RecommendedProduct from "@/component/home/RecommendedProduct";
 import Supplier from "@/component/home/Supplier";
 import { MAX_WIDTH_APP } from "@/constant/css";
