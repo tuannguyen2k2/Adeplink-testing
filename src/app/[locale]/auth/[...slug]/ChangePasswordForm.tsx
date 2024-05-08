@@ -26,7 +26,7 @@ const ChangePasswordFormPage = () => {
     confirm: boolean;
   }>({ password: false, confirm: false });
   const [showValidatePassword, setShowValidatePassword] = useState(false);
-  const [showSuccessModal, setShowSuccessModal] = useState(true);
+  const [showSuccessModal, setShowSuccessModal] = useState(false);
   const [validated, setValidated] = useState({
     upperValidated: false,
     numberValidated: false,
