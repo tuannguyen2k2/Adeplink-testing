@@ -13,7 +13,6 @@ export type SlugType =
   | "login"
   | "signup"
   | "change-password"
-  | "reset-password"
   | "forget-password"
   | "successfully";
 const AuthPage = ({
@@ -53,17 +52,6 @@ const AuthPage = ({
         >
           {selectedTab === "forget-password" && (
             <ForgetPasswordForm  />
-          )}
-        </div>
-        <div
-          className={`absolute top-0 bottom-0 w-full h-screen right-0 transition-all duration-300 ${
-            selectedTab === "reset-password"
-              ? "translate-x-0"
-              : "translate-x-full"
-          } z-10`}
-        >
-          {selectedTab === "reset-password" && (
-            <ResetPasswordForm  />
           )}
         </div>
         <div
