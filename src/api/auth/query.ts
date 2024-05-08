@@ -1,6 +1,11 @@
+import { ADEPTLINK_ACCESS_TOKEN, ADEPTLINK_USER } from "@/constant/cookies";
 import { USER_KEY } from "@/constant/queryKey";
+import { LoginResponse } from "@/interface/user";
+import { setUser } from "@/store/slice/accountSlice";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
+import Cookies from 'js-cookie';
 import { useRouter } from "next/navigation";
+import { useDispatch } from "react-redux";
 import {
   login,
   logout,
@@ -11,13 +16,6 @@ import {
   verifyOtp,
   verifyOtpReset,
 } from "./api";
-import { useDispatch, useSelector } from "react-redux";
-import { userSelector } from "@/store/selector";
-import { setUser } from "@/store/slice/accountSlice";
-import { set_cookies } from "@/utils/cookies/setCookie";
-import { LoginResType, LoginResponse } from "@/interface/user";
-import Cookies from 'js-cookie';
-import { ADEPTLINK_ACCESS_TOKEN, ADEPTLINK_USER } from "@/constant/cookies";
 
 export const useLogin = () => {
   // const setUser = useAuthStore()((state) => state.setUser);
