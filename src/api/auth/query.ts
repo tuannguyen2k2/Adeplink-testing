@@ -1,13 +1,16 @@
 import { USER_KEY } from "@/constant/queryKey";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useRouter } from "next/navigation";
-import { login, resetPassword, sendOtp, signup, verifyOtp } from "./api";
+import { login, resendOtp, resetPassword, signup, verifyOtp } from "./api";
+import { useDispatch, useSelector } from "react-redux";
+import { userSelector } from "@/store/selector";
 
 export const useLogin = () => {
   // const setUser = useAuthStore()((state) => state.setUser);
   // Must initialize queryClient from useQueryClient not use getQueryClient from server
   const queryClient = useQueryClient();
   const router = useRouter();
+  const dispatch = useDispatch();
   const { error, isPending, mutate, reset } = useMutation({
     mutationFn: login,
     onSuccess: (data) => {
@@ -29,7 +32,8 @@ export const useSignup = () => {
   const { error, isPending, mutate, reset, isSuccess } = useMutation({
     mutationFn: signup,
     onSuccess: (data) => {},
-    onError: () => {
+    onError: (error) => {
+      console.log(error)
       setTimeout(() => {
         reset();
       }, 2000);
@@ -40,7 +44,7 @@ export const useSignup = () => {
 
 export const useSendOTP = () => {
   const { error, isPending, mutate, reset, isSuccess } = useMutation({
-    mutationFn: sendOtp,
+    mutationFn: resendOtp,
     onSuccess: (data) => {},
     onError: () => {
       setTimeout(() => {
@@ -48,7 +52,7 @@ export const useSendOTP = () => {
       }, 2000);
     },
   });
-  return { sendOtp: mutate, isPending, error, isSuccess };
+  return { resendOtp: mutate, isPending, error, isSuccess };
 };
 
 export const useVerifyOTP = () => {

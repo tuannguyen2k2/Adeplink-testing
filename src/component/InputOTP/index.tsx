@@ -4,7 +4,7 @@ type InputProps = {
   length?: number;
   onComplete: any;
   //   onComplete: (pin: string) => void;
-  onSubmit?: any
+  onSubmit?: any;
 };
 
 const InputOTP = ({ length = 6, onComplete, onSubmit }: InputProps) => {
@@ -32,7 +32,7 @@ const InputOTP = ({ length = 6, onComplete, onSubmit }: InputProps) => {
       if (newPin.every((digit) => digit !== "")) {
         onComplete(newPin.join(""));
       }
-    }
+    };
   };
 
   return (
@@ -48,7 +48,12 @@ const InputOTP = ({ length = 6, onComplete, onSubmit }: InputProps) => {
           onChange={(e) => handleTextChange(e.target.value, index)}
           ref={(ref) => (inputRef.current[index] = ref as any)}
           className=" border-gray-400 rounded-md focus:outline-none flex justify-center items-center text-xl font-semibold text-center "
-          style={{ marginRight: index === length - 1 ? "0" : "10px", backgroundColor: '#DFDFDF', width: 50, height: 50}}
+          style={{
+            marginRight: index === length - 1 ? "0" : "10px",
+            backgroundColor: "#DFDFDF",
+            width: 50,
+            height: 50,
+          }}
         />
       ))}
     </div>

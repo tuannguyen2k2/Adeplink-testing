@@ -10,10 +10,14 @@ export type loginDto = z.infer<typeof loginSchema>;
 export const signupSchema = z.object({
   email: z.string().email(),
   password: z.string().min(8),
-  full_name: z.string(),
+  name: z.string(),
   company_name: z.string(),
   phone: z.string(),
-  country: z.string(),
+  country: z.string().optional(),
+  industry: z.string().optional(),
+  city: z.string().optional(),
+  state: z.string().optional(),
+  is_supplier: z.boolean().optional(),
 });
 
 export type signupDto = z.infer<typeof signupSchema>;
@@ -50,14 +54,6 @@ export const verifyOtpSchema = z.object({
 
 export type verifyOtpDto = z.infer<typeof verifyOtpSchema>;
 
-
-
-
-
-
-
-
-
 export const RegisterRes = z.object({
   data: z.object({
     token: z.string(),
@@ -65,13 +61,13 @@ export const RegisterRes = z.object({
     account: z.object({
       id: z.number(),
       name: z.string(),
-      email: z.string()
-    })
+      email: z.string(),
+    }),
   }),
-  message: z.string()
-})
+  message: z.string(),
+});
 
-export type RegisterResType = z.TypeOf<typeof RegisterRes>
+export type RegisterResType = z.TypeOf<typeof RegisterRes>;
 
-export const LoginRes = RegisterRes
-export type LoginResType = z.TypeOf<typeof LoginRes>
+export const LoginRes = RegisterRes;
+export type LoginResType = z.TypeOf<typeof LoginRes>;

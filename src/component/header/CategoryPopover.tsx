@@ -576,14 +576,15 @@ const CategoryPopover = () => {
                     key={index1}
                   >
                     <Box display={"flex"} gap={0.5} alignItems={"center"}>
-                      <Typography
+                      <Box
+                        component={"button"}
                         fontSize={14}
                         fontFamily={theme.fontFamily.secondary}
                         fontWeight={theme.fontWeight.semiBold}
                         whiteSpace={"nowrap"}
                       >
                         {categoryLevel2.name}
-                      </Typography>
+                      </Box>
                       <MdOutlineArrowRight size={18} />
                     </Box>
                     <List component="nav">

@@ -6,9 +6,15 @@ import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 import { NextIntlClientProvider, useMessages } from "next-intl";
 import { ThemeProvider } from "next-themes";
 import { useState } from "react";
-import {useLocale} from 'next-intl';
-import { Box, Container, ThemeProvider as MuiThemeProvider } from "@mui/material";
+import { useLocale } from "next-intl";
+import {
+  Box,
+  Container,
+  ThemeProvider as MuiThemeProvider,
+} from "@mui/material";
 import { theme } from "@/utils/theme";
+import { Provider as ReduxProvider } from "react-redux";
+import store from "@/store";
 export default function ReactQueryProvider({
   children,
 }: {
@@ -17,7 +23,8 @@ export default function ReactQueryProvider({
   const [queryClient] = useState(() => new QueryClient(queryClientConfig));
   return (
     <QueryClientProvider client={queryClient}>
-    <MuiThemeProvider theme={theme}>
+      <ReduxProvider store={store}>
+        <MuiThemeProvider theme={theme}>
           <ThemeProvider
             attribute="class"
             enableSystem={false}
@@ -26,7 +33,8 @@ export default function ReactQueryProvider({
             <TooltipProvider>{children}</TooltipProvider>
             <ReactQueryDevtools />
           </ThemeProvider>
-    </MuiThemeProvider>
+        </MuiThemeProvider>
+      </ReduxProvider>
     </QueryClientProvider>
   );
 }

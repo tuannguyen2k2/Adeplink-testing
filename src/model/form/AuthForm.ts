@@ -4,6 +4,11 @@ export type LoginForm = {
     isRemember: boolean
 }
 
+export type ChangePasswordForm = {
+    password: string;
+    confirm?: string;
+}
+
 export type SignupForm = {
     email: string
     password: string
@@ -13,8 +18,4 @@ export type SignupForm = {
     country: string
     confirm?: string
     locale: string
-}
-
-export type ChangePasswordForm = {
-    email: string
 }

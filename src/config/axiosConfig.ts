@@ -2,7 +2,7 @@ import axios, { AxiosResponse } from 'axios';
 import { NEXT_APP_API_URL } from '@/config';
 
 const axiosConfig = axios.create({
-  baseURL: `http://62.72.12.96:8003/api/v1/`,
+  baseURL: `https://c64b-2405-4800-5715-f45-f31c-64bd-dd4a-5c26.ngrok-free.app/api/v1/`,
 //   baseURL: `${process.env.NEXT_APP_API_URL}/api/v1/`,
   // headers: {
   //   'Content-Type': 'application/x-www-form-urlencoded',
