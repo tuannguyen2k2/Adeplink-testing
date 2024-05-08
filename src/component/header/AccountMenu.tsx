@@ -1,20 +1,13 @@
 "use client";
-import {
-  Badge,
-  Box,
-  IconButton,
-  Menu,
-  MenuItem,
-  Typography,
-  useTheme,
-} from "@mui/material";
-import Image from "next/image";
-import { GrLanguage } from "react-icons/gr";
-import { IoMdNotificationsOutline } from "react-icons/io";
-import { MdOutlineMessage, MdOutlineShoppingCart } from "react-icons/md";
+import { useLogout } from "@/api/auth/query";
 import Avatar from "@/assets/images/avatar_user.png";
-import React from "react";
+import { setUser } from "@/store/slice/accountSlice";
+import { Box, Menu, MenuItem, Typography, useTheme } from "@mui/material";
+import Cookies from "js-cookie";
 import { useTranslations } from "next-intl";
+import Image from "next/image";
+import React from "react";
+import { useDispatch } from "react-redux";
 
 type AccountMenuType = {
   open: boolean;
@@ -31,6 +24,13 @@ const AccountMenu = ({
 }: AccountMenuType) => {
   const theme = useTheme();
   const translate = useTranslations();
+  const { logout } = useLogout();
+  const dispatch = useDispatch();
+  const handleSignOut = async () => {
+    logout();
+    dispatch(setUser(null));
+    Cookies.remove("user");
+  };
   return (
     <>
       <Box
@@ -235,7 +235,7 @@ const AccountMenu = ({
           my={"4px"}
         />
         <MenuItem
-          onClick={handleCloseMenu}
+          onClick={handleSignOut}
           sx={[
             {
               "&:hover": {

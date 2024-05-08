@@ -6,7 +6,7 @@ export type LoginForm = {
 
 export type ChangePasswordForm = {
     password: string;
-    confirm?: string;
+    confirmPassword: string;
 }
 
 export type SignupForm = {

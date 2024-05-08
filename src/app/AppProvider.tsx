@@ -14,7 +14,7 @@ export const useAppContext = () => {
   return context;
 };
 
-export default function AppProvider({ children, initialSessionToken = ''}: { children: React.ReactNode, initialSessionToken: string }) {
+export default function AppProvider({ children, initialSessionToken = ''}: { children: React.ReactNode, initialSessionToken?: string  }) {
   const [sessionToken, setSessionToken] = useState(initialSessionToken);
   return <AppContext.Provider value={{ sessionToken, setSessionToken }}>{children}</AppContext.Provider>;
 }

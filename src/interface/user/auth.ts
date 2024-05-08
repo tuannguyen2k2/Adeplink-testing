@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { UserDto } from "./user";
 
 export const loginSchema = z.object({
   username: z.string().email(),
@@ -6,6 +7,12 @@ export const loginSchema = z.object({
 });
 
 export type loginDto = z.infer<typeof loginSchema>;
+
+export interface LoginResponse {
+  access_token: string;
+  token_type: string;
+  user: UserDto;
+}
 
 export const signupSchema = z.object({
   email: z.string().email(),
@@ -24,11 +31,12 @@ export type signupDto = z.infer<typeof signupSchema>;
 
 export const resetPasswordSchema = z
   .object({
-    token: z.string(),
-    password: z.string().min(8),
-    confirmPassword: z.string().min(8),
+    email: z.string().email(),
+    otp: z.string(),
+    new_password: z.string().min(8),
+    confirm_password: z.string().min(8),
   })
-  .refine((data) => data.password === data.confirmPassword, {
+  .refine((data) => data.new_password === data.confirm_password, {
     message: "Passwords do not match",
     path: ["confirmPassword"],
   });

@@ -5,10 +5,13 @@ import RecommendedProduct from "@/component/home/RecommendedProduct";
 import Supplier from "@/component/home/Supplier";
 import { MAX_WIDTH_APP } from "@/constant/css";
 import useDevices from "@/hook/useDevices";
+import { userSelector } from "@/store/selector";
 import { Box, Container } from "@mui/material";
+import { useSelector } from "react-redux";
 
 export default function Home() {
   const { isMobile } = useDevices();
+
   return (
     <>
       <Box>

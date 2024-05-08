@@ -15,6 +15,15 @@ export const login = async (data: loginDto) => {
     });
 };
 
+export const logout = async () => {
+  return await axiosConfig
+    .post("login/logout")
+    .then((response) => response.data)
+    .catch((error) => {
+      throw error;
+    });
+};
+
 export const signup = async (data: signupDto) => {
   return await axiosConfig
     .post("login/register", data)
@@ -33,6 +42,15 @@ export const resendOtp = async (email: string) => {
     });
 };
 
+export const sendOtpReset = async (email: string) => {
+  return await axiosConfig
+    .post("login/password/reset", { email })
+    .then((response) => response.data)
+    .catch((error) => {
+      throw error;
+    });
+};
+
 export const verifyOtp = async (data: verifyOtpDto) => {
   return await axiosConfig
     .post("login/register/verify", data)
@@ -42,12 +60,18 @@ export const verifyOtp = async (data: verifyOtpDto) => {
     });
 };
 
+export const verifyOtpReset = async (data: verifyOtpDto) => {
+  return await axiosConfig
+    .post("login/password/reset/verify", data)
+    .then((response) => response.data)
+    .catch((error) => {
+      throw error;
+    });
+};
+
 export const resetPassword = async (data: resetPasswordDto) => {
   return await axiosConfig
-    .post(
-      "login/reset-password",
-      new URLSearchParams({ token: data.token, new_password: data.password })
-    )
+    .post("login/password/reset/confirm", data)
     .then((response) => response.data)
     .catch((error) => {
       throw error;

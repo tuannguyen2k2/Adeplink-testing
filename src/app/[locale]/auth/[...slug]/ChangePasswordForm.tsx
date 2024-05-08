@@ -1,4 +1,5 @@
 "use client";
+import { useResetPassword } from "@/api/auth/query";
 import AppLogo from "@/assets/icons/logo.svg";
 import { InputComponent } from "@/component/common/InputComponent";
 import { ValidatePasswordForm } from "@/component/common/ValidatePasswordForm";
@@ -13,7 +14,7 @@ import { Visibility, VisibilityOff } from "@mui/icons-material";
 import { Icon } from "@mui/material";
 import { Tooltip } from "antd";
 import Image from "next/image";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import React, { useState } from "react";
 import { SubmitHandler, useForm } from "react-hook-form";
 import { IoMdArrowBack } from "react-icons/io";
@@ -31,9 +32,23 @@ const ChangePasswordFormPage = () => {
     lengthValidated: false,
   });
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const email = searchParams.get("email") ?? "";
+  const otp = searchParams.get("otp") ?? "";
   const { register, handleSubmit, formState, setValue, watch, getValues } =
     useForm<ChangePasswordForm>();
-  const onSubmit: SubmitHandler<{ password: string }> = async (data) => {};
+  const { resetPassword, isPending, error, isSuccess } = useResetPassword();
+  const onSubmit: SubmitHandler<{
+    password: string;
+    confirmPassword: string;
+  }> = async (data) => {
+    resetPassword({
+      email,
+      otp,
+      new_password: data.password,
+      confirm_password: data.confirmPassword,
+    });
+  };
 
   const handleValidatePassword = (value: string) => {
     setValidated({
@@ -61,78 +76,78 @@ const ChangePasswordFormPage = () => {
 
           <form onSubmit={handleSubmit(onSubmit)} className="mt-5 w-[80%]">
             <div className="mb-5">
-                <InputComponent
-                  title="New password"
-                  className="  relative mb-2"
-                  error={formState.errors.password?.message}
-                >
-                  <Tooltip
-                    title={<ValidatePasswordForm validated={validated} />}
-                    placement="top"
-                    open={showValidatePassword}
-                    color="#FFF"
-                  >
-                    <input
-                      type={showPassword.password ? "text" : "password"}
-                      placeholder="********"
-                      className="focus:outline-none w-full"
-                      {...register("password", {
-                        required: "Password required",
-                      })}
-                      onChange={(e) => {
-                        setValue("password", e.target.value);
-                        handleValidatePassword(e.target.value);
-                      }}
-                      onFocus={() => setShowValidatePassword(true)}
-                      onBlur={() => setShowValidatePassword(false)}
-                    />
-                  </Tooltip>
-                  <Icon
-                    titleAccess={
-                      showPassword.password ? "Hide password" : "Show password"
-                    }
-                    fontSize="small"
-                    component={showPassword.password ? Visibility : VisibilityOff}
-                    className="absolute right-3 top-[40px] hover:cursor-pointer"
-                    onClick={() =>
-                      setShowPassword({
-                        ...showPassword,
-                        password: !showPassword.password,
-                      })
-                    }
-                  />
-                </InputComponent>
-                <InputComponent
-                  title="Confirm new password"
-                  className="  relative mb-2"
-                  error={formState.errors.confirm?.message}
+              <InputComponent
+                title="New password"
+                className="  relative mb-2"
+                error={formState.errors.password?.message}
+              >
+                <Tooltip
+                  title={<ValidatePasswordForm validated={validated} />}
+                  placement="top"
+                  open={showValidatePassword}
+                  color="#FFF"
                 >
                   <input
-                    type={showPassword.confirm ? "text" : "password"}
+                    type={showPassword.password ? "text" : "password"}
                     placeholder="********"
                     className="focus:outline-none w-full"
-                    {...register("confirm", {
-                      required: "Confirm password required",
-                      validate: (value) =>
-                        value === watch("password") ||
-                        "Confirm password do not match",
+                    {...register("password", {
+                      required: "Password required",
                     })}
+                    onChange={(e) => {
+                      setValue("password", e.target.value);
+                      handleValidatePassword(e.target.value);
+                    }}
+                    onFocus={() => setShowValidatePassword(true)}
+                    onBlur={() => setShowValidatePassword(false)}
                   />
-                  <Icon
-                    titleAccess={
-                      showPassword.confirm ? "Hide password" : "Show password"
-                    }
-                    fontSize="small"
-                    component={showPassword.confirm ? Visibility : VisibilityOff}
-                    className="absolute right-3 top-[40px]"
-                    onClick={() =>
-                      setShowPassword({
-                        ...showPassword,
-                        confirm: !showPassword.confirm,
-                      })
-                    }
-                  />
-                </InputComponent>
+                </Tooltip>
+                <Icon
+                  titleAccess={
+                    showPassword.password ? "Hide password" : "Show password"
+                  }
+                  fontSize="small"
+                  component={showPassword.password ? Visibility : VisibilityOff}
+                  className="absolute right-3 top-[40px] hover:cursor-pointer"
+                  onClick={() =>
+                    setShowPassword({
+                      ...showPassword,
+                      password: !showPassword.password,
+                    })
+                  }
+                />
+              </InputComponent>
+              <InputComponent
+                title="Confirm new password"
+                className="  relative mb-2"
+                error={formState.errors.confirmPassword?.message}
+              >
+                <input
+                  type={showPassword.confirm ? "text" : "password"}
+                  placeholder="********"
+                  className="focus:outline-none w-full"
+                  {...register("confirmPassword", {
+                    required: "Confirm password required",
+                    validate: (value) =>
+                      value === watch("password") ||
+                      "Confirm password do not match",
+                  })}
+                />
+                <Icon
+                  titleAccess={
+                    showPassword.confirm ? "Hide password" : "Show password"
+                  }
+                  fontSize="small"
+                  component={showPassword.confirm ? Visibility : VisibilityOff}
+                  className="absolute right-3 top-[40px]"
+                  onClick={() =>
+                    setShowPassword({
+                      ...showPassword,
+                      confirm: !showPassword.confirm,
+                    })
+                  }
+                />
+              </InputComponent>
             </div>
 
             <button

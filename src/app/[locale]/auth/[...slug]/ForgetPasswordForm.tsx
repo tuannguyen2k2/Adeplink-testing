@@ -1,11 +1,11 @@
 "use client";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import AppLogo from "@/assets/icons/logo.svg";
 import Image from "next/image";
 import { SubmitHandler, useForm } from "react-hook-form";
 import { Modal } from "antd";
 import InputOTP from "@/component/InputOTP";
-import { useSendOTP, useVerifyOTP } from "@/api/auth/query";
+import { useSendOTP, useSendOTPReset, useVerifyOTP, useVerifyOTPReset } from "@/api/auth/query";
 import { useCountdown } from "@/hook/useCountdown";
 import { selectedTabType } from "./page";
 import { IoMdArrowBack } from "react-icons/io";
@@ -15,36 +15,43 @@ const ForgetPasswordForm = () => {
   const [showValidateEmail, setShowValidateEmail] = useState<boolean>(false);
   const [otp, setOtp] = useState("");
   const [isValidateOtp, setIsValidateOtp] = useState(false);
-  const [isOtpError, setIsOtpError] = useState<string | null>(null);
+  const [isOtpError, setIsOtpError] = useState<boolean>(false);
   const { remaining, handleRunCountDown } = useCountdown(60);
   const router = useRouter();
-  const { resendOtp, error } = useSendOTP();
-  const { verifyOtp, isSuccess, data: tokenData } = useVerifyOTP();
+  const { sendOtpReset, error } = useSendOTPReset();
+  const {
+    verifyOtpReset,
+    isSuccess: isVerifySuccess,
+    error: verifyOTPError,
+  } = useVerifyOTPReset();
 
   const { register, handleSubmit, formState, getValues } = useForm<{
     email: string;
   }>();
   const onSubmit: SubmitHandler<{ email: string }> = async (data) => {
     setShowValidateEmail(true);
-    resendOtp(data.email);
+    sendOtpReset(data.email);
     handleRunCountDown();
   };
   const handleResendCode = () => {
+    sendOtpReset(getValues().email);
     handleRunCountDown();
   };
   const handleSubmitOTP = async () => {
     try {
-      verifyOtp({ email: getValues().email, otp: otp as string });
-      console.log("DDDDDDDDDDDDDDDDDDDDDDDDD", tokenData);
-      if (isSuccess) {
-        router.push("/en/auth/reset-password");
-      } else {
-        setIsOtpError("Incorrect OTP");
-      }
+      verifyOtpReset({ email: getValues().email, otp: otp as string });
     } catch {
-      setIsOtpError("Something error");
+      setIsOtpError(true);
     }
   };
+
+  useEffect(() => {
+    if (isVerifySuccess) {
+      router.push(`/en/auth/change-password?email=${getValues().email}&otp=${otp}`);
+    } else if (verifyOTPError) {
+      setIsOtpError(true);
+    }
+  }, [isVerifySuccess, verifyOTPError]);
 
   return (
     <React.Fragment>
@@ -106,7 +113,7 @@ const ForgetPasswordForm = () => {
           </form>
           <div
             className="hover:underline font-medium text-[#0C71BA] hover:cursor-pointer mt-5 flex gap-1"
-            onClick={() =>  router.push("/en/auth/login")}
+            onClick={() => router.push("/en/auth/login")}
           >
             <IoMdArrowBack size={24} />
             Back to Login
@@ -130,7 +137,7 @@ const ForgetPasswordForm = () => {
           </div>
 
           <div className="h-5 text-red-400 text-center">
-            {isOtpError && <span>{isOtpError}</span>}
+            {isOtpError && showValidateEmail && <span>OTP incorrect</span>}
           </div>
 
           <div className="mt-5 w-4/5 mx-auto">

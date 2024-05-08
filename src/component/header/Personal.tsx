@@ -17,11 +17,18 @@ import User from "@/assets/icons/user.svg";
 import { UserCircle } from "@phosphor-icons/react";
 import { useTranslations } from "next-intl";
 import SearchMobile from "./mobile/SearchMobile";
+import { userSelector } from "@/store/selector";
+import { useSelector } from "react-redux";
+import { useRouter } from "next/navigation";
+import { useLogout } from "@/api/auth/query";
 
 const Personal = () => {
   const theme = useTheme();
   const translate = useTranslations();
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
+  const user = useSelector(userSelector);
+
+  const router = useRouter();
   const open = Boolean(anchorEl);
   const handleOpenMenu = (event: React.MouseEvent<HTMLElement>) => {
     setAnchorEl(event.currentTarget);
@@ -63,44 +70,49 @@ const Personal = () => {
             <MdOutlineShoppingCart size={24} color={"#0C71BA"} />
           </IconButton>
         </Hidden>
-        <AccountMenu
-          open={open}
-          handleCloseMenu={handleCloseMenu}
-          handleOpenMenu={handleOpenMenu}
-          anchorEl={anchorEl}
-        />
-        {/* <Box
-          display={"flex"}
-          alignItems={"center"}
-          gap={"20px"}
-          height={"100%"}
-        >
-          <Box height={"24px"} width={"1px"} bgcolor={"common.white"} />
+        {user ? (
+          <AccountMenu
+            open={open}
+            handleCloseMenu={handleCloseMenu}
+            handleOpenMenu={handleOpenMenu}
+            anchorEl={anchorEl}
+          />
+        ) : (
           <Box
-            component={"button"}
-            color={theme.blue[500]}
-            fontWeight={theme.fontWeight.medium}
-            fontFamily={theme.fontFamily.secondary}
+            display={"flex"}
+            alignItems={"center"}
+            gap={"20px"}
+            height={"100%"}
           >
-            {translate("signIn")}
+            <Box height={"24px"} width={"1px"} bgcolor={"common.white"} />
+            <Box
+              component={"button"}
+              color={theme.blue[500]}
+              fontWeight={theme.fontWeight.medium}
+              fontFamily={theme.fontFamily.secondary}
+              onClick={() => router.push("/en/auth/login")}
+            >
+              {translate("signIn")}
+            </Box>
+            <Button
+              sx={{
+                bgcolor: `${theme.blue[500]}!important`,
+                color: "common.white",
+                display: "flex",
+                alignItems: "center",
+                gap: 1,
+                borderRadius: "6px",
+                height: "100%",
+                px: "18px!important",
+                fontFamily: theme.fontFamily.secondary,
+              }}
+              onClick={() => router.push("/en/auth/signup")}
+            >
+              <UserCircle size={24} />
+              {translate("signUp")}
+            </Button>
           </Box>
-          <Button
-            sx={{
-              bgcolor: `${theme.blue[500]}!important`,
-              color: "common.white",
-              display: "flex",
-              alignItems: "center",
-              gap: 1,
-              borderRadius: "6px",
-              height: "100%",
-              px: "18px!important",
-              fontFamily: theme.fontFamily.secondary,
-            }}
-          >
-            <UserCircle size={24} />
-            {translate("signUp")}
-          </Button>
-        </Box> */}
+        )}
       </Box>
     </>
   );

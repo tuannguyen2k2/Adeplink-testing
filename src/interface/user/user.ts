@@ -1,19 +1,16 @@
 import { z } from "zod";
 
 export const userSchema = z.object({
-  firstname: z.string(),
-  lastname: z.string(),
   email: z.string().email(),
-  picture: z.string().url(),
-  provider: z.enum(["email", "google", "facebook", "linkedin"]),
-  role: z.enum([
-    "superadmin",
-    "admin",
-    "consultant",
-    "manager",
-    "enduser",
-    "client",
-  ]),
+  password: z.string().min(8),
+  name: z.string(),
+  company_name: z.string(),
+  phone: z.string(),
+  country: z.string().optional(),
+  industry: z.string().optional(),
+  city: z.string().optional(),
+  state: z.string().optional(),
+  is_supplier: z.boolean().optional(),
 });
 
 export type UserDto = z.infer<typeof userSchema>;
