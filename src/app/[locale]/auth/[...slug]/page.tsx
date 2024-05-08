@@ -1,13 +1,11 @@
 "use client";
-import React, { useEffect, useState } from "react";
-import Image from "next/image";
 import AuthBackgroundImage from "@/assets/images/login-background.png";
+import React, { useState } from "react";
+import ChangePasswordForm from "./ChangePasswordForm";
+import ForgetPasswordForm from "./ForgetPasswordForm";
 import LoginFormPage from "./LoginForm";
 import SignupForm from "./SignupForm";
-import ForgetPasswordForm from "./ForgetPasswordForm";
 import SuccessfullyForm from "./SuccessfullyForm";
-import ResetPasswordForm from "./ResetPasswordForm";
-import ChangePasswordForm from "./ChangePasswordForm";
 
 export type SlugType =
   | "login"
