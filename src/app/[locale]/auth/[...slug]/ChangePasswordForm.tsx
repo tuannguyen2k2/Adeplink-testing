@@ -1,6 +1,7 @@
 "use client";
 import { useResetPassword } from "@/api/auth/query";
 import AppLogo from "@/assets/icons/logo.svg";
+import SuccessModal from "@/component/auth/SuccessModal";
 import { InputComponent } from "@/component/common/InputComponent";
 import { ValidatePasswordForm } from "@/component/common/ValidatePasswordForm";
 import {
@@ -15,7 +16,7 @@ import { Icon } from "@mui/material";
 import { Tooltip } from "antd";
 import Image from "next/image";
 import { useRouter, useSearchParams } from "next/navigation";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { SubmitHandler, useForm } from "react-hook-form";
 import { IoMdArrowBack } from "react-icons/io";
 
@@ -25,6 +26,7 @@ const ChangePasswordFormPage = () => {
     confirm: boolean;
   }>({ password: false, confirm: false });
   const [showValidatePassword, setShowValidatePassword] = useState(false);
+  const [showSuccessModal, setShowSuccessModal] = useState(true);
   const [validated, setValidated] = useState({
     upperValidated: false,
     numberValidated: false,
@@ -49,6 +51,12 @@ const ChangePasswordFormPage = () => {
       confirm_password: data.confirmPassword,
     });
   };
+
+  useEffect(() => {
+    if (isSuccess) {
+      setShowSuccessModal(true);
+    }
+  }, [isSuccess]);
 
   const handleValidatePassword = (value: string) => {
     setValidated({
@@ -171,6 +179,21 @@ const ChangePasswordFormPage = () => {
           </div>
         </div>
       </div>
+      <SuccessModal
+        showSuccessModal={showSuccessModal}
+        title={
+          <div>
+            <h3 className="font-bold text-2xl text-center font-sans">
+              <span className="text-[#0C71BA]">Successful</span> password reset!
+            </h3>
+            <div className="text-center font-medium font-sans text-[16px] mt-1">
+              Your new password has been{" "}
+              <span className="text-[#0C71BA]">updated.</span>
+              <br /> You will be redirect to Homepage in
+            </div>
+          </div>
+        }
+      />
     </React.Fragment>
   );
 };

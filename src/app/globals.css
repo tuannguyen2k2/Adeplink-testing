@@ -26,7 +26,6 @@ body {
     rgb(var(--background-start-rgb));
 }
 
-
 @layer utilities {
   .text-balance {
     text-wrap: balance;
@@ -52,10 +51,13 @@ html *::-webkit-scrollbar {
 
 html *::-webkit-scrollbar-thumb {
   border-radius: 4px;
-  background-color: #CFD2D5;
+  background-color: #cfd2d5;
 }
 
 html *::-webkit-scrollbar-track {
   border-radius: 0;
-  background-color: #F6F8FB;
+  background-color: #f6f8fb;
+}
+.ant-tooltip-inner {
+  width: fit-content;
 }

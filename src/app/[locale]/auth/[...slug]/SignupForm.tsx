@@ -31,8 +31,8 @@ import { AxiosError } from "axios";
 import { useRouter } from "next/navigation";
 import { InputComponent } from "@/component/common/InputComponent";
 import { ValidatePasswordForm } from "@/component/common/ValidatePasswordForm";
-
-
+import Link from "next/link";
+import SuccessModal from "@/component/auth/SuccessModal";
 
 const SignupFormPage = () => {
   const { Option } = Select;
@@ -52,6 +52,7 @@ const SignupFormPage = () => {
   const [showValidateEmail, setShowValidateEmail] = useState<boolean>(false);
   const [isEmailExisted, setIsEmailExisted] = useState(false);
   const [isValidateOtp, setIsValidateOtp] = useState(false);
+  const [showSuccessModal, setShowSuccessModal] = useState(false);
   const [isOtpError, setIsOtpError] = useState(false);
   const {
     signup,
@@ -59,7 +60,11 @@ const SignupFormPage = () => {
     error: registerError,
   } = useSignup();
   const { resendOtp } = useSendOTP();
-  const { verifyOtp, isSuccess: isVerifySuccess, error: verifyOTPError } = useVerifyOTP();
+  const {
+    verifyOtp,
+    isSuccess: isVerifySuccess,
+    error: verifyOTPError,
+  } = useVerifyOTP();
   const { remaining, handleRunCountDown } = useCountdown(60);
   const [isChecked, setIsChecked] = useState(false);
   const { register, handleSubmit, formState, setValue, watch, getValues } =
@@ -77,13 +82,11 @@ const SignupFormPage = () => {
   };
   useEffect(() => {
     if (isVerifySuccess) {
-      router.push("/en/auth/successfully");
-    } else if(verifyOTPError){
+      setShowSuccessModal(true);
+    } else if (verifyOTPError) {
       setIsOtpError(true);
     }
   }, [isVerifySuccess, verifyOTPError]);
-
-  
 
   useEffect(() => {
     if (registerError) {
@@ -121,9 +124,6 @@ const SignupFormPage = () => {
     setIsEmailExisted(false);
   };
 
-
-  
-
   return (
     <React.Fragment>
       <div className="bg-white h-full w-4/5 mx-auto">
@@ -144,7 +144,7 @@ const SignupFormPage = () => {
           <span
             className="text-[#0C71BA] underline hover:cursor-pointer font-medium"
             title="Sign up"
-            onClick={() =>  router.push("/en/auth/login")}
+            onClick={() => router.push("/en/auth/login")}
           >
             Login
           </span>
@@ -443,6 +443,21 @@ const SignupFormPage = () => {
           </div>
         </Modal>
       )}
+      <SuccessModal
+        showSuccessModal={showSuccessModal}
+        title={
+          <div>
+            <h3 className="font-bold text-2xl text-center font-sans">
+              Registered <span className="text-[#0C71BA]">successfully</span>!
+            </h3>
+            <div className="text-center font-medium font-sans text-[16px] mt-1">
+              Thank you and Welcome to{" "}
+              <span className="text-[#0C71BA]">AdeptLink!</span>
+              <br /> You will be redirect to Homepage in
+            </div>
+          </div>
+        }
+      />
     </React.Fragment>
   );
 };

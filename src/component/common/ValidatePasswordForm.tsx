@@ -1,5 +1,6 @@
+"use client";
 import { CheckCircleOutline, HighlightOff } from "@mui/icons-material";
-import { Icon } from "@mui/material";
+import { Box, Icon, Typography, useTheme } from "@mui/material";
 
 export const ValidatePasswordForm = ({
   validated,
@@ -11,41 +12,98 @@ export const ValidatePasswordForm = ({
     lengthValidated: boolean;
   };
 }) => {
+  const theme = useTheme();
   return (
-    <div className="text-black">
-      <div>The password must be:</div>
-      <div className={`${validated.lengthValidated && "text-green-500"}`}>
+    <Box
+      color={"common.black"}
+      display={"flex"}
+      flexDirection={"column"}
+      gap={1}
+    >
+      <Typography
+        whiteSpace={"nowrap"}
+        fontFamily={theme.fontFamily.secondary}
+        fontSize={12}
+      >
+        The password must be:
+      </Typography>
+      <Box display={"flex"} gap={1} alignItems={"center"}>
         {validated.lengthValidated ? (
-          <Icon component={CheckCircleOutline} fontSize="inherit" />
+          <Icon
+            component={CheckCircleOutline}
+            fontSize="inherit"
+            color="success"
+          />
         ) : (
           <Icon component={HighlightOff} fontSize="inherit" color="error" />
         )}
-        <span className="ml-1">Between 8 and 20 characters long</span>
-      </div>
-      <div className={`${validated.upperValidated && "text-green-500"}`}>
+        <Typography
+          whiteSpace={"nowrap"}
+          fontFamily={theme.fontFamily.secondary}
+          fontSize={12}
+          className="ml-1"
+        >
+          Between 8 and 20 characters long
+        </Typography>
+      </Box>
+      <Box display={"flex"} gap={1} alignItems={"center"}>
         {validated.upperValidated ? (
-          <Icon component={CheckCircleOutline} fontSize="inherit" />
+          <Icon
+            component={CheckCircleOutline}
+            fontSize="inherit"
+            color="success"
+          />
         ) : (
           <Icon component={HighlightOff} fontSize="inherit" color="error" />
         )}
-        <span className="ml-1">Contains at least 1 upper case character</span>
-      </div>
-      <div className={`${validated.numberValidated && "text-green-500"}`}>
+        <Typography
+          whiteSpace={"nowrap"}
+          fontFamily={theme.fontFamily.secondary}
+          fontSize={12}
+          className="ml-1"
+        >
+          Contains at least 1 upper case character
+        </Typography>
+      </Box>
+      <Box display={"flex"} gap={1} alignItems={"center"}>
         {validated.numberValidated ? (
-          <Icon component={CheckCircleOutline} fontSize="inherit" />
+          <Icon
+            component={CheckCircleOutline}
+            fontSize="inherit"
+            color="success"
+          />
         ) : (
           <Icon component={HighlightOff} fontSize="inherit" color="error" />
         )}
-        <span className="ml-1">Contains at least 1 numberic character</span>
-      </div>
-      <div className={`${validated.specialValidated && "text-green-500"}`}>
+        <Typography
+          whiteSpace={"nowrap"}
+          fontFamily={theme.fontFamily.secondary}
+          fontSize={12}
+          className="ml-1"
+        >
+          Contains at least 1 numberic character
+        </Typography>
+      </Box>
+      <Box display={"flex"} gap={1} alignItems={"center"}>
         {validated.specialValidated ? (
-          <Icon component={CheckCircleOutline} fontSize="inherit" />
+          <Icon
+            component={CheckCircleOutline}
+            fontSize="inherit"
+            color="success"
+          />
         ) : (
           <Icon component={HighlightOff} fontSize="inherit" color="error" />
         )}
-        <span className="ml-1">Contains at least 1 special character</span>
-      </div>
-    </div>
+        <Typography
+          fontFamily={theme.fontFamily.secondary}
+          fontSize={12}
+          className="ml-1"
+        >
+          {
+            'Contains at least 1 special character: ~`!@#$%^&*()-_+={}[]|;:"<>,./?'
+          }
+        </Typography>
+      </Box>
+    </Box>
   );
 };
