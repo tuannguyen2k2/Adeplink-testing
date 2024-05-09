@@ -82,6 +82,7 @@ const SignupFormPage = () => {
   };
   useEffect(() => {
     if (isVerifySuccess) {
+      setShowValidateEmail(false);
       setShowSuccessModal(true);
     } else if (verifyOTPError) {
       setIsOtpError(true);
@@ -443,21 +444,23 @@ const SignupFormPage = () => {
           </div>
         </Modal>
       )}
-      <SuccessModal
-        showSuccessModal={showSuccessModal}
-        title={
-          <div>
-            <h3 className="font-bold text-2xl text-center font-sans">
-              Registered <span className="text-[#0C71BA]">successfully</span>!
-            </h3>
-            <div className="text-center font-medium font-sans text-[16px] mt-1">
-              Thank you and Welcome to{" "}
-              <span className="text-[#0C71BA]">AdeptLink!</span>
-              <br /> You will be redirect to Homepage in
+      {showSuccessModal && (
+        <SuccessModal
+          showSuccessModal={showSuccessModal}
+          title={
+            <div>
+              <h3 className="font-bold text-2xl text-center font-sans">
+                Registered <span className="text-[#0C71BA]">successfully</span>!
+              </h3>
+              <div className="text-center font-medium font-sans text-[16px] mt-1">
+                Thank you and Welcome to{" "}
+                <span className="text-[#0C71BA]">AdeptLink!</span>
+                <br /> You will be redirect to Homepage in
+              </div>
             </div>
-          </div>
-        }
-      />
+          }
+        />
+      )}
     </React.Fragment>
   );
 };

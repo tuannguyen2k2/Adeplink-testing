@@ -14,6 +14,12 @@ export interface LoginResponse {
   user: UserDto;
 }
 
+export interface VerifyOtpResponse {
+  code: string;
+  message: string;
+  data: LoginResponse;
+}
+
 export const signupSchema = z.object({
   email: z.string().email(),
   password: z.string().min(8),

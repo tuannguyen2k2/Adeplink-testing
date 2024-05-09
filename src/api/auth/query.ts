@@ -1,6 +1,6 @@
 import { ADEPTLINK_ACCESS_TOKEN, ADEPTLINK_USER } from "@/constant/cookies";
 import { USER_KEY } from "@/constant/queryKey";
-import { LoginResponse } from "@/interface/user";
+import { LoginResponse, VerifyOtpResponse, verifyOtpResponse } from "@/interface/user";
 import { setUser } from "@/store/slice/accountSlice";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import Cookies from 'js-cookie';
@@ -104,9 +104,16 @@ export const useSendOTPReset = () => {
 };
 
 export const useVerifyOTP = () => {
+  const queryClient = useQueryClient();
+  const dispatch = useDispatch();
   const { error, isPending, mutate, reset, isSuccess, data } = useMutation({
     mutationFn: verifyOtp,
-    onSuccess: (data) => {},
+    onSuccess: (data: VerifyOtpResponse) => {
+      dispatch(setUser(data.data.user));
+      Cookies.set(ADEPTLINK_USER, JSON.stringify(data.data.user));
+      Cookies.set(ADEPTLINK_ACCESS_TOKEN, JSON.stringify(data.data.access_token));
+      queryClient.setQueryData(USER_KEY, data.data);
+    },
     onError: () => {
       setTimeout(() => {
         reset();
