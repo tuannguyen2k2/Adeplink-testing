@@ -1,6 +1,6 @@
 import { ADEPTLINK_ACCESS_TOKEN, ADEPTLINK_USER } from "@/constant/cookies";
 import { USER_KEY } from "@/constant/queryKey";
-import { LoginResponse, VerifyOtpResponse, verifyOtpResponse } from "@/interface/user";
+import { LoginResponse, VerifyOtpResponse } from "@/interface/user";
 import { setUser } from "@/store/slice/accountSlice";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import Cookies from 'js-cookie';
