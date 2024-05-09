@@ -61,3 +61,12 @@ html *::-webkit-scrollbar-track {
 .ant-tooltip-inner {
   width: fit-content;
 }
+.ant-modal-mask{
+  z-index: 1999!important;
+}
+.ant-modal-wrap{
+  z-index: 2000!important;
+}
+.ant-modal-content{
+  width: fit-content;
+}

@@ -6,8 +6,9 @@ import { Box, Menu, MenuItem, Typography, useTheme } from "@mui/material";
 import Cookies from "js-cookie";
 import { useTranslations } from "next-intl";
 import Image from "next/image";
-import React from "react";
+import React, { useState } from "react";
 import { useDispatch } from "react-redux";
+import SupplierSignUpModal from "../home/supplierRegister/SupplierSignUpModal";
 
 type AccountMenuType = {
   open: boolean;
@@ -22,6 +23,7 @@ const AccountMenu = ({
   handleOpenMenu,
   anchorEl,
 }: AccountMenuType) => {
+  const [openSupplierSignUpModal, setOpenSupplierSignUpModal] = useState(false);
   const theme = useTheme();
   const translate = useTranslations();
   const { logout } = useLogout();
@@ -184,7 +186,10 @@ const AccountMenu = ({
           {translate("myProducts")}
         </MenuItem> */}
         <MenuItem
-          onClick={handleCloseMenu}
+          onClick={() => {
+            setOpenSupplierSignUpModal(true);
+            handleCloseMenu();
+          }}
           sx={[
             {
               "&:hover": {
@@ -252,6 +257,7 @@ const AccountMenu = ({
           {translate("signOut")}
         </MenuItem>
       </Menu>
+      <SupplierSignUpModal openSupplierSignUpModal={openSupplierSignUpModal} />
     </>
   );
 };
