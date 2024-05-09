@@ -250,7 +250,7 @@ const SignupFormPage = () => {
                 {...register("phoneNumber", {
                   required: "Phone number required",
                   pattern: {
-                    value: new RegExp(/^[0-9]{10}$/),
+                    value: new RegExp(/^[0-9]+$/),
                     message: "Phone number invalid",
                   },
                 })}

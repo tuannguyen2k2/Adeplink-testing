@@ -7,8 +7,9 @@ import Cookies from "js-cookie";
 import { useTranslations } from "next-intl";
 import Image from "next/image";
 import React, { useState } from "react";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import SupplierSignUpModal from "../home/supplierRegister/SupplierSignUpModal";
+import { userSelector } from "@/store/selector";
 
 type AccountMenuType = {
   open: boolean;
@@ -28,6 +29,7 @@ const AccountMenu = ({
   const translate = useTranslations();
   const { logout } = useLogout();
   const dispatch = useDispatch();
+  const user = useSelector(userSelector);
   const handleSignOut = async () => {
     logout();
     dispatch(setUser(null));
@@ -82,8 +84,7 @@ const AccountMenu = ({
           fontFamily={theme.fontFamily.secondary}
           px={"16px"}
         >
-          {translate("hi")},{/* Nguyen Van Quoc Tuan */}
-          {translate("greeting")}
+          {translate("hi")},&nbsp;{user?.name}
         </Typography>
         <Box
           height={"1px"}

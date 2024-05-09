@@ -53,11 +53,11 @@ const LoginFormPage = () => {
       </div>
 
       <form onSubmit={handleSubmit(onSubmit)}>
-        <div className="text-red-500 h-5 mt-5 text-center">
-          {error && <span>Username or password incorrect</span>}
+        <div className="text-red-500 h-5 mt-5 text-center font-sans font-medium">
+          {error && <span>Incorrect email address or password.</span>}
         </div>
 
-        <div className="mb-5 h-20">
+        <div className="mb-5 h-20 mt-2">
           <h4
             className={`font-medium mb-2 ${
               formState.errors.username && "text-red-500"
@@ -91,7 +91,7 @@ const LoginFormPage = () => {
               Password
             </h4>
             <span
-              onClick={() =>  router.push("/en/auth/forget-password")}
+              onClick={() => router.push("/en/auth/forget-password")}
               className="text-[#0C71BA] hover:underline hover:cursor-pointer font-medium"
             >
               Forgot password?
