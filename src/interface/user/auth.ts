@@ -33,7 +33,7 @@ export const signupSchema = z.object({
   is_supplier: z.boolean().optional(),
 });
 
-export type signupDto = z.infer<typeof signupSchema>;
+export type SignUpDto = z.infer<typeof signupSchema>;
 
 export const resetPasswordSchema = z
   .object({

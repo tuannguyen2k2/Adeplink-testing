@@ -14,6 +14,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { setUser } from "@/store/slice/accountSlice";
 import { userSelector } from "@/store/selector";
 import { useRouter } from "next/navigation";
+import Cookies from "js-cookie";
 
 const LoginFormPage = () => {
   const [showPassword, setShowPassword] = useState<boolean>(false);
@@ -22,6 +23,7 @@ const LoginFormPage = () => {
   const { register, handleSubmit, formState } = useForm<LoginForm>();
   const dispatch = useDispatch();
   const user = useSelector(userSelector);
+  const locale = Cookies.get("NEXT_LOCALE");
   const onSubmit: SubmitHandler<LoginForm> = async (data) => {
     login(data);
   };
@@ -29,7 +31,10 @@ const LoginFormPage = () => {
   return (
     <div className="w-[80%] lg:w-3/5 mx-auto">
       <div className="flex flex-col items-center">
-        <div className="flex justify-center mt-10 lg:mt-[100px] mr-7">
+        <div
+          className="flex justify-center mt-10 lg:mt-[100px] mr-7 cursor-pointer"
+          onClick={() => router.push("/")}
+        >
           <Image src={AppLogo} alt={""} />
           <span className="text-[#0B7ECA] text-[48px] font-bold">
             Adeptlink
@@ -44,7 +49,7 @@ const LoginFormPage = () => {
           <span
             className="text-[#0C71BA] underline hover:cursor-pointer font-medium"
             title="Sign up"
-            onClick={() => router.push("/en/auth/signup")}
+            onClick={() => router.push(`/${locale}/auth/signup`)}
           >
             Sign up
           </span>
@@ -91,7 +96,7 @@ const LoginFormPage = () => {
               Password
             </h4>
             <span
-              onClick={() => router.push("/en/auth/forget-password")}
+              onClick={() => router.push(`/${locale}/auth/forget-password`)}
               className="text-[#0C71BA] hover:underline hover:cursor-pointer font-medium"
             >
               Forgot password?

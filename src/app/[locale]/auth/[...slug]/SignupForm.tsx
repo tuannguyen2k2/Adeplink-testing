@@ -1,40 +1,33 @@
 "use client";
-import React, { useEffect, useState } from "react";
-import { SubmitHandler, useForm } from "react-hook-form";
-import { SignupForm } from "@/model/form/AuthForm";
-import Image from "next/image";
-import AppLogo from "@/assets/icons/logo.svg";
-import { Autocomplete, Icon, TextField } from "@mui/material";
-import {
-  VisibilityOff,
-  Visibility,
-  CheckCircleOutline,
-  HighlightOff,
-} from "@mui/icons-material";
-import { countryData, phoneNumberData } from "@/constant";
-import { Modal, Select, Tooltip } from "antd";
 import { useSendOTP, useSignup, useVerifyOTP } from "@/api/auth/query";
+import GoogleIcon from "@/assets/icons/google-icon.png";
+import AppLogo from "@/assets/icons/logo.svg";
 import InputOTP from "@/component/InputOTP";
-import { useCountdown } from "@/hook/useCountdown";
+import SuccessModal from "@/component/auth/SuccessModal";
+import { InputComponent } from "@/component/common/InputComponent";
+import { ValidatePasswordForm } from "@/component/common/ValidatePasswordForm";
+import { countryData } from "@/constant";
 import {
+  CheckSpecial,
   checkEmail,
   checkLength,
   checkNumber,
-  CheckSpecial,
   checkUpper,
 } from "@/constant/regex";
-import { selectedTabType } from "./page";
-import GoogleIcon from "@/assets/icons/google-icon.png";
-import { sentOtpDto } from "@/interface/user";
-import { MdOutlineKeyboardArrowDown } from "react-icons/md";
-import { AxiosError } from "axios";
+import { useCountdown } from "@/hook/useCountdown";
+import { SignUpBuyerForm } from "@/model/form/AuthForm";
+import { Visibility, VisibilityOff } from "@mui/icons-material";
+import { Autocomplete, Icon, TextField } from "@mui/material";
+import { Modal, Select, Tooltip } from "antd";
+import Cookies from "js-cookie";
+import Image from "next/image";
 import { useRouter } from "next/navigation";
-import { InputComponent } from "@/component/common/InputComponent";
-import { ValidatePasswordForm } from "@/component/common/ValidatePasswordForm";
-import Link from "next/link";
-import SuccessModal from "@/component/auth/SuccessModal";
+import React, { useEffect, useState } from "react";
+import { SubmitHandler, useForm } from "react-hook-form";
+import { MdOutlineKeyboardArrowDown } from "react-icons/md";
 
 const SignupFormPage = () => {
+  const locale = Cookies.get("NEXT_LOCALE");
   const { Option } = Select;
   const [showPassword, setShowPassword] = useState<{
     password: boolean;
@@ -68,8 +61,8 @@ const SignupFormPage = () => {
   const { remaining, handleRunCountDown } = useCountdown(60);
   const [isChecked, setIsChecked] = useState(false);
   const { register, handleSubmit, formState, setValue, watch, getValues } =
-    useForm<SignupForm>();
-  const onSubmit: SubmitHandler<SignupForm> = async (data) => {
+    useForm<SignUpBuyerForm>();
+  const onSubmit: SubmitHandler<SignUpBuyerForm> = async (data) => {
     signup({
       email: getValues().email,
       password: getValues().password,
@@ -128,7 +121,10 @@ const SignupFormPage = () => {
   return (
     <React.Fragment>
       <div className="bg-white h-full w-4/5 mx-auto">
-        <div className="flex justify-center mt-[100px] mr-7">
+        <div
+          className="flex justify-center mt-[100px] mr-7 cursor-pointer"
+          onClick={() => router.push("/")}
+        >
           <Image src={AppLogo} alt={""} />
           <span className="text-[#0B7ECA] text-[48px] font-bold">
             Adeptlink
@@ -144,8 +140,7 @@ const SignupFormPage = () => {
           Already have an account?&nbsp;
           <span
             className="text-[#0C71BA] underline hover:cursor-pointer font-medium"
-            title="Sign up"
-            onClick={() => router.push("/en/auth/login")}
+            onClick={() => router.push(`/${locale}/auth/login`)}
           >
             Login
           </span>

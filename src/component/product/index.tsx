@@ -3,16 +3,19 @@ import { MAX_WIDTH_APP } from "@/constant/css";
 import useDevices from "@/hook/useDevices";
 import {
   Box,
+  Button,
   Checkbox,
   Container,
   FormControlLabel,
   Grid,
+  Pagination,
   TextField,
   Typography,
   useTheme,
 } from "@mui/material";
 import Image from "next/image";
 import Product2 from "@/assets/images/product2.jpg";
+import CheckboxComponent from "../common/CheckboxComponent";
 const Product = () => {
   const { isMobile } = useDevices();
   const theme = useTheme();
@@ -25,11 +28,17 @@ const Product = () => {
         fontFamily: theme.fontFamily.secondary,
       }}
     >
-      <Typography fontFamily={theme.fontFamily.secondary} mb={"80px"}>
+      <Typography fontFamily={theme.fontFamily.secondary} mb={"20px"}>
         Showing 2,000+ products for “search value”
       </Typography>
       <Box display={"flex"}>
-        <Box bgcolor={theme.blue[100]} p={"24px"} borderRadius={"16px"}>
+        <Box
+          bgcolor={theme.blue[100]}
+          p={"24px"}
+          borderRadius={"16px"}
+          height={"fit-content"}
+          mr={"10px"}
+        >
           <Typography
             fontFamily={theme.fontFamily.secondary}
             color={theme.black[200]}
@@ -50,29 +59,21 @@ const Product = () => {
                 fontFamily={theme.fontFamily.secondary}
                 fontWeight={theme.fontWeight.bold}
                 whiteSpace={"nowrap"}
+                mb={"16px"}
               >
                 Matching Products Categories
               </Typography>
-              <FormControlLabel
-                control={
-                  <Checkbox
-                    sx={{
-                      svg: { fill: theme.palette.primary.main },
-                    }}
-                    name="Cereals"
-                  />
-                }
-                label={
-                  <Typography
-                    sx={{
-                      fontFamily: theme.fontFamily.secondary,
-                      fontSize: 14,
-                    }}
-                  >
-                    Cereals
-                  </Typography>
-                }
-              />
+              <Box display={"flex"} gap={1}>
+                <CheckboxComponent id="1"/>
+                <Typography
+                  sx={{
+                    fontFamily: theme.fontFamily.secondary,
+                    fontSize: 14,
+                  }}
+                >
+                  Cereals
+                </Typography>
+              </Box>
               <Box
                 component={"button"}
                 fontFamily={theme.fontFamily.secondary}
@@ -93,29 +94,21 @@ const Product = () => {
                 fontFamily={theme.fontFamily.secondary}
                 fontWeight={theme.fontWeight.bold}
                 whiteSpace={"nowrap"}
+                mb={"16px"}
               >
                 Suppliers Country
               </Typography>
-              <FormControlLabel
-                control={
-                  <Checkbox
-                    sx={{
-                      svg: { fill: theme.palette.primary.main },
-                    }}
-                    name="Austrialia"
-                  />
-                }
-                label={
-                  <Typography
-                    sx={{
-                      fontFamily: theme.fontFamily.secondary,
-                      fontSize: 14,
-                    }}
-                  >
-                    Austrialia
-                  </Typography>
-                }
-              />
+              <Box display={"flex"} gap={1}>
+                <CheckboxComponent id="2"/>
+                <Typography
+                  sx={{
+                    fontFamily: theme.fontFamily.secondary,
+                    fontSize: 14,
+                  }}
+                >
+                  Australia
+                </Typography>
+              </Box>
               <Box
                 component={"button"}
                 fontFamily={theme.fontFamily.secondary}
@@ -125,35 +118,143 @@ const Product = () => {
                 Show more
               </Box>
             </Box>
-            <Box display={"flex"} flexDirection={"column"} alignItems={"start"}>
+            <Box
+              display={"flex"}
+              flexDirection={"column"}
+              alignItems={"start"}
+              mb={"24px"}
+            >
               <Typography
                 fontSize={14}
                 fontFamily={theme.fontFamily.secondary}
                 fontWeight={theme.fontWeight.bold}
                 whiteSpace={"nowrap"}
+                mb={"10px"}
               >
                 Price
               </Typography>
+              <Box display={"flex"} alignItems={"center"}>
+                <TextField
+                  type="number"
+                  sx={{
+                    width: "100px",
+                    bgcolor: "white",
+                    fontFamily: theme.fontFamily.secondary,
+                    borderRadius: "8px",
+                    border: `1px solid ${theme.palette.grey[50]}`,
+                    input: {
+                      padding: "12px 16px",
+                    },
+                  }}
+                  placeholder="From"
+                  inputProps={{
+                    min: 0,
+                    inputMode: "numeric",
+                    pattern: "[0-9]*",
+                  }}
+                />
+                <Box
+                  mx={"16px"}
+                  width={"23px"}
+                  height={"1px"}
+                  bgcolor={theme.palette.grey[500]}
+                />
+                <TextField
+                  type="number"
+                  sx={{
+                    width: "100px",
+                    bgcolor: "white",
+                    fontFamily: theme.fontFamily.secondary,
+                    borderRadius: "8px",
+                    border: `1px solid ${theme.palette.grey[50]}`,
+                    input: {
+                      padding: "12px 16px",
+                    },
+                  }}
+                  placeholder="To"
+                  inputProps={{
+                    min: 0,
+                    inputMode: "numeric",
+                    pattern: "[0-9]*",
+                  }}
+                />
+              </Box>
+            </Box>
+            <Box
+              display={"flex"}
+              flexDirection={"column"}
+              alignItems={"start"}
+              width={"100%"}
+              mb={"24px"}
+            >
+              <Typography
+                fontSize={14}
+                fontFamily={theme.fontFamily.secondary}
+                fontWeight={theme.fontWeight.bold}
+                whiteSpace={"nowrap"}
+                mb={"10px"}
+              >
+                Minimum Order Quantity
+              </Typography>
               <TextField
                 type="number"
-                sx={{ width: "100px", bgcolor: "white" }}
+                sx={{
+                  width: "100%",
+                  bgcolor: "white",
+                  fontFamily: theme.fontFamily.secondary,
+                  borderRadius: "8px",
+                  border: `1px solid ${theme.palette.grey[50]}`,
+                  input: {
+                    padding: "10px 16px",
+                  },
+                }}
                 inputProps={{
                   min: 0,
+                  inputMode: "numeric",
+                  pattern: "[0-9]*",
                 }}
               />
+            </Box>
+            <Box width={"100%"}>
               <Box
                 component={"button"}
-                fontFamily={theme.fontFamily.secondary}
-                fontSize={14}
-                color={theme.palette.primary.main}
+                sx={{
+                  p: "20px 14px",
+                  textAlign: "start",
+                  color: theme.palette.primary.main,
+                  fontFamily: theme.fontFamily.secondary,
+                  width: "45%",
+                  fontWeight: theme.fontWeight.medium,
+                  fontSize: 14,
+                }}
               >
-                Show more
+                Clear All
               </Box>
+              <Button
+                type="submit"
+                sx={{
+                  p: "10px 14px!important",
+                  borderRadius: "6px",
+                  bgcolor: `${theme.blue[500]}!important`,
+                  color: "common.white",
+                  fontFamily: theme.fontFamily.secondary,
+                  width: "55%",
+                  fontWeight: theme.fontWeight.medium,
+                  fontSize: 14,
+                }}
+              >
+                Apply
+              </Button>
             </Box>
           </form>
         </Box>
-        <Box display={"flex"} justifyContent={"center"}>
-          <Grid container spacing={10} width={"100%"} marginLeft={0}>
+        <Box
+          display={"flex"}
+          flexDirection={"column"}
+          justifyContent={"center"}
+          alignItems={"center"}
+        >
+          <Grid container spacing={10} width={"100%"} marginLeft={0} mt={0}>
             {Array.from(Array(15)).map((_, index) => (
               <Grid
                 item
@@ -167,11 +268,11 @@ const Product = () => {
                   display: "flex",
                   justifyContent: "center",
                   paddingLeft: "0!important",
-                  paddingTop: "32px!important",
+                  paddingTop: index > 2 ? "20px!important" : "0!important",
                 }}
               >
                 <Box
-                  width={"242px"}
+                  width={"300px"}
                   height={"100%"}
                   display={"flex"}
                   flexDirection={"column"}
@@ -179,12 +280,13 @@ const Product = () => {
                   bgcolor={"common.white"}
                   p={"16px"}
                   borderRadius={"10px"}
+                  border={`1px solid ${theme.blue[100]}`}
                 >
                   <Image
                     src={Product2}
                     alt="product"
-                    width={210}
-                    height={210}
+                    width={268}
+                    height={268}
                   />
                   <Box>
                     <Typography
@@ -266,6 +368,12 @@ const Product = () => {
               </Grid>
             ))}
           </Grid>
+          <Pagination
+            count={10}
+            color="primary"
+            shape="rounded"
+            sx={{ justifyContent: "center", mt: "20px" }}
+          />
         </Box>
       </Box>
     </Container>

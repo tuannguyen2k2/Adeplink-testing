@@ -14,6 +14,7 @@ import { ChangePasswordForm } from "@/model/form/AuthForm";
 import { Visibility, VisibilityOff } from "@mui/icons-material";
 import { Icon } from "@mui/material";
 import { Tooltip } from "antd";
+import Cookies from "js-cookie";
 import Image from "next/image";
 import { useRouter, useSearchParams } from "next/navigation";
 import React, { useEffect, useState } from "react";
@@ -37,6 +38,7 @@ const ChangePasswordFormPage = () => {
   const searchParams = useSearchParams();
   const email = searchParams.get("email") ?? "";
   const otp = searchParams.get("otp") ?? "";
+  const locale = Cookies.get("NEXT_LOCALE");
   const { register, handleSubmit, formState, setValue, watch, getValues } =
     useForm<ChangePasswordForm>();
   const { resetPassword, isPending, error, isSuccess } = useResetPassword();
@@ -71,7 +73,10 @@ const ChangePasswordFormPage = () => {
     <React.Fragment>
       <div className="bg-white h-full w-full">
         <div className="w-[80%] mx-auto flex flex-col items-center">
-          <div className="flex justify-center mt-10 lg:mt-[100px] mr-7">
+          <div
+            className="flex justify-center mt-10 lg:mt-[100px] mr-7 cursor-pointer"
+            onClick={() => router.push("/")}
+          >
             <Image src={AppLogo} alt={""} />
             <span className="text-[#0B7ECA] text-[48px] font-bold">
               Adeptlink
@@ -172,7 +177,7 @@ const ChangePasswordFormPage = () => {
           </form>
           <div
             className="hover:underline font-medium text-[#0C71BA] hover:cursor-pointer mt-5 flex gap-1"
-            onClick={() => router.push("/en/auth/login")}
+            onClick={() => router.push(`/${locale}/auth/login`)}
           >
             <IoMdArrowBack size={24} />
             Back to Login

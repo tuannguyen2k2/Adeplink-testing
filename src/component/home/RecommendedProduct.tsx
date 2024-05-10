@@ -6,10 +6,14 @@ import Product2 from "@/assets/images/product2.jpg";
 import { MAX_WIDTH_APP } from "@/constant/css";
 
 import useDevices from "@/hook/useDevices";
+import Cookies from "js-cookie";
+import { useRouter } from "next/navigation";
 
 const RecommendedProduct = () => {
   const { isMobile } = useDevices();
   const theme = useTheme();
+  const locale = Cookies.get("NEXT_LOCALE");
+  const router = useRouter();
   return (
     <Box
       bgcolor={theme.blue[100]}
@@ -38,6 +42,7 @@ const RecommendedProduct = () => {
           </Typography>
           <Box
             component={"button"}
+            onClick={() => router.push(`/${locale}/recommend-product`)}
             display={"flex"}
             alignItems={"center"}
             gap={1}

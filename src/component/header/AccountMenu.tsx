@@ -258,7 +258,10 @@ const AccountMenu = ({
           {translate("signOut")}
         </MenuItem>
       </Menu>
-      <SupplierSignUpModal openSupplierSignUpModal={openSupplierSignUpModal} />
+      <SupplierSignUpModal
+        openSupplierSignUpModal={openSupplierSignUpModal}
+        setOpenSupplierSignUpModal={setOpenSupplierSignUpModal}
+      />
     </>
   );
 };

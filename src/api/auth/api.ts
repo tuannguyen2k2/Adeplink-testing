@@ -1,9 +1,9 @@
 import axiosConfig from "@/config/axiosConfig";
 import {
+  SignUpDto,
   loginDto,
   resetPasswordDto,
-  signupDto,
-  verifyOtpDto,
+  verifyOtpDto
 } from "@/interface/user";
 
 export const login = async (data: loginDto) => {
@@ -24,7 +24,7 @@ export const logout = async () => {
     });
 };
 
-export const signup = async (data: signupDto) => {
+export const signup = async (data: SignUpDto) => {
   return await axiosConfig
     .post("login/register", data)
     .then((response) => response.data)

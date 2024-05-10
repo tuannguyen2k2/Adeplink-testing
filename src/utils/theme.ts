@@ -41,10 +41,12 @@ const themeOptions: ThemeOptionsOld = {
       main: "#0B7ECA",
     },
     grey: {
+      50: "#D9D9D9",
       100: "#EAECEE",
       200: "#F6F8FB",
       300: "#808080",
       400: "#737B7D",
+      500: "#CFD2D5",
     },
   },
   typography: {

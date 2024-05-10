@@ -21,13 +21,14 @@ import { userSelector } from "@/store/selector";
 import { useSelector } from "react-redux";
 import { useRouter } from "next/navigation";
 import { useLogout } from "@/api/auth/query";
+import Cookies from "js-cookie";
 
 const Personal = () => {
   const theme = useTheme();
   const translate = useTranslations();
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
   const user = useSelector(userSelector);
-
+  const locale = Cookies.get("NEXT_LOCALE");
   const router = useRouter();
   const open = Boolean(anchorEl);
   const handleOpenMenu = (event: React.MouseEvent<HTMLElement>) => {
@@ -90,7 +91,7 @@ const Personal = () => {
               color={theme.blue[500]}
               fontWeight={theme.fontWeight.medium}
               fontFamily={theme.fontFamily.secondary}
-              onClick={() => router.push("/en/auth/login")}
+              onClick={() => router.push(`/${locale}/auth/login`)}
             >
               {translate("signIn")}
             </Box>
@@ -106,7 +107,7 @@ const Personal = () => {
                 px: "18px!important",
                 fontFamily: theme.fontFamily.secondary,
               }}
-              onClick={() => router.push("/en/auth/signup")}
+              onClick={() => router.push(`/${locale}/auth/signup`)}
             >
               <UserCircle size={24} />
               {translate("signUp")}

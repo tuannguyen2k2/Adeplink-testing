@@ -5,13 +5,20 @@ import Image from "next/image";
 import { SubmitHandler, useForm } from "react-hook-form";
 import { Modal } from "antd";
 import InputOTP from "@/component/InputOTP";
-import { useSendOTP, useSendOTPReset, useVerifyOTP, useVerifyOTPReset } from "@/api/auth/query";
+import {
+  useSendOTP,
+  useSendOTPReset,
+  useVerifyOTP,
+  useVerifyOTPReset,
+} from "@/api/auth/query";
 import { useCountdown } from "@/hook/useCountdown";
 import { selectedTabType } from "./page";
 import { IoMdArrowBack } from "react-icons/io";
 import { useRouter } from "next/navigation";
+import Cookies from "js-cookie";
 
 const ForgetPasswordForm = () => {
+  const locale = Cookies.get("NEXT_LOCALE");
   const [showValidateEmail, setShowValidateEmail] = useState<boolean>(false);
   const [otp, setOtp] = useState("");
   const [isValidateOtp, setIsValidateOtp] = useState(false);
@@ -47,7 +54,9 @@ const ForgetPasswordForm = () => {
 
   useEffect(() => {
     if (isVerifySuccess) {
-      router.push(`/en/auth/change-password?email=${getValues().email}&otp=${otp}`);
+      router.push(
+        `/${locale}/auth/change-password?email=${getValues().email}&otp=${otp}`
+      );
     } else if (verifyOTPError) {
       setIsOtpError(true);
     }
@@ -57,7 +66,10 @@ const ForgetPasswordForm = () => {
     <React.Fragment>
       <div className="bg-white h-full w-full">
         <div className="w-[80%] mx-auto flex flex-col items-center">
-          <div className="flex justify-center mt-10 lg:mt-[100px] mr-7">
+          <div
+            className="flex justify-center mt-10 lg:mt-[100px] mr-7 cursor-pointer"
+            onClick={() => router.push("/")}
+          >
             <Image src={AppLogo} alt={""} />
             <span className="text-[#0B7ECA] text-[48px] font-bold">
               Adeptlink
@@ -113,7 +125,7 @@ const ForgetPasswordForm = () => {
           </form>
           <div
             className="hover:underline font-medium text-[#0C71BA] hover:cursor-pointer mt-5 flex gap-1"
-            onClick={() => router.push("/en/auth/login")}
+            onClick={() => router.push(`/${locale}/auth/login`)}
           >
             <IoMdArrowBack size={24} />
             Back to Login
