@@ -9,7 +9,7 @@ import {
 } from "@mui/material";
 import { useState } from "react";
 import { IoIosClose, IoMdClose, IoMdSearch } from "react-icons/io";
-import Search from "../Search";
+import Search from "../search/Search";
 
 const SearchMobile = () => {
   const [open, setOpen] = useState(false);

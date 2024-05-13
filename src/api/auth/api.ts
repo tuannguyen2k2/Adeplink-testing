@@ -3,7 +3,7 @@ import {
   SignUpDto,
   loginDto,
   resetPasswordDto,
-  verifyOtpDto
+  verifyOtpDto,
 } from "@/interface/user";
 
 export const login = async (data: loginDto) => {

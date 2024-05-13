@@ -4,9 +4,30 @@ import Image from "next/image";
 import { RiArrowRightLine } from "react-icons/ri";
 import Light from "@/assets/icons/light.svg";
 import { useState } from "react";
-const CategoryItem = () => {
+import { CategoryDto } from "@/interface/user";
+
+type CategoryItemType = {
+  data?: CategoryDto;
+};
+
+const CategoryItem = ({ data }: CategoryItemType) => {
   const theme = useTheme();
   const [openArrowButton, setOpenArrowButton] = useState(false);
+  const convertImage = (image: string | null | undefined) => {
+    if (image) {
+      if (
+        image.includes("https://localhost:8000") &&
+        process.env.NEXT_APP_API_URL
+      ) {
+        return image.replace(
+          "https://localhost:8000",
+          process.env.NEXT_APP_API_URL
+        );
+      } else if (process.env.NEXT_APP_API_URL) {
+        return `${process.env.NEXT_APP_API_URL}/${image}`;
+      }
+    }
+  };
   return (
     <Box
       component={"button"}
@@ -30,12 +51,13 @@ const CategoryItem = () => {
         // alignItems={"center"}
       >
         <Image
-          src={Light}
+          src={convertImage(data?.image) || Light}
           alt="light"
           width={120}
-          height={200}
-          style={{ alignSelf: "center", marginTop: "60px" }}
+          height={120}
+          style={{ alignSelf: "center", marginTop: "60px", height: "120px" }}
         />
+
         <Box
           mx={"20px"}
           mt={3}
@@ -47,14 +69,21 @@ const CategoryItem = () => {
               color={theme.black[100]}
               fontWeight={theme.fontWeight.semiBold}
               fontSize={24}
+              sx={{
+                display: "-webkit-box",
+                WebkitBoxOrient: "vertical",
+                WebkitLineClamp: 1,
+                overflow: "hidden",
+              }}
             >
-              Light
+              {data?.name}
             </Typography>
-            <Typography>20 suppliers</Typography>
+            <Typography>{data?.supplier_count || 0} suppliers</Typography>
           </Box>
           <Box
             component={"button"}
             mb={"4%"}
+            ml={"10px"}
             p={"8px"}
             alignSelf={"end"}
             bgcolor={theme.blue[900]}

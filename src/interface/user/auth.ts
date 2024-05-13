@@ -85,3 +85,4 @@ export type RegisterResType = z.TypeOf<typeof RegisterRes>;
 
 export const LoginRes = RegisterRes;
 export type LoginResType = z.TypeOf<typeof LoginRes>;
+

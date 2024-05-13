@@ -7,6 +7,14 @@ const nextConfig = {
   env: {
     NEXT_APP_API_URL: process.env.NEXT_APP_API_URL,
   },
+  images: {
+    remotePatterns: [
+      {
+        protocol: "https",
+        hostname: "**",
+      },
+    ],
+  },
 };
 
 export default withNextIntl(nextConfig);

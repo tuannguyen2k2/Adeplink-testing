@@ -12,14 +12,21 @@ import { useTranslations } from "next-intl";
 import { useRouter } from "next/navigation";
 import CategoryPopover from "./CategoryPopover";
 import Personal from "./Personal";
-import Search from "./Search";
-
+import Search from "./search/Search";
+import { useGetCategoriesHierarchy } from "@/api/category/query";
+import { useEffect } from "react";
 
 const Header = () => {
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
   const router = useRouter();
   const translate = useTranslations();
+  const { data: categoriesHierarchy, getCategoriesHierarchy } =
+    useGetCategoriesHierarchy();
+
+  useEffect(() => {
+    getCategoriesHierarchy();
+  }, []);
   return (
     <AppBar
       sx={{
@@ -89,7 +96,7 @@ const Header = () => {
           display={"flex"}
           gap={"6%"}
         >
-          <CategoryPopover />
+          <CategoryPopover data={categoriesHierarchy} />
           <Box
             component={"button"}
             fontWeight={theme.fontWeight.bold}

@@ -65,13 +65,13 @@ const RecommendedProduct = () => {
         </Box>
         <Box display={"flex"} justifyContent={"center"}>
           <Grid container spacing={10} width={"100%"} marginLeft={0}>
-            {Array.from(Array(15)).map((_, index) => (
+            {Array.from(Array(10)).map((_, index) => (
               <Grid
                 item
                 xs={12}
                 sm={6}
                 md={4}
-                lg={3}
+                lg={12 / 5}
                 xl={12 / 5}
                 key={index}
                 sx={{

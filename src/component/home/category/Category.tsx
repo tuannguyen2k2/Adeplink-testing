@@ -1,14 +1,11 @@
 "use client";
+import { useGetAllCategoryRoot } from "@/api/category/query";
 import { Box, Typography, useTheme } from "@mui/material";
-import { FC, MouseEventHandler, ReactNode, useState } from "react";
+import { FC, MouseEventHandler, ReactNode, useEffect } from "react";
+import { MdArrowBackIos, MdArrowForwardIos } from "react-icons/md";
 import "slick-carousel/slick/slick-theme.css";
 import "slick-carousel/slick/slick.css";
 import SliderContent from "../../common/SliderContent";
-import Image from "next/image";
-import Light from "@/assets/icons/light.svg";
-import { MdArrowBackIos } from "react-icons/md";
-import { MdArrowForwardIos } from "react-icons/md";
-import { RiArrowRightLine } from "react-icons/ri";
 import CategoryItem from "./CategoryItem";
 
 interface ArrowProps {
@@ -17,6 +14,11 @@ interface ArrowProps {
   onClick?: MouseEventHandler<HTMLDivElement>;
 }
 const Category = () => {
+  const { getAllCategoryRoot, data } = useGetAllCategoryRoot();
+  useEffect(() => {
+    getAllCategoryRoot();
+  }, []);
+  console.log(data);
   const PrevArrow: FC<ArrowProps> = ({ className, style, onClick }) => {
     return (
       <Box className={className} style={style} onClick={onClick}>
@@ -102,11 +104,9 @@ const Category = () => {
         }}
       >
         <SliderContent settings={settings}>
-          {Array(10)
-            .fill(null)
-            .map((_, index) => (
-              <CategoryItem key={index} />
-            ))}
+          {data?.map((category, index) => (
+            <CategoryItem key={index} data={category} />
+          ))}
         </SliderContent>
       </Box>
     </Box>

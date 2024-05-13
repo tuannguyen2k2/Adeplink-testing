@@ -1,4 +1,5 @@
 "use client";
+import { CategoriesHierarchyDto } from "@/interface/user";
 import {
   Box,
   List,
@@ -436,12 +437,18 @@ const useStyles = makeStyles({
     pointerEvents: "auto",
   },
 });
-const CategoryPopover = () => {
+type CategoryPopoverType = {
+  data?: CategoriesHierarchyDto[];
+};
+
+const CategoryPopover = ({ data }: CategoryPopoverType) => {
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
   const classes = useStyles();
   const translate = useTranslations();
-  const [categoryLevel1Selected, setCategoryLevel1Selected] = useState(0);
+  const [categoryLevel1Selected, setCategoryLevel1Selected] = useState<
+    string | null
+  >(data ? data[0].id : null);
   const [listCategoryLevel2, setListCategoryLevel2] = useState<any>([]);
   const [openedPopover, setOpenedPopover] = useState(false);
   const popoverAnchor = useRef(null);
@@ -461,6 +468,7 @@ const CategoryPopover = () => {
       }
     });
   }, [categoryLevel1Selected]);
+  console.log(data);
   return (
     <>
       <Box
@@ -518,39 +526,39 @@ const CategoryPopover = () => {
               overflowY: "auto",
             }}
           >
-            {Array(10)
-              .fill(null)
-              .map((_, index) => {
-                return (
-                  <ListItemButton
-                    sx={{ pl: 2 }}
-                    key={index}
-                    selected={index === categoryLevel1Selected}
-                    onMouseEnter={() => setCategoryLevel1Selected(index)}
-                  >
-                    <ListItemText
-                      primary={
-                        <Typography
-                          sx={{
-                            fontSize: 14,
-                            fontWeight:
-                              index === categoryLevel1Selected
-                                ? theme.fontWeight.semiBold
-                                : theme.fontWeight.regular,
-                            fontFamily: theme.fontFamily.secondary,
-                            color:
-                              index === categoryLevel1Selected
-                                ? theme.blue[500]
-                                : theme.black[100],
-                          }}
-                        >
-                          Category level 1
-                        </Typography>
-                      }
-                    />
-                  </ListItemButton>
-                );
-              })}
+            {data?.map((categoryLevel1, index) => {
+              return (
+                <ListItemButton
+                  sx={{ pl: 2 }}
+                  key={categoryLevel1.id}
+                  selected={categoryLevel1.id === categoryLevel1Selected}
+                  onMouseEnter={() =>
+                    setCategoryLevel1Selected(categoryLevel1.id)
+                  }
+                >
+                  <ListItemText
+                    primary={
+                      <Typography
+                        sx={{
+                          fontSize: 14,
+                          fontWeight:
+                            index === categoryLevel1Selected
+                              ? theme.fontWeight.semiBold
+                              : theme.fontWeight.regular,
+                          fontFamily: theme.fontFamily.secondary,
+                          color:
+                            index === categoryLevel1Selected
+                              ? theme.blue[500]
+                              : theme.black[100],
+                        }}
+                      >
+                        {categoryLevel1.name}
+                      </Typography>
+                    }
+                  />
+                </ListItemButton>
+              );
+            })}
           </List>
           <Box width={"1px"} height={"auto"} bgcolor={theme.blue[100]} mx={2} />
           <Box
