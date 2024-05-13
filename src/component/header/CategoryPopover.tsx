@@ -461,13 +461,13 @@ const CategoryPopover = ({ data }: CategoryPopoverType) => {
     setOpenedPopover(false);
   };
 
-  useEffect(() => {
-    categoryFake.map((category) => {
-      if (category.id === categoryLevel1Selected) {
-        setListCategoryLevel2(category.children);
-      }
-    });
-  }, [categoryLevel1Selected]);
+  // useEffect(() => {
+  //   categoryFake.map((category) => {
+  //     if (category.id === categoryLevel1Selected) {
+  //       setListCategoryLevel2(category.children);
+  //     }
+  //   });
+  // }, [categoryLevel1Selected]);
   console.log(data);
   return (
     <>
@@ -541,15 +541,15 @@ const CategoryPopover = ({ data }: CategoryPopoverType) => {
                       <Typography
                         sx={{
                           fontSize: 14,
-                          fontWeight:
-                            index === categoryLevel1Selected
-                              ? theme.fontWeight.semiBold
-                              : theme.fontWeight.regular,
-                          fontFamily: theme.fontFamily.secondary,
-                          color:
-                            index === categoryLevel1Selected
-                              ? theme.blue[500]
-                              : theme.black[100],
+                          // fontWeight:
+                          //   index === categoryLevel1Selected
+                          //     ? theme.fontWeight.semiBold
+                          //     : theme.fontWeight.regular,
+                          // fontFamily: theme.fontFamily.secondary,
+                          // color:
+                          //   index === categoryLevel1Selected
+                          //     ? theme.blue[500]
+                          //     : theme.black[100],
                         }}
                       >
                         {categoryLevel1.name}
