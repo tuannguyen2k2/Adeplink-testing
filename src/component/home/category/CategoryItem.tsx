@@ -4,7 +4,7 @@ import Image from "next/image";
 import { RiArrowRightLine } from "react-icons/ri";
 import Light from "@/assets/icons/light.svg";
 import { useState } from "react";
-import { CategoryDto } from "@/interface/user";
+import { CategoryDto } from "@/interface/common";
 
 type CategoryItemType = {
   data?: CategoryDto;

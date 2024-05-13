@@ -1,5 +1,5 @@
 "use client";
-import { CategoriesHierarchyDto } from "@/interface/user";
+import { CategoriesHierarchyDto } from "@/interface/common";
 import {
   Box,
   List,

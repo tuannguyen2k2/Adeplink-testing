@@ -1,6 +1,6 @@
 import { useMutation } from "@tanstack/react-query";
 
-import { ProductDto } from "@/interface/user";
+import { ProductDto } from "@/interface/common";
 import { getAllProduct } from "./api";
 
 export const useGetAllProduct = () => {

@@ -1,6 +1,6 @@
 import { useMutation } from "@tanstack/react-query";
 
-import { CategoriesHierarchyDto, CategoryDto } from "@/interface/user";
+import { CategoriesHierarchyDto, CategoryDto } from "@/interface/common";
 import { getAllCategoryRoot, getCategoriesHierarchy } from "./api";
 
 

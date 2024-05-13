@@ -1,6 +1,6 @@
 import { useMutation } from "@tanstack/react-query";
 import { getAllBanner } from "./api";
-import { BannerDto } from "@/interface/user";
+import { BannerDto } from "@/interface/common";
 
 export const useGetAllBanner = () => {
   // const setUser = useAuthStore()((state) => state.setUser);
