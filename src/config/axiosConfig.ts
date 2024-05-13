@@ -6,8 +6,8 @@ const axiosConfig = axios.create({
   baseURL: `${process.env.NEXT_APP_API_URL}/api/v1/`,
 
   headers: {
-    "Content-Type": "application/x-www-form-urlencoded",
-    Accept: "application/json",
+    // "Content-Type": "application/x-www-form-urlencoded",
+    // Accept: "application/json",
     "ngrok-skip-browser-warning": "true",
   },
 });
