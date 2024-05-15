@@ -22,11 +22,13 @@ import { useSelector } from "react-redux";
 import { useRouter } from "next/navigation";
 import { useLogout } from "@/api/auth/query";
 import Cookies from "js-cookie";
+import useDevices from "@/hook/useDevices";
 
 const Personal = () => {
   const theme = useTheme();
   const translate = useTranslations();
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
+  const { isMobile } = useDevices();
   const user = useSelector(userSelector);
   const locale = Cookies.get("NEXT_LOCALE");
   const router = useRouter();
@@ -44,12 +46,13 @@ const Personal = () => {
         <IconButton>
           <GrLanguage size={23} color={"#0C71BA"} />
         </IconButton>
-        <Hidden smDown>
+
+        {!isMobile && (
           <IconButton>
             <MdOutlineMessage size={24} color={"#0C71BA"} />
           </IconButton>
-        </Hidden>
-        <Hidden smDown>
+        )}
+        {!isMobile && (
           <IconButton>
             <Badge
               badgeContent={45}
@@ -65,12 +68,12 @@ const Personal = () => {
               <IoMdNotificationsOutline size={24} color={"#0C71BA"} />
             </Badge>
           </IconButton>
-        </Hidden>
-        <Hidden smDown>
+        )}
+        {!isMobile && (
           <IconButton>
             <MdOutlineShoppingCart size={24} color={"#0C71BA"} />
           </IconButton>
-        </Hidden>
+        )}
         {user ? (
           <AccountMenu
             open={open}

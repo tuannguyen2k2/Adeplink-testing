@@ -1,38 +1,77 @@
 "use client";
 import { useClickOutside } from "@/hook/useClickOutside";
 import useDevices from "@/hook/useDevices";
-import { Box, MenuItem, Select, TextField, useTheme } from "@mui/material";
+import {
+  Box,
+  IconButton,
+  MenuItem,
+  Select,
+  TextField,
+  useTheme,
+} from "@mui/material";
 import { useTranslations } from "next-intl";
-import { ChangeEvent, KeyboardEvent, useRef, useState } from "react";
+import { ChangeEvent, KeyboardEvent, useEffect, useRef, useState } from "react";
 import { IoIosArrowDown, IoIosArrowUp, IoMdSearch } from "react-icons/io";
 import SearchResult from "./SearchResult";
 import Cookies from "js-cookie";
 import { RECENTLY_SEARCH_RESULT } from "@/constant/cookies";
+import { IoMdClose } from "react-icons/io";
+import useDebounce from "@/hook/useDebounce";
+import { useGetProductSearch } from "@/api/product/query";
+import { CircularProgress, makeStyles } from "@material-ui/core";
+import { useRouter } from "next/navigation";
 
+const useStyles = makeStyles((theme) => ({
+  spinner: {
+    marginRight: "20px",
+    animation: "$spin 1s infinite linear",
+  },
+  "@keyframes spin": {
+    "0%": {
+      transform: "rotate(0deg)",
+    },
+    "100%": {
+      transform: "rotate(360deg)",
+    },
+  },
+}));
 const Search = () => {
   const theme = useTheme();
+  const classes = useStyles();
   const translate = useTranslations();
+  const router = useRouter();
   const { isTablet } = useDevices();
   const [openSelect, setOpenSelect] = useState<boolean>(false);
   const [isFocusInput, setIsFocusInput] = useState<boolean>(false);
   const [valueInput, setValueInput] = useState<string>("");
+  const [loading, setLoading] = useState(false);
+  const { getProductSearch, isSuccess, data } = useGetProductSearch();
+  const debouncedValue = useDebounce(valueInput, 500);
   const searchBoxRef = useRef<HTMLElement | null>(null);
+  const locale = Cookies.get("NEXT_LOCALE");
+  const handleClickOutSide = () => {
+    setIsFocusInput(false);
+  };
+
+  useClickOutside(searchBoxRef, handleClickOutSide);
+
   const handleFocusInput = (
     event: React.FocusEvent<HTMLInputElement | HTMLTextAreaElement>
   ) => {
     setIsFocusInput(true);
   };
-  const handleClickOutSide = () => {
-    setIsFocusInput(false);
-  };
-  useClickOutside(searchBoxRef, handleClickOutSide);
+
   const handleKeyDown = (e: KeyboardEvent<HTMLInputElement>) => {
     if (e.key === "Enter") {
       if (valueInput === "") {
+        return;
       }
       e.preventDefault();
       const recentlySearchResult = Cookies.get(RECENTLY_SEARCH_RESULT);
-      console.log(recentlySearchResult);
+      const searchValue = {
+        keyword: valueInput,
+        id: null,
+      };
       if (recentlySearchResult) {
         const recentlySearchResultParse = JSON.parse(recentlySearchResult);
         if (recentlySearchResultParse.length === 5) {
@@ -40,13 +79,15 @@ const Search = () => {
         }
         Cookies.set(
           RECENTLY_SEARCH_RESULT,
-          JSON.stringify([valueInput, ...recentlySearchResultParse])
+          JSON.stringify([searchValue, ...recentlySearchResultParse])
         );
       } else {
-        Cookies.set(RECENTLY_SEARCH_RESULT, JSON.stringify([valueInput]));
+        Cookies.set(RECENTLY_SEARCH_RESULT, JSON.stringify([searchValue]));
       }
+      router.push(`/${locale}/product?keyword=${valueInput}`);
     }
   };
+
   const handleOnChangeInput = (e: ChangeEvent<HTMLInputElement>) => {
     const searchValue = e.target.value;
     if (searchValue.startsWith(" ")) {
@@ -54,6 +95,23 @@ const Search = () => {
     }
     setValueInput(searchValue);
   };
+
+  useEffect(() => {
+    if (debouncedValue == "") {
+      return;
+    }
+    setLoading(true);
+    getProductSearch({ keyword: debouncedValue });
+
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [debouncedValue]);
+
+  useEffect(() => {
+    if (isSuccess) {
+      setLoading(false);
+    }
+  }, [isSuccess]);
+
   return (
     <Box
       ref={searchBoxRef}
@@ -149,6 +207,7 @@ const Search = () => {
             },
           }}
           onKeyDown={handleKeyDown}
+          value={valueInput}
           placeholder={translate("placeHolderSearch")}
           onFocus={(e) => handleFocusInput(e)}
           onChange={handleOnChangeInput}
@@ -162,7 +221,25 @@ const Search = () => {
             },
           }}
         />
-        {isFocusInput && <SearchResult />}
+        {isFocusInput && valueInput !== "" && !loading && (
+          <IconButton sx={{ mr: "10px" }} onClick={() => setValueInput("")}>
+            <IoMdClose color="#0C71B9" size={18} />
+          </IconButton>
+        )}
+        {loading && (
+          <CircularProgress
+            className={classes.spinner}
+            size={16}
+            color="primary"
+          />
+        )}
+        {isFocusInput && (
+          <SearchResult
+            debouncedValue={debouncedValue}
+            data={debouncedValue !== "" ? data?.products : undefined}
+            setIsFocusInput={setIsFocusInput}
+          />
+        )}
       </Box>
     </Box>
   );

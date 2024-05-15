@@ -15,10 +15,11 @@ import Personal from "./Personal";
 import Search from "./search/Search";
 import { useGetCategoriesHierarchy } from "@/api/category/query";
 import { useEffect } from "react";
+import useDevices from "@/hook/useDevices";
 
 const Header = () => {
   const theme = useTheme();
-  const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
+  const { isMobile, isTablet } = useDevices();
   const router = useRouter();
   const translate = useTranslations();
   const { data: categoriesHierarchy, getCategoriesHierarchy } =
@@ -70,9 +71,9 @@ const Header = () => {
               Adeptlink
             </Typography>
           </Box>
-          <Hidden mdDown>
-            <Search />
-          </Hidden>
+
+          {!isTablet && <Search />}
+
           <Personal />
         </Box>
       </Box>

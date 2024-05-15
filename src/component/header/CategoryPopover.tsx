@@ -449,7 +449,9 @@ const CategoryPopover = ({ data }: CategoryPopoverType) => {
   const [categoryLevel1Selected, setCategoryLevel1Selected] = useState<
     string | null
   >(data ? data[0].id : null);
-  const [listCategoryLevel2, setListCategoryLevel2] = useState<any>([]);
+  const [listCategoryLevel2, setListCategoryLevel2] = useState<
+    CategoriesHierarchyDto[]
+  >([]);
   const [openedPopover, setOpenedPopover] = useState(false);
   const popoverAnchor = useRef(null);
 
@@ -461,13 +463,13 @@ const CategoryPopover = ({ data }: CategoryPopoverType) => {
     setOpenedPopover(false);
   };
 
-  // useEffect(() => {
-  //   categoryFake.map((category) => {
-  //     if (category.id === categoryLevel1Selected) {
-  //       setListCategoryLevel2(category.children);
-  //     }
-  //   });
-  // }, [categoryLevel1Selected]);
+  useEffect(() => {
+    data?.map((category) => {
+      if (category.id === categoryLevel1Selected) {
+        setListCategoryLevel2(category.child_categories);
+      }
+    });
+  }, [categoryLevel1Selected]);
   console.log(data);
   return (
     <>
@@ -541,15 +543,15 @@ const CategoryPopover = ({ data }: CategoryPopoverType) => {
                       <Typography
                         sx={{
                           fontSize: 14,
-                          // fontWeight:
-                          //   index === categoryLevel1Selected
-                          //     ? theme.fontWeight.semiBold
-                          //     : theme.fontWeight.regular,
-                          // fontFamily: theme.fontFamily.secondary,
-                          // color:
-                          //   index === categoryLevel1Selected
-                          //     ? theme.blue[500]
-                          //     : theme.black[100],
+                          fontWeight:
+                            categoryLevel1.id === categoryLevel1Selected
+                              ? theme.fontWeight.semiBold
+                              : theme.fontWeight.regular,
+                          fontFamily: theme.fontFamily.secondary,
+                          color:
+                            categoryLevel1.id === categoryLevel1Selected
+                              ? theme.blue[500]
+                              : theme.black[100],
                         }}
                       >
                         {categoryLevel1.name}
@@ -573,15 +575,14 @@ const CategoryPopover = ({ data }: CategoryPopoverType) => {
           >
             {listCategoryLevel2?.map(
               (
-                categoryLevel2: { name: string; children: any },
-                index1: number
+                categoryLevel2: CategoriesHierarchyDto,
               ) => {
                 return (
                   <Box
                     display={"flex"}
                     flexDirection={"column"}
                     alignItems={"start"}
-                    key={index1}
+                    key={categoryLevel2.id}
                   >
                     <Box display={"flex"} gap={0.5} alignItems={"center"}>
                       <Box
@@ -596,11 +597,11 @@ const CategoryPopover = ({ data }: CategoryPopoverType) => {
                       <MdOutlineArrowRight size={18} />
                     </Box>
                     <List component="nav">
-                      {categoryLevel2.children?.map(
-                        (categoryLevel3: { name: string }, index2: number) => {
+                      {categoryLevel2?.child_categories?.map(
+                        (categoryLevel3: CategoriesHierarchyDto) => {
                           return (
                             <ListItemButton
-                              key={index2}
+                              key={categoryLevel3.id}
                               sx={{ pl: 0, py: "4px", maxWidth: "150px" }}
                             >
                               <ListItemText

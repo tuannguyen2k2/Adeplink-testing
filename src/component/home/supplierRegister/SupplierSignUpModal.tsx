@@ -1,7 +1,12 @@
 "use client";
+import { useSignup } from "@/api/auth/query";
+import { useGetAllCategoryRoot } from "@/api/category/query";
+import { useSignUpBecomeSupplier } from "@/api/user/query";
 import { InputComponent } from "@/component/common/InputComponent";
 import { countryData } from "@/constant";
+import { CategoryDto } from "@/interface/common";
 import { SignUpSupplierForm } from "@/model/form/AuthForm";
+import { setUser } from "@/store/slice/accountSlice";
 import {
   Autocomplete,
   Box,
@@ -12,9 +17,18 @@ import {
   useTheme,
 } from "@mui/material";
 import { Modal } from "antd";
-import React, { useState } from "react";
+import {
+  City,
+  Country,
+  ICity,
+  ICountry,
+  IState,
+  State,
+} from "country-state-city";
+import React, { useEffect, useState } from "react";
 import { SubmitHandler, useForm } from "react-hook-form";
 import { MdOutlineKeyboardArrowDown } from "react-icons/md";
+import { useDispatch } from "react-redux";
 
 type SupplierSignUpModalType = {
   openSupplierSignUpModal: boolean;
@@ -27,6 +41,18 @@ const SupplierSignUpModal = ({
 }: SupplierSignUpModalType) => {
   const theme = useTheme();
   const [phase, setPhase] = useState(1);
+  const [selectedCategory, setSelectedCategory] =
+    useState<CategoryDto | null>();
+  const [selectedCountry, setSelectedCountry] = useState<ICountry | null>();
+  const [selectedState, setSelectedState] = useState<IState | null>();
+  const [selectedCity, setSelectedCity] = useState<ICity | null>();
+  const { getAllCategoryRoot, data } = useGetAllCategoryRoot();
+  const dispatch = useDispatch();
+  const {
+    signUpBecomeSupplier,
+    isSuccess: isSignUpSuccess,
+    error: signUpError,
+  } = useSignUpBecomeSupplier();
   const {
     register,
     handleSubmit,
@@ -41,12 +67,38 @@ const SupplierSignUpModal = ({
   };
 
   const onSubmit: SubmitHandler<SignUpSupplierForm> = async (data) => {
+    signUpBecomeSupplier({
+      category_id: getValues().category.id,
+      country: getValues().country.name,
+      state: getValues().state.name,
+      city: getValues().city.name,
+      number_of_employees: getValues().numberOfEmployees
+        ? parseInt(getValues().numberOfEmployees, 10)
+        : null,
+      year_established: getValues().yearEstablished
+        ? parseInt(getValues().yearEstablished, 10)
+        : null,
+    });
     setPhase(3);
   };
+
   const handleCloseModal = () => {
+    setSelectedCountry(null);
+    setSelectedCategory(null);
     setOpenSupplierSignUpModal(false);
     setPhase(1);
   };
+  useEffect(() => {
+    getAllCategoryRoot();
+  }, []);
+
+  useEffect(() => {
+    setSelectedState(null);
+  }, [selectedCountry]);
+
+  useEffect(() => {
+    setSelectedCity(null);
+  }, [selectedState]);
   return (
     <Modal
       open={openSupplierSignUpModal}
@@ -128,8 +180,9 @@ const SupplierSignUpModal = ({
                 <div>
                   <Autocomplete
                     className=" border-[1px] border-solid border-gray-400 rounded-lg"
-                    options={countryData}
-                    value={getValues().category}
+                    options={data || []}
+                    getOptionLabel={(category) => category.name}
+                    value={selectedCategory}
                     size="small"
                     renderInput={(params) => (
                       <TextField
@@ -147,9 +200,10 @@ const SupplierSignUpModal = ({
                     {...register("category", {
                       required: "Category required",
                     })}
-                    onChange={(e, value) =>
-                      setValue("category", value as string)
-                    }
+                    onChange={(e, value: CategoryDto | null) => {
+                      setValue("category", value as CategoryDto);
+                      setSelectedCategory(value);
+                    }}
                   />
                   {formState.errors.category?.message && (
                     <div className="text-red-500 w-full font-medium text-[13px]">
@@ -174,8 +228,9 @@ const SupplierSignUpModal = ({
                   <div>
                     <Autocomplete
                       className=" border-[1px] border-solid border-gray-400 rounded-lg"
-                      options={countryData}
-                      value={getValues().country}
+                      options={Country.getAllCountries()}
+                      getOptionLabel={(country) => country.name}
+                      value={selectedCountry}
                       size="small"
                       renderInput={(params) => (
                         <TextField
@@ -193,9 +248,10 @@ const SupplierSignUpModal = ({
                       {...register("country", {
                         required: "Country required",
                       })}
-                      onChange={(e, value) =>
-                        setValue("country", value as string)
-                      }
+                      onChange={(e, value: ICountry | null) => {
+                        setValue("country", value as ICountry);
+                        setSelectedCountry(value);
+                      }}
                     />
                     {formState.errors.country?.message && (
                       <div className="text-red-500 w-full font-medium text-[13px]">
@@ -212,9 +268,13 @@ const SupplierSignUpModal = ({
                   <div>
                     <Autocomplete
                       className=" border-[1px] border-solid border-gray-400 rounded-lg"
-                      options={countryData}
-                      value={getValues().state}
+                      options={State.getStatesOfCountry(
+                        selectedCountry?.isoCode
+                      )}
+                      getOptionLabel={(state) => state.name}
+                      value={selectedState}
                       size="small"
+                      disabled={!selectedCountry}
                       renderInput={(params) => (
                         <TextField
                           {...params}
@@ -231,9 +291,10 @@ const SupplierSignUpModal = ({
                       {...register("state", {
                         required: "State required",
                       })}
-                      onChange={(e, value) =>
-                        setValue("state", value as string)
-                      }
+                      onChange={(e, value: IState | null) => {
+                        setValue("state", value as IState);
+                        setSelectedState(value);
+                      }}
                     />
                     {formState.errors.state?.message && (
                       <div className="text-red-500 w-full font-medium text-[13px]">
@@ -250,8 +311,17 @@ const SupplierSignUpModal = ({
                   <div>
                     <Autocomplete
                       className=" border-[1px] border-solid border-gray-400 rounded-lg"
-                      options={countryData}
-                      value={getValues().city}
+                      options={
+                        selectedCountry && selectedState
+                          ? City.getCitiesOfState(
+                              selectedCountry?.isoCode,
+                              selectedState?.isoCode
+                            )
+                          : []
+                      }
+                      getOptionLabel={(city) => city.name}
+                      value={selectedCity}
+                      disabled={!selectedState}
                       size="small"
                       renderInput={(params) => (
                         <TextField
@@ -269,7 +339,10 @@ const SupplierSignUpModal = ({
                       {...register("city", {
                         required: "City required",
                       })}
-                      onChange={(e, value) => setValue("city", value as string)}
+                      onChange={(e, value: ICity | null) => {
+                        setValue("city", value as ICity);
+                        setSelectedCity(value);
+                      }}
                     />
                     {formState.errors.city?.message && (
                       <div className="text-red-500 w-full font-medium text-[13px]">
@@ -293,6 +366,7 @@ const SupplierSignUpModal = ({
                   >
                     <input
                       size={14}
+                      type="number"
                       placeholder="100"
                       className="focus:outline-none w-full"
                       {...register("numberOfEmployees", {
@@ -312,6 +386,7 @@ const SupplierSignUpModal = ({
                     <input
                       size={14}
                       placeholder="100"
+                      type="number"
                       className="focus:outline-none w-full"
                       {...register("yearEstablished", {
                         pattern: {

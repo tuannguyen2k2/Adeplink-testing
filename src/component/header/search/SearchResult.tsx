@@ -1,5 +1,6 @@
 "use client";
 import { RECENTLY_SEARCH_RESULT } from "@/constant/cookies";
+import { ProductSearchDto, SearchCookiesType } from "@/interface/common";
 import {
   Box,
   List,
@@ -14,20 +15,32 @@ import {
   useTheme,
 } from "@mui/material";
 import Cookies from "js-cookie";
-import React, { useState } from "react";
+import { useRouter } from "next/navigation";
+import React, { Dispatch, SetStateAction, useEffect, useState } from "react";
 import { LuClock5 } from "react-icons/lu";
-type SearchResultType = {};
+type SearchResultType = {
+  debouncedValue: string;
+  data?: ProductSearchDto[];
+  setIsFocusInput: Dispatch<SetStateAction<boolean>>;
+};
 
-const SearchResult = () => {
+const SearchResult = ({
+  debouncedValue,
+  data,
+  setIsFocusInput,
+}: SearchResultType) => {
   const theme = useTheme();
   const recentlySearchResult = Cookies.get(RECENTLY_SEARCH_RESULT);
-
+  const router = useRouter();
+  const locale = Cookies.get("NEXT_LOCALE");
   const recentlySearchResultParse =
     recentlySearchResult && JSON.parse(recentlySearchResult);
+
   return (
     <Paper
       elevation={2}
       sx={{
+        display: !recentlySearchResultParse && !data ? "none" : "block",
         width: "104%",
         bgcolor: "background.paper",
         position: "absolute",
@@ -36,40 +49,109 @@ const SearchResult = () => {
       }}
     >
       <List sx={{ pt: 0 }}>
-        {recentlySearchResultParse?.map((value: string, index: number) => {
-          return (
-            <ListItem disablePadding key={index} sx={{ my: "6px" }}>
-              <ListItemButton
-                sx={{
-                  p: "2px 20px",
-                  "&:hover": {
-                    bgcolor: theme.blue[700],
-                  },
-                }}
-              >
-                <ListItemIcon sx={{ minWidth: "20px" }}>
-                  <LuClock5 color="#61646B" size={12} />
-                </ListItemIcon>
-                <ListItemText sx={{ m: 0 }}>
-                  <Typography sx={{ fontSize: 14 }}>{value}</Typography>
-                </ListItemText>
-              </ListItemButton>
-            </ListItem>
-          );
-        })}
+        {debouncedValue === "" &&
+          recentlySearchResultParse?.map(
+            (value: SearchCookiesType, index: number) => {
+              return (
+                <SearchResultItem
+                  key={index}
+                  text={value.keyword}
+                  id={value.id}
+                  isRecently
+                  setIsFocusInput={setIsFocusInput}
+                />
+              );
+            }
+          )}
+        {debouncedValue !== "" &&
+          data?.map((value: ProductSearchDto, index: number) => {
+            return (
+              <SearchResultItem
+                key={value.id}
+                text={value.name}
+                id={value.id}
+              />
+            );
+          })}
 
-        <Box component={"button"} width={"100%"}>
+        {data && data?.length < 1 && (
           <Typography
-            fontWeight={theme.fontWeight.medium}
+            fontStyle={"italic"}
             fontSize={14}
-            color={theme.blue[500]}
+            color={"rgba(147, 147, 147, 0.5)"}
             textAlign={"center"}
+            pt={"10px"}
           >
-            View all
+            No results found
           </Typography>
-        </Box>
+        )}
+        {data && data?.length > 0 && (
+          <Box
+            component={"button"}
+            width={"100%"}
+            onClick={() => {
+              router.push(`/${locale}/product?keyword=${debouncedValue}`);
+              setIsFocusInput(false);
+            }}
+          >
+            <Typography
+              fontWeight={theme.fontWeight.medium}
+              fontSize={14}
+              color={theme.blue[500]}
+              textAlign={"center"}
+            >
+              View all
+            </Typography>
+          </Box>
+        )}
       </List>
     </Paper>
+  );
+};
+
+type SearchResultItemType = {
+  text: string;
+  id: string | null;
+  isRecently?: boolean;
+  setIsFocusInput?: Dispatch<SetStateAction<boolean>>;
+};
+
+const SearchResultItem = ({
+  text,
+  id,
+  isRecently,
+  setIsFocusInput,
+}: SearchResultItemType) => {
+  const theme = useTheme();
+  const router = useRouter();
+  const locale = Cookies.get("NEXT_LOCALE");
+  const handleClickItem = () => {
+    if (!id) {
+      router.push(`/${locale}/product?keyword=${text}`);
+      setIsFocusInput && setIsFocusInput(false);
+    }
+  };
+  return (
+    <ListItem disablePadding sx={{ my: "6px" }}>
+      <ListItemButton
+        sx={{
+          p: "2px 20px",
+          "&:hover": {
+            bgcolor: theme.blue[700],
+          },
+        }}
+        onClick={handleClickItem}
+      >
+        {isRecently && (
+          <ListItemIcon sx={{ minWidth: "20px" }}>
+            <LuClock5 color="#61646B" size={12} />
+          </ListItemIcon>
+        )}
+        <ListItemText sx={{ m: 0 }}>
+          <Typography sx={{ fontSize: 14 }}>{text}</Typography>
+        </ListItemText>
+      </ListItemButton>
+    </ListItem>
   );
 };
 

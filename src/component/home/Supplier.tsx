@@ -5,22 +5,19 @@ import { Box, Button, Grid, Typography, useTheme } from "@mui/material";
 import Image from "next/image";
 import { MdArrowForward } from "react-icons/md";
 
-
-
 const Supplier = () => {
   const theme = useTheme();
-  const { isTablet } = useDevices();
   return (
     <Box
       display={"flex"}
       alignItems={"center"}
-      flexDirection={isTablet ? "column" : "row"}
-      gap={isTablet ? "20px" : 0}
+      gap={{ xs: "20px", md: 0 }}
       mt={"105px"}
       width={"100%"}
+      sx={{ flexDirection: { xs: "column", md: "row" } }}
     >
       <Typography
-        textAlign={isTablet ? "center" : "start"}
+        textAlign={{ xs: "center", md: "start" }}
         color={theme.black[200]}
         fontSize={16}
         fontWeight={theme.fontWeight.bold}

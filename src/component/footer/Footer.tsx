@@ -10,7 +10,7 @@ import Image from "next/image";
 
 const Footer = () => {
   const theme = useTheme();
-  const { isLaptop, isTablet, isMobile } = useDevices();
+  const { isLaptop } = useDevices();
   const translate = useTranslations();
   return (
     <footer style={{ marginTop: "100px" }}>
@@ -29,7 +29,7 @@ const Footer = () => {
           sx={{
             display: "flex",
             width: "100%",
-            p: isMobile ? "30px 30px 0 30px" : "30px 50px 0 50px",
+            p: { xs: "30px 30px 0 30px", sm: "30px 50px 0 50px" },
             flexDirection: "column",
           }}
         >
@@ -37,8 +37,8 @@ const Footer = () => {
             sx={{
               display: "flex",
               width: "100%",
-              flexDirection: isLaptop ? "column" : "row",
-              gap: isLaptop ? "20px" : 0,
+              flexDirection: { xs: "column", lg: "row" },
+              gap: { xs: "20px", lg: 0 },
             }}
           >
             <Box display={"flex"} alignItems={"center"} flex={"55%"}>
@@ -57,7 +57,7 @@ const Footer = () => {
               sx={{
                 display: "flex",
                 width: "100%",
-                flexDirection: isTablet ? "column" : "row",
+                flexDirection: { xs: "column", md: "row" },
                 justifyContent: "space-between",
               }}
             >
@@ -227,13 +227,13 @@ const Footer = () => {
             })}
           />
           <Box
-            mb={isMobile ? "60px" : 0}
-            flexDirection={isMobile ? "column" : "row"}
-            gap={isMobile ? "20px" : 0}
-            alignItems={isMobile ? "start" : "center"}
+            mb={{ xs: "60px", sm: 0 }}
+            flexDirection={{ xs: "column", sm: "row" }}
+            gap={{ xs: "20px", sm: 0 }}
+            alignItems={{ xs: "start", sm: "center" }}
             display={"flex"}
             justifyContent={"space-between"}
-            p={isMobile ? "20px 36px 20px 30px" : "20px 36px 20px 52px"}
+            p={{ xs: "20px 36px 20px 30px", sm: "20px 36px 20px 52px" }}
             width={"100%"}
             maxWidth={1240}
           >

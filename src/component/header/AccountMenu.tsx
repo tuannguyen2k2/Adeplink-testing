@@ -152,87 +152,94 @@ const AccountMenu = ({
           alignSelf={"center"}
           my={"4px"}
         />
-        {/* <MenuItem
-          onClick={handleCloseMenu}
-          sx={[
-            {
-              "&:hover": {
-                fontWeight: theme.fontWeight.medium,
-                bgcolor: theme.blue[700],
-              },
-              color: theme.black[300],
-              fontSize: 12,
-              fontWeight: theme.fontWeight.regular,
-              fontFamily: theme.fontFamily.secondary,
-            },
-          ]}
-        >
-          {translate("businessProfile")}
-        </MenuItem>
-        <MenuItem
-          onClick={handleCloseMenu}
-          sx={[
-            {
-              "&:hover": {
-                fontWeight: theme.fontWeight.medium,
-                bgcolor: theme.blue[700],
-              },
-              color: theme.black[300],
-              fontSize: 12,
-              fontWeight: theme.fontWeight.regular,
-              fontFamily: theme.fontFamily.secondary,
-            },
-          ]}
-        >
-          {translate("myProducts")}
-        </MenuItem> */}
-        <MenuItem
-          onClick={() => {
-            setOpenSupplierSignUpModal(true);
-            handleCloseMenu();
-          }}
-          sx={[
-            {
-              "&:hover": {
-                bgcolor: theme.blue[700],
-              },
-              color: theme.black[300],
-              fontSize: 12,
-              fontWeight: theme.fontWeight.regular,
-              fontFamily: theme.fontFamily.secondary,
-              display: "flex",
-              alignItems: "end",
-              lineHeight: "1.6",
-            },
-          ]}
-        >
-          {translate("customerAppeal1")}
-          <Typography
-            color={theme.palette.primary.main}
-            sx={{
-              fontSize: 12,
-              fontWeight: theme.fontWeight.regular,
-              whiteSpace: "pre-wrap",
-            }}
-          >
-            {" "}
-            {translate("supplier")}
-          </Typography>
-          {translate("customerAppeal2")}
-          <Typography
-            color={theme.palette.primary.main}
-            sx={{
-              fontSize: 12,
-              fontWeight: theme.fontWeight.regular,
-              whiteSpace: "pre-wrap",
-            }}
-          >
-            {" "}
-            {translate("free")}{" "}
-          </Typography>
-          {translate("now")}
-          {"!"}
-        </MenuItem>
+        {user?.is_supplier ? (
+          <>
+            <MenuItem
+              onClick={handleCloseMenu}
+              sx={[
+                {
+                  "&:hover": {
+                    fontWeight: theme.fontWeight.medium,
+                    bgcolor: theme.blue[700],
+                  },
+                  color: theme.black[300],
+                  fontSize: 12,
+                  fontWeight: theme.fontWeight.regular,
+                  fontFamily: theme.fontFamily.secondary,
+                },
+              ]}
+            >
+              {translate("businessProfile")}
+            </MenuItem>
+            <MenuItem
+              onClick={handleCloseMenu}
+              sx={[
+                {
+                  "&:hover": {
+                    fontWeight: theme.fontWeight.medium,
+                    bgcolor: theme.blue[700],
+                  },
+                  color: theme.black[300],
+                  fontSize: 12,
+                  fontWeight: theme.fontWeight.regular,
+                  fontFamily: theme.fontFamily.secondary,
+                },
+              ]}
+            >
+              {translate("myProducts")}
+            </MenuItem>
+          </>
+        ) : (
+          <>
+            <MenuItem
+              onClick={() => {
+                setOpenSupplierSignUpModal(true);
+                handleCloseMenu();
+              }}
+              sx={[
+                {
+                  "&:hover": {
+                    bgcolor: theme.blue[700],
+                  },
+                  color: theme.black[300],
+                  fontSize: 12,
+                  fontWeight: theme.fontWeight.regular,
+                  fontFamily: theme.fontFamily.secondary,
+                  display: "flex",
+                  alignItems: "end",
+                  lineHeight: "1.6",
+                },
+              ]}
+            >
+              {translate("customerAppeal1")}
+              <Typography
+                color={theme.palette.primary.main}
+                sx={{
+                  fontSize: 12,
+                  fontWeight: theme.fontWeight.regular,
+                  whiteSpace: "pre-wrap",
+                }}
+              >
+                {" "}
+                {translate("supplier")}
+              </Typography>
+              {translate("customerAppeal2")}
+              <Typography
+                color={theme.palette.primary.main}
+                sx={{
+                  fontSize: 12,
+                  fontWeight: theme.fontWeight.regular,
+                  whiteSpace: "pre-wrap",
+                }}
+              >
+                {" "}
+                {translate("free")}{" "}
+              </Typography>
+              {translate("now")}
+              {"!"}
+            </MenuItem>
+          </>
+        )}
         <Box
           height={"1px"}
           width={"90%"}

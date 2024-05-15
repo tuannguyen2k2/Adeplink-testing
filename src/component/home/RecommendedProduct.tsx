@@ -10,7 +10,6 @@ import Cookies from "js-cookie";
 import { useRouter } from "next/navigation";
 
 const RecommendedProduct = () => {
-  const { isMobile } = useDevices();
   const theme = useTheme();
   const locale = Cookies.get("NEXT_LOCALE");
   const router = useRouter();
@@ -24,7 +23,7 @@ const RecommendedProduct = () => {
       <Box
         px={"88px"}
         py={"24px"}
-        p={isMobile ? "0 20px 20px" : "24px 88px"}
+        p={{ xs: "0 20px 20px", sm: "24px 88px" }}
         maxWidth={MAX_WIDTH_APP}
       >
         <Box
@@ -42,7 +41,7 @@ const RecommendedProduct = () => {
           </Typography>
           <Box
             component={"button"}
-            onClick={() => router.push(`/${locale}/recommend-product`)}
+            onClick={() => router.push(`/${locale}/product`)}
             display={"flex"}
             alignItems={"center"}
             gap={1}

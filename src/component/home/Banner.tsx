@@ -33,7 +33,6 @@ var settings = {
 };
 
 const Banner = () => {
-  const { isMobile } = useDevices();
   const { getAllBanner, data } = useGetAllBanner();
   useEffect(() => {
     getAllBanner();
@@ -71,16 +70,28 @@ const Banner = () => {
                 sx={{
                   height: "379px",
                   width: "100%",
-                  backgroundImage: `url("${convertImage(banner.image)}")`,
-                  backgroundSize: "cover",
-                  backgroundRepeat: "no-repeat",
                   bgcolor: "#C9DEFF",
                   display: "flex!important",
                   alignItems: "center",
                   justifyContent: "center",
                   borderRadius: "8px",
+                  outline: "none",
+                  cursor: "pointer",
                 }}
-              ></Box>
+              >
+                <Image
+                  key={banner.id}
+                  src={convertImage(banner.image) || BannerImage}
+                  alt={banner.id}
+                  width={1440}
+                  height={379}
+                  style={{
+                    height: "379px",
+                    width: "auto",
+                    aspectRatio: "16/4",
+                  }}
+                />
+              </Box>
             );
           })}
         {!data &&
@@ -102,7 +113,7 @@ const Banner = () => {
                 >
                   <Typography
                     sx={{
-                      fontSize: isMobile ? "80px" : "96px",
+                      fontSize: { xs: "80px", md: "96px" },
                       color: "white",
                       fontWeight: "700",
                     }}

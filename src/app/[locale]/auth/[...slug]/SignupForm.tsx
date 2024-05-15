@@ -25,7 +25,8 @@ import { useRouter } from "next/navigation";
 import React, { useEffect, useState } from "react";
 import { SubmitHandler, useForm } from "react-hook-form";
 import { MdOutlineKeyboardArrowDown } from "react-icons/md";
-
+import { Country, State, City } from "country-state-city";
+import { ICountry, IState, ICity } from "country-state-city";
 const SignupFormPage = () => {
   const locale = Cookies.get("NEXT_LOCALE");
   const { Option } = Select;
@@ -69,7 +70,7 @@ const SignupFormPage = () => {
       name: getValues().fullname,
       company_name: getValues().companyName,
       phone: getValues().phoneNumber,
-      country: getValues().country,
+      country: getValues().country.name,
       is_supplier: false,
     });
   };
@@ -155,7 +156,8 @@ const SignupFormPage = () => {
             <div className="col-span-12 h-12 mb-2">
               <Autocomplete
                 className="col-span-12 border-[1px] border-solid border-gray-400 rounded-lg"
-                options={countryData}
+                options={Country.getAllCountries()}
+                getOptionLabel={(country) => country.name}
                 size="small"
                 renderInput={(params) => <TextField {...params} label="" />}
                 popupIcon={
@@ -164,7 +166,7 @@ const SignupFormPage = () => {
                 {...register("country", {
                   required: "Country required",
                 })}
-                onChange={(e, value) => setValue("country", value as string)}
+                onChange={(e, value) => setValue("country", value as ICountry)}
               />
               {formState.errors.country?.message && (
                 <div className="text-red-500 w-full font-medium text-[13px]">

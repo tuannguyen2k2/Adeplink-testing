@@ -1,26 +1,87 @@
 "use client";
+import { useGetProductSearch } from "@/api/product/query";
 import { MAX_WIDTH_APP } from "@/constant/css";
 import useDevices from "@/hook/useDevices";
 import {
   Box,
   Button,
-  Checkbox,
   Container,
-  FormControlLabel,
-  Grid,
-  Pagination,
   TextField,
   Typography,
   useTheme,
 } from "@mui/material";
-import Image from "next/image";
-import Product2 from "@/assets/images/product2.jpg";
+import { useSearchParams } from "next/navigation";
 import CheckboxComponent from "../common/CheckboxComponent";
 import ProductList from "./ProductList";
+import RelevantCategoryFilter from "./RelevantCategoryFilter";
+import { ChangeEvent, useEffect, useState } from "react";
 import NotFound from "./NotFound";
 const Product = () => {
   const { isMobile } = useDevices();
   const theme = useTheme();
+  const searchParams = useSearchParams();
+  const keyword = searchParams.get("keyword");
+  const { getProductSearch, isSuccess, data } = useGetProductSearch();
+  const [priceFilter, setPriceFilter] = useState<{
+    from_price?: string;
+    to_price?: string;
+  }>({});
+  const [moq, setMoq] = useState<string>();
+  const [categoryIdCheckedList, setCategoryIdCheckedList] = useState<string[]>(
+    []
+  );
+  const [countryCheckedList, setCountryCheckedList] = useState<string[]>([]);
+  useEffect(() => {
+    getProductSearch({});
+  }, []);
+  console.log(countryCheckedList);
+  const handleOnCheckCategory = (
+    e: ChangeEvent<HTMLInputElement>,
+    id: string
+  ) => {
+    const isChecked = e.target.checked;
+    const updatedList = [...categoryIdCheckedList];
+
+    if (isChecked) {
+      updatedList.push(id);
+    } else {
+      const index = updatedList.indexOf(id);
+      if (index !== -1) {
+        updatedList.splice(index, 1);
+      }
+    }
+
+    setCategoryIdCheckedList(updatedList);
+  };
+
+  const handleOnCheckCountry = (
+    e: ChangeEvent<HTMLInputElement>,
+    country: string
+  ) => {
+    const isChecked = e.target.checked;
+    const updatedList = [...countryCheckedList];
+
+    if (isChecked) {
+      updatedList.push(country);
+    } else {
+      const index = updatedList.indexOf(country);
+      if (index !== -1) {
+        updatedList.splice(index, 1);
+      }
+    }
+
+    setCountryCheckedList(updatedList);
+  };
+  const handleApply = () => {
+    getProductSearch({
+      category_ids: categoryIdCheckedList,
+      countries: countryCheckedList,
+      from_price: priceFilter.from_price,
+      to_price: priceFilter.to_price,
+      moq: moq,
+    });
+  };
+
   return (
     <Container
       sx={{
@@ -30,11 +91,19 @@ const Product = () => {
         fontFamily: theme.fontFamily.secondary,
       }}
     >
-      {/* <Typography fontFamily={theme.fontFamily.secondary} mb={"20px"}>
-        Showing 2,000+ products for “search value”
-      </Typography> */}
+      <RelevantCategoryFilter />
+      {keyword && (
+        <Typography fontFamily={theme.fontFamily.secondary} mb={"20px"}>
+          {`Showing 2,000+ products for "${keyword}"`}
+        </Typography>
+      )}
+       {!keyword && (
+        <Typography fontFamily={theme.fontFamily.secondary} mb={"20px"}>
+          {`Showing 2,000+ products recommendations`}
+        </Typography>
+      )}
       <Box display={"flex"}>
-        {/* <Box
+        <Box
           bgcolor={theme.blue[100]}
           p={"24px"}
           borderRadius={"16px"}
@@ -49,7 +118,7 @@ const Product = () => {
           >
             Filter
           </Typography>
-          <form>
+          <>
             <Box
               display={"flex"}
               flexDirection={"column"}
@@ -65,17 +134,26 @@ const Product = () => {
               >
                 Matching Products Categories
               </Typography>
-              <Box display={"flex"} gap={1}>
-                <CheckboxComponent id="1" />
-                <Typography
-                  sx={{
-                    fontFamily: theme.fontFamily.secondary,
-                    fontSize: 14,
-                  }}
-                >
-                  Cereals
-                </Typography>
-              </Box>
+              {data?.categories &&
+                Object.entries(data?.categories).map(([id, name]) => {
+                  return (
+                    <Box display={"flex"} gap={1} key={id}>
+                      <CheckboxComponent
+                        id={id}
+                        handleOnCheck={handleOnCheckCategory}
+                        checked={categoryIdCheckedList.includes(id)}
+                      />
+                      <Typography
+                        sx={{
+                          fontFamily: theme.fontFamily.secondary,
+                          fontSize: 14,
+                        }}
+                      >
+                        {name}
+                      </Typography>
+                    </Box>
+                  );
+                })}
               <Box
                 component={"button"}
                 fontFamily={theme.fontFamily.secondary}
@@ -100,17 +178,26 @@ const Product = () => {
               >
                 Suppliers Country
               </Typography>
-              <Box display={"flex"} gap={1}>
-                <CheckboxComponent id="2" />
-                <Typography
-                  sx={{
-                    fontFamily: theme.fontFamily.secondary,
-                    fontSize: 14,
-                  }}
-                >
-                  Australia
-                </Typography>
-              </Box>
+              {data?.countries &&
+                data?.countries.map((country) => {
+                  return (
+                    <Box display={"flex"} gap={1} key={country}>
+                      <CheckboxComponent
+                        id={country}
+                        handleOnCheck={handleOnCheckCountry}
+                        checked={countryCheckedList.includes(country)}
+                      />
+                      <Typography
+                        sx={{
+                          fontFamily: theme.fontFamily.secondary,
+                          fontSize: 14,
+                        }}
+                      >
+                        {country}
+                      </Typography>
+                    </Box>
+                  );
+                })}
               <Box
                 component={"button"}
                 fontFamily={theme.fontFamily.secondary}
@@ -138,6 +225,12 @@ const Product = () => {
               <Box display={"flex"} alignItems={"center"}>
                 <TextField
                   type="number"
+                  onChange={(e: ChangeEvent<HTMLInputElement>) =>
+                    setPriceFilter({
+                      from_price: e.target.value,
+                      to_price: priceFilter.to_price,
+                    })
+                  }
                   sx={{
                     width: "100px",
                     bgcolor: "white",
@@ -173,6 +266,12 @@ const Product = () => {
                       padding: "12px 16px",
                     },
                   }}
+                  onChange={(e: ChangeEvent<HTMLInputElement>) =>
+                    setPriceFilter({
+                      from_price: priceFilter.from_price,
+                      to_price: e.target.value,
+                    })
+                  }
                   placeholder="To"
                   inputProps={{
                     min: 0,
@@ -200,6 +299,9 @@ const Product = () => {
               </Typography>
               <TextField
                 type="number"
+                onChange={(e: ChangeEvent<HTMLInputElement>) =>
+                  setMoq(e.target.value)
+                }
                 sx={{
                   width: "100%",
                   bgcolor: "white",
@@ -233,7 +335,7 @@ const Product = () => {
                 Clear All
               </Box>
               <Button
-                type="submit"
+                onClick={handleApply}
                 sx={{
                   p: "10px 14px!important",
                   borderRadius: "6px",
@@ -248,10 +350,13 @@ const Product = () => {
                 Apply
               </Button>
             </Box>
-          </form>
-        </Box> */}
-        {/* <ProductList /> */}
-        <NotFound />
+          </>
+        </Box>
+        {data?.products && data?.products?.length > 0 ? (
+          <ProductList data={data?.products} />
+        ) : (
+          <NotFound caseValue={1} />
+        )}
       </Box>
     </Container>
   );

@@ -10,7 +10,6 @@ import { Box, Container } from "@mui/material";
 import { useSelector } from "react-redux";
 
 export default function Home() {
-  const { isMobile } = useDevices();
 
   return (
     <>
@@ -18,7 +17,7 @@ export default function Home() {
         <Container
           sx={{
             mt: "184px",
-            p: isMobile ? "20px!important" : "0 88px!important",
+            p: {xs: "20px!important", md: "0 88px!important"},
             maxWidth: `${MAX_WIDTH_APP}!important`,
           }}
         >

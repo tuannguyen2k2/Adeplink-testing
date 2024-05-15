@@ -1,19 +1,25 @@
 "use client";
 import Product2 from "@/assets/images/product2.jpg";
+import { ProductSearchDto } from "@/interface/common";
 import { Box, Grid, Pagination, Typography, useTheme } from "@mui/material";
 import Image from "next/image";
 
-const ProductList = () => {
+type ProductListType = {
+  data?: ProductSearchDto[];
+};
+
+const ProductList = ({ data }: ProductListType) => {
   const theme = useTheme();
   return (
     <Box
       display={"flex"}
       flexDirection={"column"}
-      justifyContent={"center"}
+      justifyContent={"start"}
       alignItems={"center"}
+      width={"100%"}
     >
       <Grid container spacing={10} width={"100%"} marginLeft={0} mt={0}>
-        {Array.from(Array(15)).map((_, index) => (
+        {data?.map((product: ProductSearchDto, index: number) => (
           <Grid
             item
             xs={12}
@@ -21,7 +27,7 @@ const ProductList = () => {
             md={4}
             lg={4}
             xl={4}
-            key={index}
+            key={product?.id}
             sx={{
               display: "flex",
               justifyContent: "center",
@@ -34,7 +40,6 @@ const ProductList = () => {
               height={"100%"}
               display={"flex"}
               flexDirection={"column"}
-              alignItems={"center"}
               bgcolor={"common.white"}
               p={"16px"}
               borderRadius={"10px"}
@@ -50,7 +55,7 @@ const ProductList = () => {
                   fontWeight={theme.fontWeight.regular}
                   fontFamily={theme.fontFamily.secondary}
                 >
-                  Category
+                  {product.category}
                 </Typography>
                 <Typography
                   color={theme.black[200]}
@@ -64,8 +69,7 @@ const ProductList = () => {
                     mb: 1,
                   }}
                 >
-                  Name of Product Name of Product Name of Product Name of
-                  Product
+                  {product.name}
                 </Typography>
                 <Box
                   height={"1px"}
@@ -74,42 +78,13 @@ const ProductList = () => {
                   mt={2}
                   mb={1}
                 />
-                <Box display={"flex"} gap={0.5} fontSize={14}>
-                  <Typography
-                    color={theme.blue[500]}
-                    fontWeight={theme.fontWeight.regular}
-                    fontFamily={theme.fontFamily.secondary}
-                  >
-                    From
-                  </Typography>
-                  <Typography
-                    color={theme.blue[500]}
-                    fontWeight={theme.fontWeight.medium}
-                    fontFamily={theme.fontFamily.secondary}
-                  >
-                    $45.00
-                  </Typography>
-                  <Typography
-                    color={theme.blue[500]}
-                    fontWeight={theme.fontWeight.regular}
-                    fontFamily={theme.fontFamily.secondary}
-                  >
-                    to
-                  </Typography>
-                  <Typography
-                    color={theme.blue[500]}
-                    fontWeight={theme.fontWeight.medium}
-                    fontFamily={theme.fontFamily.secondary}
-                  >
-                    $100.00
-                  </Typography>
-                </Box>
+                <Price price={product.price} />
                 <Box display={"flex"} gap={0.5} color={theme.palette.grey[400]}>
                   <Typography fontFamily={theme.fontFamily.secondary}>
                     MOQ
                   </Typography>
                   <Typography fontFamily={theme.fontFamily.secondary}>
-                    1000
+                    {product.min_order}
                   </Typography>
                 </Box>
               </Box>
@@ -125,6 +100,88 @@ const ProductList = () => {
       />
     </Box>
   );
+};
+
+type PriceType = {
+  price: {
+    total_range_price: number;
+    min_price: number;
+    max_price: number;
+  };
+};
+
+const Price = ({ price }: PriceType) => {
+  const theme = useTheme();
+  if (price.total_range_price == 0) {
+    return (
+      <Typography
+        fontSize={14}
+        color={theme.blue[500]}
+        fontWeight={theme.fontWeight.regular}
+        fontFamily={theme.fontFamily.secondary}
+      >
+        Contact for best prices
+      </Typography>
+    );
+  } else if (price.total_range_price == 1) {
+    return (
+      <Box display={"flex"} gap={0.5}>
+        <Typography
+          fontSize={14}
+          color={theme.blue[500]}
+          fontWeight={theme.fontWeight.regular}
+          fontFamily={theme.fontFamily.secondary}
+        >
+          Starting at
+        </Typography>
+        <Typography
+          fontSize={14}
+          color={theme.blue[500]}
+          fontWeight={theme.fontWeight.medium}
+          fontFamily={theme.fontFamily.secondary}
+        >
+          ${price.min_price}.00
+        </Typography>
+      </Box>
+    );
+  } else if (price.total_range_price >= 2) {
+    return (
+      <Box display={"flex"} gap={0.5}>
+        <Typography
+          fontSize={14}
+          color={theme.blue[500]}
+          fontWeight={theme.fontWeight.regular}
+          fontFamily={theme.fontFamily.secondary}
+        >
+          From
+        </Typography>
+        <Typography
+          fontSize={14}
+          color={theme.blue[500]}
+          fontWeight={theme.fontWeight.medium}
+          fontFamily={theme.fontFamily.secondary}
+        >
+          ${price.min_price}.00
+        </Typography>
+        <Typography
+          fontSize={14}
+          color={theme.blue[500]}
+          fontWeight={theme.fontWeight.regular}
+          fontFamily={theme.fontFamily.secondary}
+        >
+          to
+        </Typography>
+        <Typography
+          fontSize={14}
+          color={theme.blue[500]}
+          fontWeight={theme.fontWeight.medium}
+          fontFamily={theme.fontFamily.secondary}
+        >
+          ${price.max_price}.00
+        </Typography>
+      </Box>
+    );
+  }
 };
 
 export default ProductList;
