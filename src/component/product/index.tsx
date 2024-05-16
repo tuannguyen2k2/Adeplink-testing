@@ -16,11 +16,16 @@ import ProductList from "./ProductList";
 import RelevantCategoryFilter from "./RelevantCategoryFilter";
 import { ChangeEvent, useEffect, useState } from "react";
 import NotFound from "./NotFound";
+import { isEqual } from "lodash";
 const Product = () => {
   const { isMobile } = useDevices();
   const theme = useTheme();
   const searchParams = useSearchParams();
   const keyword = searchParams.get("keyword");
+  const [listCategoryFilter, setListCategoryFilter] = useState<{
+    [key: string]: string;
+  }>();
+  const [listCountryFilter, setListCountryFilter] = useState<string[]>();
   const { getProductSearch, isSuccess, data } = useGetProductSearch();
   const [priceFilter, setPriceFilter] = useState<{
     from_price?: string;
@@ -31,14 +36,30 @@ const Product = () => {
     []
   );
   const [countryCheckedList, setCountryCheckedList] = useState<string[]>([]);
+
+  useEffect(() => {
+    if (!listCategoryFilter && isSuccess) {
+      setListCategoryFilter(data?.categories);
+    }
+    if (isSuccess && !isEqual(listCountryFilter, data?.countries)) {
+      setListCountryFilter(data?.countries);
+    }
+  }, [isSuccess]);
+
   useEffect(() => {
     getProductSearch({});
   }, []);
-  console.log(countryCheckedList);
   const handleOnCheckCategory = (
     e: ChangeEvent<HTMLInputElement>,
     id: string
   ) => {
+    getProductSearch({
+      category_ids: [...categoryIdCheckedList, id],
+      countries: countryCheckedList,
+      from_price: priceFilter.from_price,
+      to_price: priceFilter.to_price,
+      moq: moq,
+    });
     const isChecked = e.target.checked;
     const updatedList = [...categoryIdCheckedList];
 
@@ -82,6 +103,13 @@ const Product = () => {
     });
   };
 
+  const handleClearAll = () => {
+    setCategoryIdCheckedList([]);
+    setCountryCheckedList([]);
+    setPriceFilter({ from_price: "", to_price: "" });
+    setMoq("");
+    getProductSearch({});
+  };
   return (
     <Container
       sx={{
@@ -94,12 +122,12 @@ const Product = () => {
       <RelevantCategoryFilter />
       {keyword && (
         <Typography fontFamily={theme.fontFamily.secondary} mb={"20px"}>
-          {`Showing 2,000+ products for "${keyword}"`}
+          {`Showing ${data?.total}+ products for "${keyword}"`}
         </Typography>
       )}
-       {!keyword && (
+      {!keyword && (
         <Typography fontFamily={theme.fontFamily.secondary} mb={"20px"}>
-          {`Showing 2,000+ products recommendations`}
+          {`Showing ${data?.total}+ products recommendations`}
         </Typography>
       )}
       <Box display={"flex"}>
@@ -134,8 +162,8 @@ const Product = () => {
               >
                 Matching Products Categories
               </Typography>
-              {data?.categories &&
-                Object.entries(data?.categories).map(([id, name]) => {
+              {listCategoryFilter &&
+                Object.entries(listCategoryFilter).map(([id, name]) => {
                   return (
                     <Box display={"flex"} gap={1} key={id}>
                       <CheckboxComponent
@@ -178,8 +206,8 @@ const Product = () => {
               >
                 Suppliers Country
               </Typography>
-              {data?.countries &&
-                data?.countries.map((country) => {
+              {listCountryFilter &&
+                listCountryFilter.map((country) => {
                   return (
                     <Box display={"flex"} gap={1} key={country}>
                       <CheckboxComponent
@@ -224,6 +252,7 @@ const Product = () => {
               </Typography>
               <Box display={"flex"} alignItems={"center"}>
                 <TextField
+                  value={priceFilter.from_price}
                   type="number"
                   onChange={(e: ChangeEvent<HTMLInputElement>) =>
                     setPriceFilter({
@@ -256,6 +285,7 @@ const Product = () => {
                 />
                 <TextField
                   type="number"
+                  value={priceFilter.to_price}
                   sx={{
                     width: "100px",
                     bgcolor: "white",
@@ -281,6 +311,7 @@ const Product = () => {
                 />
               </Box>
             </Box>
+            
             <Box
               display={"flex"}
               flexDirection={"column"}
@@ -298,6 +329,7 @@ const Product = () => {
                 Minimum Order Quantity
               </Typography>
               <TextField
+                value={moq}
                 type="number"
                 onChange={(e: ChangeEvent<HTMLInputElement>) =>
                   setMoq(e.target.value)
@@ -319,15 +351,20 @@ const Product = () => {
                 }}
               />
             </Box>
-            <Box width={"100%"}>
+            <Box
+              width={"100%"}
+              display={"flex"}
+            >
+              
               <Box
+                onClick={handleClearAll}
                 component={"button"}
+                width={"45%"}
                 sx={{
-                  p: "20px 14px",
-                  textAlign: "start",
+                  p: "16px 10px",
+                  textAlign: "center",
                   color: theme.palette.primary.main,
                   fontFamily: theme.fontFamily.secondary,
-                  width: "45%",
                   fontWeight: theme.fontWeight.medium,
                   fontSize: 14,
                 }}
@@ -337,12 +374,12 @@ const Product = () => {
               <Button
                 onClick={handleApply}
                 sx={{
+                  width: "55%",
                   p: "10px 14px!important",
-                  borderRadius: "6px",
+                  borderRadius: "8px",
                   bgcolor: `${theme.blue[500]}!important`,
                   color: "common.white",
                   fontFamily: theme.fontFamily.secondary,
-                  width: "55%",
                   fontWeight: theme.fontWeight.medium,
                   fontSize: 14,
                 }}

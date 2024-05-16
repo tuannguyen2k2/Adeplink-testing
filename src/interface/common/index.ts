@@ -69,13 +69,14 @@ export type FilterProductDto = {
   countries?: string[];
   from_price?: string;
   to_price?: string;
-  moq?: string; 
+  moq?: string;
 };
 
 export type ProductSearchResultDto = {
   products: ProductSearchDto[];
   categories: { [key: string]: string };
   countries: string[];
+  total: number;
 };
 
 export type SearchCookiesType = {
