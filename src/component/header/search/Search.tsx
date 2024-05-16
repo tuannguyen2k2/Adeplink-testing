@@ -18,7 +18,8 @@ import { RECENTLY_SEARCH_RESULT } from "@/constant/cookies";
 import { IoMdClose } from "react-icons/io";
 import useDebounce from "@/hook/useDebounce";
 import { useGetProductSearch } from "@/api/product/query";
-import { CircularProgress, makeStyles } from "@material-ui/core";
+import { makeStyles } from "@mui/styles";
+import { CircularProgress } from "@material-ui/core";
 import { useRouter } from "next/navigation";
 
 const useStyles = makeStyles((theme) => ({
