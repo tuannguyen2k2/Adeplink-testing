@@ -26,6 +26,7 @@ type SearchResultType = {
   setIsFocusInput: Dispatch<SetStateAction<boolean>>;
   recentlySearchResultParse?: { keyword: string; id: string }[];
   isSearchHeader?: boolean;
+  totalData?: number | null;
   css?: {
     paper?: {
       width?: string;
@@ -42,6 +43,7 @@ const SearchResult = ({
   recentlySearchResultParse,
   css,
   isSearchHeader = false,
+  totalData,
 }: SearchResultType) => {
   const theme = useTheme();
   const router = useRouter();
@@ -98,7 +100,7 @@ const SearchResult = ({
             No results found
           </Typography>
         )}
-        {data && data?.length > 0 && (
+        {totalData && totalData > 5 && (
           <Box
             component={"button"}
             width={"100%"}

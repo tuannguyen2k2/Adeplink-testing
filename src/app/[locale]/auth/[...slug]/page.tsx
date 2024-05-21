@@ -27,8 +27,8 @@ const AuthPage = ({
       style={{
         backgroundImage: `url('${AuthBackgroundImage.src}')`,
         backgroundRepeat: "no-repeat",
-        backgroundSize: "cover",
-        backgroundPosition: "center",
+        backgroundSize: "57% auto",
+        backgroundPosition: "left",
       }}
     >
       <div className="w-[100%] md:w-[80%] xl:w-1/2 md:rounded-l-[2.5rem] bg-white relative overflow-x-hidden overflow-y-auto">
@@ -37,9 +37,7 @@ const AuthPage = ({
             selectedTab === "signup" ? "translate-x-0" : "translate-x-full"
           } z-10`}
         >
-          {selectedTab === "signup" && (
-            <SignupForm />
-          )}
+          {selectedTab === "signup" && <SignupForm />}
         </div>
         <div
           className={`absolute top-0 bottom-0 w-full h-screen right-0 transition-all duration-300 ${
@@ -48,9 +46,7 @@ const AuthPage = ({
               : "translate-x-full"
           } z-10`}
         >
-          {selectedTab === "forget-password" && (
-            <ForgetPasswordForm  />
-          )}
+          {selectedTab === "forget-password" && <ForgetPasswordForm />}
         </div>
         <div
           className={`absolute top-0 bottom-0 w-full h-screen right-0 transition-all duration-300 ${
@@ -66,7 +62,7 @@ const AuthPage = ({
             selectedTab === "login" ? "translate-x-0" : "translate-x-full"
           } z-10`}
         >
-          <LoginFormPage  />
+          <LoginFormPage />
         </div>
         <div
           className={`absolute top-0 bottom-0 w-full h-screen right-0 transition-all duration-300 ${
@@ -75,9 +71,7 @@ const AuthPage = ({
               : "translate-x-full"
           } z-10`}
         >
-          {selectedTab === "change-password" && (
-            <ChangePasswordForm  />
-          )}
+          {selectedTab === "change-password" && <ChangePasswordForm />}
         </div>
       </div>
     </div>

@@ -146,10 +146,12 @@ const LoginFormPage = () => {
           Log in
         </button>
       </form>
-      <div className="mt-10 border-t-2 relative flex justify-center">
-        <span className="absolute -top-[14px] bg-white px-4 opacity-60">
+      <div className="mt-10  relative flex items-center w-full">
+        <div className="w-full bg-[#E5E7EB] h-[1px]"></div>
+        <span className=" bg-white px-4 opacity-60 whitespace-nowrap">
           or continue with
         </span>
+        <div className="w-full bg-[#E5E7EB] h-[1px]"></div>
       </div>
       <div
         className="text-center bg-gray-100 mt-5 flex px-3 py-2 rounded-lg hover:bg-gray-200 hover:cursor-pointer"

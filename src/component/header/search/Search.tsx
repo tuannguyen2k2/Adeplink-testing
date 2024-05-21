@@ -240,6 +240,7 @@ const Search = () => {
             debouncedValue={debouncedValue}
             data={debouncedValue !== "" ? data?.products : undefined}
             setIsFocusInput={setIsFocusInput}
+            totalData={data?.metadata.total_data}
             recentlySearchResultParse={
               recentlySearchResult && JSON.parse(recentlySearchResult)
             }
