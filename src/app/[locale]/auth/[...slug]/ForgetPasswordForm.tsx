@@ -16,6 +16,7 @@ import { selectedTabType } from "./page";
 import { IoMdArrowBack } from "react-icons/io";
 import { useRouter } from "next/navigation";
 import Cookies from "js-cookie";
+import { AUTH_PATH_URL } from "@/constant/pathUrl";
 
 const ForgetPasswordForm = () => {
   const locale = Cookies.get("NEXT_LOCALE");
@@ -55,7 +56,7 @@ const ForgetPasswordForm = () => {
   useEffect(() => {
     if (isVerifySuccess) {
       router.push(
-        `/${locale}/auth/change-password?email=${getValues().email}&otp=${otp}`
+        `${AUTH_PATH_URL.CHANGE_PASSWORD}?email=${getValues().email}&otp=${otp}`
       );
     } else if (verifyOTPError) {
       setIsOtpError(true);
@@ -125,7 +126,7 @@ const ForgetPasswordForm = () => {
           </form>
           <div
             className="hover:underline font-medium text-[#0C71BA] hover:cursor-pointer mt-5 flex gap-1"
-            onClick={() => router.push(`/${locale}/auth/login`)}
+            onClick={() => router.push(AUTH_PATH_URL.LOGIN)}
           >
             <IoMdArrowBack size={24} />
             Back to Login

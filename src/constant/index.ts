@@ -10,3 +10,5 @@ export const phoneNumberData = [
     label: "+01",
   },
 ];
+
+export const PRODUCT_LIST_LIMIT = "15";

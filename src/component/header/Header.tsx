@@ -16,6 +16,7 @@ import Search from "./search/Search";
 import { useGetCategoriesHierarchy } from "@/api/category/query";
 import { useEffect } from "react";
 import useDevices from "@/hook/useDevices";
+import { SUPPLIER_PATH_URL } from "@/constant/pathUrl";
 
 const Header = () => {
   const theme = useTheme();
@@ -112,6 +113,7 @@ const Header = () => {
                 color: theme.blue[500],
               },
             }}
+            onClick={() => router.push(SUPPLIER_PATH_URL.SUPPLIER_LIST)}
           >
             {translate("suppliers")}
           </Box>

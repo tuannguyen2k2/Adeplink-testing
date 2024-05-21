@@ -21,6 +21,7 @@ import { useGetProductSearch } from "@/api/product/query";
 import { makeStyles } from "@mui/styles";
 import { CircularProgress } from "@material-ui/core";
 import { useRouter } from "next/navigation";
+import { PRODUCT_PATH_URL } from "@/constant/pathUrl";
 
 const useStyles = makeStyles((theme) => ({
   spinner: {
@@ -49,7 +50,7 @@ const Search = () => {
   const { getProductSearch, isSuccess, data } = useGetProductSearch();
   const debouncedValue = useDebounce(valueInput, 500);
   const searchBoxRef = useRef<HTMLElement | null>(null);
-  const locale = Cookies.get("NEXT_LOCALE");
+  const recentlySearchResult = Cookies.get(RECENTLY_SEARCH_RESULT);
   const handleClickOutSide = () => {
     setIsFocusInput(false);
   };
@@ -68,7 +69,7 @@ const Search = () => {
         return;
       }
       e.preventDefault();
-      const recentlySearchResult = Cookies.get(RECENTLY_SEARCH_RESULT);
+
       const searchValue = {
         keyword: valueInput,
         id: null,
@@ -85,7 +86,7 @@ const Search = () => {
       } else {
         Cookies.set(RECENTLY_SEARCH_RESULT, JSON.stringify([searchValue]));
       }
-      router.push(`/${locale}/product?keyword=${valueInput}`);
+      router.push(`${PRODUCT_PATH_URL.PRODUCT_LIST}?keyword=${valueInput}`);
     }
   };
 
@@ -102,7 +103,7 @@ const Search = () => {
       return;
     }
     setLoading(true);
-    getProductSearch({ keyword: debouncedValue });
+    getProductSearch({ keyword: debouncedValue, limit: "5" });
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [debouncedValue]);
@@ -141,7 +142,7 @@ const Search = () => {
           },
         }}
         id="search-select"
-        defaultValue={10}
+        defaultValue={30}
         IconComponent={() => {
           if (openSelect) {
             return (
@@ -165,17 +166,6 @@ const Search = () => {
         onClose={() => setOpenSelect(false)}
       >
         <MenuItem
-          value={10}
-          sx={{
-            fontFamily: theme.fontFamily.secondary,
-            fontSize: 14,
-            fontWeight: theme.fontWeight.medium,
-            textTransform: "capitalize",
-          }}
-        >
-          {translate("supplier")}
-        </MenuItem>
-        <MenuItem
           value={30}
           sx={{
             fontFamily: theme.fontFamily.secondary,
@@ -185,6 +175,17 @@ const Search = () => {
           }}
         >
           {translate("products")}
+        </MenuItem>
+        <MenuItem
+          value={10}
+          sx={{
+            fontFamily: theme.fontFamily.secondary,
+            fontSize: 14,
+            fontWeight: theme.fontWeight.medium,
+            textTransform: "capitalize",
+          }}
+        >
+          {translate("supplier")}
         </MenuItem>
       </Select>
       <Box
@@ -239,6 +240,11 @@ const Search = () => {
             debouncedValue={debouncedValue}
             data={debouncedValue !== "" ? data?.products : undefined}
             setIsFocusInput={setIsFocusInput}
+            recentlySearchResultParse={
+              recentlySearchResult && JSON.parse(recentlySearchResult)
+            }
+            isSearchHeader
+            css={{ paper: { width: "104%", top: "58px", left: "-16px" } }}
           />
         )}
       </Box>

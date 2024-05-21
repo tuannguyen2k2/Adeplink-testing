@@ -1,6 +1,7 @@
 "use client";
 import Product2 from "@/assets/images/product2.jpg";
 import { ProductSearchDto } from "@/interface/common";
+import { convertImage } from "@/utils";
 import { Box, Grid, Pagination, Typography, useTheme } from "@mui/material";
 import Image from "next/image";
 
@@ -45,7 +46,12 @@ const ProductList = ({ data }: ProductListType) => {
               borderRadius={"10px"}
               border={`1px solid ${theme.blue[100]}`}
             >
-              <Image src={Product2} alt="product" width={268} height={268} />
+              <Image
+                src={convertImage(product?.image[0]?.url) || ""}
+                alt="product"
+                width={268}
+                height={268}
+              />
               <Box>
                 <Typography
                   color={theme.blue[500]}
@@ -67,6 +73,7 @@ const ProductList = ({ data }: ProductListType) => {
                     WebkitLineClamp: 2,
                     overflow: "hidden",
                     mb: 1,
+                    cursor: "pointer",
                   }}
                 >
                   {product.name}
@@ -92,12 +99,6 @@ const ProductList = ({ data }: ProductListType) => {
           </Grid>
         ))}
       </Grid>
-      <Pagination
-        count={10}
-        color="primary"
-        shape="rounded"
-        sx={{ justifyContent: "center", mt: "20px" }}
-      />
     </Box>
   );
 };

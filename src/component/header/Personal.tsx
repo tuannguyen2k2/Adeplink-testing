@@ -23,6 +23,7 @@ import { useRouter } from "next/navigation";
 import { useLogout } from "@/api/auth/query";
 import Cookies from "js-cookie";
 import useDevices from "@/hook/useDevices";
+import { AUTH_PATH_URL } from "@/constant/pathUrl";
 
 const Personal = () => {
   const theme = useTheme();
@@ -94,7 +95,7 @@ const Personal = () => {
               color={theme.blue[500]}
               fontWeight={theme.fontWeight.medium}
               fontFamily={theme.fontFamily.secondary}
-              onClick={() => router.push(`/${locale}/auth/login`)}
+              onClick={() => router.push(AUTH_PATH_URL.LOGIN)}
             >
               {translate("signIn")}
             </Box>
@@ -110,7 +111,7 @@ const Personal = () => {
                 px: "18px!important",
                 fontFamily: theme.fontFamily.secondary,
               }}
-              onClick={() => router.push(`/${locale}/auth/signup`)}
+              onClick={() => router.push(AUTH_PATH_URL.SIGN_UP)}
             >
               <UserCircle size={24} />
               {translate("signUp")}

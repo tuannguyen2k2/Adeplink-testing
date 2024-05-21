@@ -15,6 +15,7 @@ import { setUser } from "@/store/slice/accountSlice";
 import { userSelector } from "@/store/selector";
 import { useRouter } from "next/navigation";
 import Cookies from "js-cookie";
+import { AUTH_PATH_URL } from "@/constant/pathUrl";
 
 const LoginFormPage = () => {
   const [showPassword, setShowPassword] = useState<boolean>(false);
@@ -49,7 +50,7 @@ const LoginFormPage = () => {
           <span
             className="text-[#0C71BA] underline hover:cursor-pointer font-medium"
             title="Sign up"
-            onClick={() => router.push(`/${locale}/auth/signup`)}
+            onClick={() => router.push(AUTH_PATH_URL.SIGN_UP)}
           >
             Sign up
           </span>
@@ -96,7 +97,7 @@ const LoginFormPage = () => {
               Password
             </h4>
             <span
-              onClick={() => router.push(`/${locale}/auth/forget-password`)}
+              onClick={() => router.push(AUTH_PATH_URL.FORGET_PASSWORD)}
               className="text-[#0C71BA] hover:underline hover:cursor-pointer font-medium"
             >
               Forgot password?

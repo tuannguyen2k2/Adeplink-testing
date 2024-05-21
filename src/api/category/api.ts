@@ -17,3 +17,13 @@ export const getCategoriesHierarchy = async () => {
       throw error;
     });
 };
+
+
+export const getCategoriesChildren = async (id: string) => {
+  return await axiosConfig
+    .get(`category/${id}/children`)
+    .then((response) => response.data.data)
+    .catch((error) => {
+      throw error;
+    });
+};

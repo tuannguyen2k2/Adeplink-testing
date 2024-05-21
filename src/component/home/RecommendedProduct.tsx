@@ -8,6 +8,7 @@ import { MAX_WIDTH_APP } from "@/constant/css";
 import useDevices from "@/hook/useDevices";
 import Cookies from "js-cookie";
 import { useRouter } from "next/navigation";
+import { PRODUCT_PATH_URL } from "@/constant/pathUrl";
 
 const RecommendedProduct = () => {
   const theme = useTheme();
@@ -41,7 +42,7 @@ const RecommendedProduct = () => {
           </Typography>
           <Box
             component={"button"}
-            onClick={() => router.push(`/${locale}/product`)}
+            onClick={() => router.push(PRODUCT_PATH_URL.PRODUCT_LIST)}
             display={"flex"}
             alignItems={"center"}
             gap={1}

@@ -26,6 +26,7 @@ export interface CategoriesHierarchyDto {
   name: string;
   parent_category_id: string | null;
   child_categories: CategoriesHierarchyDto[];
+  image?: string;
 }
 
 export type ProductDto = {
@@ -48,12 +49,16 @@ export type ProductDto = {
   lead_time: Date;
   is_showcase: boolean;
 };
+type ImageType = {
+  id: string;
+  url: string;
+};
 
 export type ProductSearchDto = {
   id: string;
   name: string;
   description: string;
-  image: string[];
+  image: ImageType[];
   category: string;
   price: {
     total_range_price: number;
@@ -64,22 +69,46 @@ export type ProductSearchDto = {
 };
 
 export type FilterProductDto = {
-  keyword?: string;
+  product_category_id?: string | null;
+  keyword?: string | null;
   category_ids?: string[];
   countries?: string[];
   from_price?: string;
   to_price?: string;
   moq?: string;
+  page?: string | null;
+  limit?: string;
 };
 
 export type ProductSearchResultDto = {
   products: ProductSearchDto[];
   categories: { [key: string]: string };
   countries: string[];
-  total: number;
+  metadata: {
+    prev_page: number | null;
+    current_page: number | null;
+    next_page: number | null;
+    total_page: number | null;
+    limit: number | null;
+    total_data: number | null;
+  };
 };
 
 export type SearchCookiesType = {
   keyword: string;
   id: string | null;
+};
+
+export type FilterSupplierDto = {
+  keyword?: string | null;
+  category_ids?: string[];
+  countries?: string[];
+};
+
+export type SupplierDto = {
+  id: any;
+  name: string;
+  image: string;
+  category: string;
+  location: string;
 };

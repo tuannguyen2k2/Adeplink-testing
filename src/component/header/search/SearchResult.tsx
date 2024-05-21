@@ -1,6 +1,8 @@
 "use client";
 import { RECENTLY_SEARCH_RESULT } from "@/constant/cookies";
+import { PRODUCT_PATH_URL } from "@/constant/pathUrl";
 import { ProductSearchDto, SearchCookiesType } from "@/interface/common";
+import { getCateUrl } from "@/utils";
 import {
   Box,
   List,
@@ -15,41 +17,51 @@ import {
   useTheme,
 } from "@mui/material";
 import Cookies from "js-cookie";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import React, { Dispatch, SetStateAction, useEffect, useState } from "react";
 import { LuClock5 } from "react-icons/lu";
 type SearchResultType = {
   debouncedValue: string;
   data?: ProductSearchDto[];
   setIsFocusInput: Dispatch<SetStateAction<boolean>>;
+  recentlySearchResultParse?: { keyword: string; id: string }[];
+  isSearchHeader?: boolean;
+  css?: {
+    paper?: {
+      width?: string;
+      top?: string;
+      left?: string;
+    };
+  };
 };
 
 const SearchResult = ({
   debouncedValue,
   data,
   setIsFocusInput,
+  recentlySearchResultParse,
+  css,
+  isSearchHeader = false,
 }: SearchResultType) => {
   const theme = useTheme();
-  const recentlySearchResult = Cookies.get(RECENTLY_SEARCH_RESULT);
   const router = useRouter();
-  const locale = Cookies.get("NEXT_LOCALE");
-  const recentlySearchResultParse =
-    recentlySearchResult && JSON.parse(recentlySearchResult);
 
   return (
     <Paper
       elevation={2}
       sx={{
         display: !recentlySearchResultParse && !data ? "none" : "block",
-        width: "104%",
+        width: css?.paper?.width || "100%",
         bgcolor: "background.paper",
         position: "absolute",
-        top: "58px",
-        left: "-16px",
+        top: css?.paper?.top || "50px",
+        left: css?.paper?.left || "0px",
+        zIndex: "1200",
       }}
     >
       <List sx={{ pt: 0 }}>
         {debouncedValue === "" &&
+          recentlySearchResultParse &&
           recentlySearchResultParse?.map(
             (value: SearchCookiesType, index: number) => {
               return (
@@ -59,6 +71,7 @@ const SearchResult = ({
                   id={value.id}
                   isRecently
                   setIsFocusInput={setIsFocusInput}
+                  isSearchHeader={isSearchHeader}
                 />
               );
             }
@@ -90,7 +103,13 @@ const SearchResult = ({
             component={"button"}
             width={"100%"}
             onClick={() => {
-              router.push(`/${locale}/product?keyword=${debouncedValue}`);
+              router.push(
+                `${PRODUCT_PATH_URL.PRODUCT_LIST}?${
+                  isSearchHeader
+                    ? `keyword=${debouncedValue}`
+                    : `keyword_by_category=${debouncedValue}&${getCateUrl()}`
+                }`
+              );
               setIsFocusInput(false);
             }}
           >
@@ -114,6 +133,7 @@ type SearchResultItemType = {
   id: string | null;
   isRecently?: boolean;
   setIsFocusInput?: Dispatch<SetStateAction<boolean>>;
+  isSearchHeader?: boolean;
 };
 
 const SearchResultItem = ({
@@ -121,13 +141,19 @@ const SearchResultItem = ({
   id,
   isRecently,
   setIsFocusInput,
+  isSearchHeader,
 }: SearchResultItemType) => {
   const theme = useTheme();
   const router = useRouter();
-  const locale = Cookies.get("NEXT_LOCALE");
   const handleClickItem = () => {
     if (!id) {
-      router.push(`/${locale}/product?keyword=${text}`);
+      router.push(
+        `${PRODUCT_PATH_URL.PRODUCT_LIST}/product?${
+          isSearchHeader
+            ? `keyword=${text}`
+            : `keyword_by_category=${text}&${getCateUrl()}`
+        }`
+      );
       setIsFocusInput && setIsFocusInput(false);
     }
   };
@@ -148,7 +174,17 @@ const SearchResultItem = ({
           </ListItemIcon>
         )}
         <ListItemText sx={{ m: 0 }}>
-          <Typography sx={{ fontSize: 14 }}>{text}</Typography>
+          <Typography
+            sx={{
+              fontSize: 14,
+              display: "-webkit-box",
+              WebkitBoxOrient: "vertical",
+              WebkitLineClamp: 1,
+              overflow: "hidden",
+            }}
+          >
+            {text}
+          </Typography>
         </ListItemText>
       </ListItemButton>
     </ListItem>

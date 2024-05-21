@@ -1,4 +1,5 @@
 "use client";
+import { PRODUCT_PATH_URL } from "@/constant/pathUrl";
 import { CategoriesHierarchyDto } from "@/interface/common";
 import {
   Box,
@@ -13,7 +14,9 @@ import {
   useTheme,
 } from "@mui/material";
 import { makeStyles } from "@mui/styles";
+import Cookies from "js-cookie";
 import { useTranslations } from "next-intl";
+import { useRouter } from "next/navigation";
 import {
   AwaitedReactNode,
   JSXElementConstructor,
@@ -25,409 +28,6 @@ import {
   useState,
 } from "react";
 import { MdOutlineArrowRight } from "react-icons/md";
-
-const categoryFake = [
-  {
-    id: 0,
-    name: "cate level 1",
-    children: [
-      {
-        name: "Agricultural Crops",
-        children: [
-          {
-            name: "Lvl 3 cate name",
-          },
-          {
-            name: "Lvl 3 cate name",
-          },
-          {
-            name: "Lvl 3 cate name",
-          },
-          {
-            name: "Lvl 3 cate name",
-          },
-          {
-            name: "Lvl 3 cate name",
-          },
-          {
-            name: "Lvl 3 cate name",
-          },
-          {
-            name: "Lvl 3 cate name",
-          },
-          {
-            name: "Lvl 3 cate name",
-          },
-          {
-            name: "Lvl 3 cate name",
-          },
-          {
-            name: "Lvl 3 cate name",
-          },
-          {
-            name: "Lvl 3 cate name",
-          },
-          {
-            name: "Lvl 3 cate name",
-          },
-        ],
-      },
-      {
-        name: "Agricultural Crops",
-        children: [
-          {
-            name: "Lvl 3 cate name",
-          },
-          {
-            name: "Lvl 3 cate name",
-          },
-          {
-            name: "Lvl 3 cate name",
-          },
-          {
-            name: "Lvl 3 cate name",
-          },
-          {
-            name: "Lvl 3 cate name",
-          },
-          {
-            name: "Lvl 3 cate name",
-          },
-          {
-            name: "Lvl 3 cate name",
-          },
-          {
-            name: "Lvl 3 cate name",
-          },
-        ],
-      },
-      {
-        name: "Agricultural Crops",
-        children: [
-          {
-            name: "Lvl 3 cate name",
-          },
-          {
-            name: "Lvl 3 cate name",
-          },
-          {
-            name: "Lvl 3 cate name",
-          },
-          {
-            name: "Lvl 3 cate name",
-          },
-          {
-            name: "Lvl 3 cate name",
-          },
-          {
-            name: "Lvl 3 cate name",
-          },
-          {
-            name: "Lvl 3 cate name",
-          },
-          {
-            name: "Lvl 3 cate name",
-          },
-        ],
-      },
-      {
-        name: "Agricultural Crops",
-        children: [
-          {
-            name: "Lvl 3 cate name",
-          },
-          {
-            name: "Lvl 3 cate name",
-          },
-          {
-            name: "Lvl 3 cate name",
-          },
-          {
-            name: "Lvl 3 cate name",
-          },
-          {
-            name: "Lvl 3 cate name",
-          },
-          {
-            name: "Lvl 3 cate name",
-          },
-          {
-            name: "Lvl 3 cate name",
-          },
-          {
-            name: "Lvl 3 cate name",
-          },
-        ],
-      },
-      {
-        name: "Agricultural Crops",
-        children: [
-          {
-            name: "Lvl 3 cate name",
-          },
-          {
-            name: "Lvl 3 cate name",
-          },
-          {
-            name: "Lvl 3 cate name",
-          },
-          {
-            name: "Lvl 3 cate name",
-          },
-          {
-            name: "Lvl 3 cate name",
-          },
-          {
-            name: "Lvl 3 cate name",
-          },
-          {
-            name: "Lvl 3 cate name",
-          },
-          {
-            name: "Lvl 3 cate name",
-          },
-        ],
-      },
-      {
-        name: "Agricultural Crops",
-        children: [
-          {
-            name: "Lvl 3 cate name",
-          },
-          {
-            name: "Lvl 3 cate name",
-          },
-          {
-            name: "Lvl 3 cate name",
-          },
-          {
-            name: "Lvl 3 cate name",
-          },
-          {
-            name: "Lvl 3 cate name",
-          },
-          {
-            name: "Lvl 3 cate name",
-          },
-          {
-            name: "Lvl 3 cate name",
-          },
-          {
-            name: "Lvl 3 cate name",
-          },
-        ],
-      },
-      {
-        name: "Agricultural Crops",
-        children: [
-          {
-            name: "Lvl 3 cate name fdsfdsfdsfdsfds",
-          },
-          {
-            name: "Lvl 3 cate name",
-          },
-          {
-            name: "Lvl 3 cate name",
-          },
-          {
-            name: "Lvl 3 cate name",
-          },
-          {
-            name: "Lvl 3 cate name",
-          },
-          {
-            name: "Lvl 3 cate name",
-          },
-          {
-            name: "Lvl 3 cate name",
-          },
-          {
-            name: "Lvl 3 cate name",
-          },
-        ],
-      },
-      {
-        name: "Agricultural Crops",
-        children: [
-          {
-            name: "Lvl 3 cate name",
-          },
-          {
-            name: "Lvl 3 cate name",
-          },
-          {
-            name: "Lvl 3 cate name",
-          },
-          {
-            name: "Lvl 3 cate name",
-          },
-          {
-            name: "Lvl 3 cate name",
-          },
-          {
-            name: "Lvl 3 cate name",
-          },
-          {
-            name: "Lvl 3 cate name",
-          },
-          {
-            name: "Lvl 3 cate name",
-          },
-        ],
-      },
-    ],
-  },
-  {
-    id: 1,
-    name: "cate level 1",
-    children: [
-      {
-        name: "Agricultural Crops",
-        children: [
-          {
-            name: "Lvl 3 cate name",
-          },
-          {
-            name: "Lvl 3 cate name",
-          },
-          {
-            name: "Lvl 3 cate name",
-          },
-          {
-            name: "Lvl 3 cate name",
-          },
-          {
-            name: "Lvl 3 cate name",
-          },
-          {
-            name: "Lvl 3 cate name",
-          },
-          {
-            name: "Lvl 3 cate name",
-          },
-          {
-            name: "Lvl 3 cate name",
-          },
-          {
-            name: "Lvl 3 cate name",
-          },
-          {
-            name: "Lvl 3 cate name",
-          },
-          {
-            name: "Lvl 3 cate name",
-          },
-          {
-            name: "Lvl 3 cate name",
-          },
-        ],
-      },
-      {
-        name: "Agricultural Crops",
-        children: [
-          {
-            name: "Lvl 3 cate name",
-          },
-          {
-            name: "Lvl 3 cate name",
-          },
-          {
-            name: "Lvl 3 cate name",
-          },
-          {
-            name: "Lvl 3 cate name",
-          },
-          {
-            name: "Lvl 3 cate name",
-          },
-          {
-            name: "Lvl 3 cate name",
-          },
-          {
-            name: "Lvl 3 cate name",
-          },
-          {
-            name: "Lvl 3 cate name",
-          },
-        ],
-      },
-      {
-        name: "Agricultural Crops",
-        children: [
-          {
-            name: "Lvl 3 cate name",
-          },
-          {
-            name: "Lvl 3 cate name",
-          },
-          {
-            name: "Lvl 3 cate name",
-          },
-          {
-            name: "Lvl 3 cate name",
-          },
-          {
-            name: "Lvl 3 cate name",
-          },
-          {
-            name: "Lvl 3 cate name",
-          },
-          {
-            name: "Lvl 3 cate name",
-          },
-          {
-            name: "Lvl 3 cate name",
-          },
-        ],
-      },
-    ],
-  },
-  {
-    id: 2,
-    name: "cate level 1",
-    children: [],
-  },
-  {
-    id: 3,
-    name: "cate level 1",
-    children: [],
-  },
-  {
-    id: 4,
-    name: "cate level 1",
-    children: [],
-  },
-  {
-    id: 5,
-    name: "cate level 1",
-    children: [],
-  },
-  {
-    id: 6,
-    name: "cate level 1",
-    children: [],
-  },
-  {
-    id: 7,
-    name: "cate level 1",
-    children: [],
-  },
-  {
-    id: 8,
-    name: "cate level 1",
-    children: [],
-  },
-  {
-    id: 9,
-    name: "cate level 1",
-    children: [],
-  },
-  {
-    id: 10,
-    name: "cate level 1",
-    children: [],
-  },
-];
 
 const useStyles = makeStyles({
   popover: {
@@ -443,12 +43,14 @@ type CategoryPopoverType = {
 
 const CategoryPopover = ({ data }: CategoryPopoverType) => {
   const theme = useTheme();
+  const router = useRouter();
+  const locale = Cookies.get("NEXT_LOCALE");
   const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
   const classes = useStyles();
   const translate = useTranslations();
   const [categoryLevel1Selected, setCategoryLevel1Selected] = useState<
     string | null
-  >(data ? data[0].id : null);
+  >(data ? data[0]?.id : null);
   const [listCategoryLevel2, setListCategoryLevel2] = useState<
     CategoriesHierarchyDto[]
   >([]);
@@ -470,7 +72,7 @@ const CategoryPopover = ({ data }: CategoryPopoverType) => {
       }
     });
   }, [categoryLevel1Selected]);
-  console.log(data);
+
   return (
     <>
       <Box
@@ -528,39 +130,45 @@ const CategoryPopover = ({ data }: CategoryPopoverType) => {
               overflowY: "auto",
             }}
           >
-            {data?.map((categoryLevel1, index) => {
-              return (
-                <ListItemButton
-                  sx={{ pl: 2 }}
-                  key={categoryLevel1.id}
-                  selected={categoryLevel1.id === categoryLevel1Selected}
-                  onMouseEnter={() =>
-                    setCategoryLevel1Selected(categoryLevel1.id)
-                  }
-                >
-                  <ListItemText
-                    primary={
-                      <Typography
-                        sx={{
-                          fontSize: 14,
-                          fontWeight:
-                            categoryLevel1.id === categoryLevel1Selected
-                              ? theme.fontWeight.semiBold
-                              : theme.fontWeight.regular,
-                          fontFamily: theme.fontFamily.secondary,
-                          color:
-                            categoryLevel1.id === categoryLevel1Selected
-                              ? theme.blue[500]
-                              : theme.black[100],
-                        }}
-                      >
-                        {categoryLevel1.name}
-                      </Typography>
+            {data && data?.length > 0 &&
+              data?.map((categoryLevel1, index) => {
+                return (
+                  <ListItemButton
+                    sx={{ pl: 2 }}
+                    key={categoryLevel1.id}
+                    selected={categoryLevel1.id === categoryLevel1Selected}
+                    onMouseEnter={() =>
+                      setCategoryLevel1Selected(categoryLevel1.id)
                     }
-                  />
-                </ListItemButton>
-              );
-            })}
+                    onClick={() =>
+                      router.push(
+                        `${PRODUCT_PATH_URL.PRODUCT_LIST}?cate_level1_id=${categoryLevel1.id}&cate_name=${categoryLevel1.name}`
+                      )
+                    }
+                  >
+                    <ListItemText
+                      primary={
+                        <Typography
+                          sx={{
+                            fontSize: 14,
+                            fontWeight:
+                              categoryLevel1.id === categoryLevel1Selected
+                                ? theme.fontWeight.semiBold
+                                : theme.fontWeight.regular,
+                            fontFamily: theme.fontFamily.secondary,
+                            color:
+                              categoryLevel1.id === categoryLevel1Selected
+                                ? theme.blue[500]
+                                : theme.black[100],
+                          }}
+                        >
+                          {categoryLevel1.name}
+                        </Typography>
+                      }
+                    />
+                  </ListItemButton>
+                );
+              })}
           </List>
           <Box width={"1px"} height={"auto"} bgcolor={theme.blue[100]} mx={2} />
           <Box
@@ -574,9 +182,7 @@ const CategoryPopover = ({ data }: CategoryPopoverType) => {
             }}
           >
             {listCategoryLevel2?.map(
-              (
-                categoryLevel2: CategoriesHierarchyDto,
-              ) => {
+              (categoryLevel2: CategoriesHierarchyDto) => {
                 return (
                   <Box
                     display={"flex"}
@@ -591,6 +197,11 @@ const CategoryPopover = ({ data }: CategoryPopoverType) => {
                         fontFamily={theme.fontFamily.secondary}
                         fontWeight={theme.fontWeight.semiBold}
                         whiteSpace={"nowrap"}
+                        onClick={() =>
+                          router.push(
+                            `${PRODUCT_PATH_URL.PRODUCT_LIST}?cate_level1_id=${categoryLevel2.parent_category_id}&cate_level2_id=${categoryLevel2.id}&cate_name=${categoryLevel2.name}`
+                          )
+                        }
                       >
                         {categoryLevel2.name}
                       </Box>
@@ -603,6 +214,11 @@ const CategoryPopover = ({ data }: CategoryPopoverType) => {
                             <ListItemButton
                               key={categoryLevel3.id}
                               sx={{ pl: 0, py: "4px", maxWidth: "150px" }}
+                              onClick={() =>
+                                router.push(
+                                  `${PRODUCT_PATH_URL.PRODUCT_LIST}?cate_level1_id=${categoryLevel2.parent_category_id}&cate_level2_id=${categoryLevel2.id}&cate_level3_id=${categoryLevel3.id}&cate_name=${categoryLevel3.name}`
+                                )
+                              }
                             >
                               <ListItemText
                                 primary={

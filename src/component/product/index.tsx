@@ -1,32 +1,57 @@
 "use client";
-import { useGetProductSearch } from "@/api/product/query";
+import {
+  useGetProductByCategory,
+  useGetProductSearch,
+} from "@/api/product/query";
 import { MAX_WIDTH_APP } from "@/constant/css";
 import useDevices from "@/hook/useDevices";
 import {
   Box,
   Button,
   Container,
+  Pagination,
   TextField,
   Typography,
   useTheme,
 } from "@mui/material";
-import { useSearchParams } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import CheckboxComponent from "../common/CheckboxComponent";
 import ProductList from "./ProductList";
-import RelevantCategoryFilter from "./RelevantCategoryFilter";
+import RelevantCategoryFilter from "./RelevantCategoryFilter/RelevantCategoryFilter";
 import { ChangeEvent, useEffect, useState } from "react";
 import NotFound from "./NotFound";
 import { isEqual } from "lodash";
+import { ProductSearchResultDto } from "@/interface/common";
+import { PRODUCT_LIST_LIMIT } from "@/constant";
+import { PRODUCT_PATH_URL } from "@/constant/pathUrl";
 const Product = () => {
   const { isMobile } = useDevices();
   const theme = useTheme();
   const searchParams = useSearchParams();
+  const cate_name = searchParams.get("cate_name");
+  const cate_level1_id = searchParams.get("cate_level1_id");
+  const cate_level2_id = searchParams.get("cate_level2_id");
+  const cate_level3_id = searchParams.get("cate_level3_id");
+  const page = searchParams.get("page");
+  const router = useRouter();
   const keyword = searchParams.get("keyword");
+  const keyword_by_category = searchParams.get("keyword_by_category");
   const [listCategoryFilter, setListCategoryFilter] = useState<{
     [key: string]: string;
   }>();
+  const [data, setData] = useState<ProductSearchResultDto>();
+  const [isSuccess, setIsSuccess] = useState(false);
   const [listCountryFilter, setListCountryFilter] = useState<string[]>();
-  const { getProductSearch, isSuccess, data } = useGetProductSearch();
+  const {
+    getProductSearch,
+    isSuccess: isSuccessProductSearch,
+    data: productSearch,
+  } = useGetProductSearch();
+  const {
+    getProductByCategory,
+    isSuccess: isSuccessProductByCategory,
+    data: productByCategory,
+  } = useGetProductByCategory();
   const [priceFilter, setPriceFilter] = useState<{
     from_price?: string;
     to_price?: string;
@@ -38,41 +63,102 @@ const Product = () => {
   const [countryCheckedList, setCountryCheckedList] = useState<string[]>([]);
 
   useEffect(() => {
-    if (!listCategoryFilter && isSuccess) {
+    if (keyword) {
+      setData(productSearch);
+      setIsSuccess(isSuccessProductSearch);
+    } else if (cate_name) {
+      setData(productByCategory);
+      setIsSuccess(isSuccessProductByCategory);
+    }
+  }, [isSuccessProductByCategory, isSuccessProductSearch]);
+  useEffect(() => {
+    if (isSuccess && !isEqual(listCategoryFilter, data?.categories)) {
       setListCategoryFilter(data?.categories);
     }
     if (isSuccess && !isEqual(listCountryFilter, data?.countries)) {
       setListCountryFilter(data?.countries);
     }
-  }, [isSuccess]);
+  }, [data]);
+
+  const handleGetProduct = () => {
+    if (keyword) {
+      getProductSearch({
+        keyword: keyword,
+        limit: PRODUCT_LIST_LIMIT,
+        page: page,
+      });
+    } else if (cate_name) {
+      getProductByCategory({
+        page: page,
+        limit: PRODUCT_LIST_LIMIT,
+        keyword: keyword_by_category,
+        product_category_id: cate_level3_id ?? cate_level2_id ?? cate_level1_id,
+      });
+    }
+  };
+
+  const handleFilterProduct = (category_ids: string[], countries: string[]) => {
+    if (keyword) {
+      getProductSearch({
+        page: page,
+        keyword: keyword,
+        category_ids: category_ids,
+        countries: countries,
+        from_price: priceFilter.from_price,
+        to_price: priceFilter.to_price,
+        moq: moq,
+        limit: PRODUCT_LIST_LIMIT,
+      });
+    } else if (cate_name) {
+      getProductByCategory({
+        keyword: keyword_by_category,
+        product_category_id: cate_level3_id ?? cate_level2_id ?? cate_level1_id,
+        category_ids: category_ids,
+        countries: countries,
+        from_price: priceFilter.from_price,
+        to_price: priceFilter.to_price,
+        moq: moq,
+        limit: PRODUCT_LIST_LIMIT,
+      });
+    }
+  };
 
   useEffect(() => {
-    getProductSearch({});
-  }, []);
+    handleGetProduct();
+  }, [
+    page,
+    keyword_by_category,
+    keyword,
+    cate_level3_id,
+    cate_level2_id,
+    cate_level1_id,
+  ]);
   const handleOnCheckCategory = (
     e: ChangeEvent<HTMLInputElement>,
     id: string
   ) => {
-    getProductSearch({
-      category_ids: [...categoryIdCheckedList, id],
-      countries: countryCheckedList,
-      from_price: priceFilter.from_price,
-      to_price: priceFilter.to_price,
-      moq: moq,
-    });
     const isChecked = e.target.checked;
     const updatedList = [...categoryIdCheckedList];
 
     if (isChecked) {
+      handleFilterProduct([...categoryIdCheckedList, id], countryCheckedList);
       updatedList.push(id);
     } else {
       const index = updatedList.indexOf(id);
       if (index !== -1) {
         updatedList.splice(index, 1);
+        handleFilterProduct([...updatedList], countryCheckedList);
       }
     }
 
     setCategoryIdCheckedList(updatedList);
+    if (page) {
+      const updatedSearchParams = new URLSearchParams(searchParams.toString());
+      updatedSearchParams.delete("page");
+      router.push(
+        `${PRODUCT_PATH_URL.PRODUCT_LIST}?${updatedSearchParams.toString()}`
+      );
+    }
   };
 
   const handleOnCheckCountry = (
@@ -90,17 +176,26 @@ const Product = () => {
         updatedList.splice(index, 1);
       }
     }
+    handleFilterProduct(categoryIdCheckedList, updatedList);
 
     setCountryCheckedList(updatedList);
+    if (page) {
+      const updatedSearchParams = new URLSearchParams(searchParams.toString());
+      updatedSearchParams.delete("page");
+      router.push(
+        `${PRODUCT_PATH_URL.PRODUCT_LIST}?${updatedSearchParams.toString()}`
+      );
+    }
   };
   const handleApply = () => {
-    getProductSearch({
-      category_ids: categoryIdCheckedList,
-      countries: countryCheckedList,
-      from_price: priceFilter.from_price,
-      to_price: priceFilter.to_price,
-      moq: moq,
-    });
+    handleFilterProduct(categoryIdCheckedList, countryCheckedList);
+    if (page) {
+      const updatedSearchParams = new URLSearchParams(searchParams.toString());
+      updatedSearchParams.delete("page");
+      router.push(
+        `${PRODUCT_PATH_URL.PRODUCT_LIST}?${updatedSearchParams.toString()}`
+      );
+    }
   };
 
   const handleClearAll = () => {
@@ -108,27 +203,62 @@ const Product = () => {
     setCountryCheckedList([]);
     setPriceFilter({ from_price: "", to_price: "" });
     setMoq("");
-    getProductSearch({});
+    handleGetProduct();
+  };
+
+  const handleChangePage = (event: ChangeEvent<unknown>, page: number) => {
+    const updatedSearchParams = new URLSearchParams(searchParams.toString());
+    updatedSearchParams.set("page", page.toString());
+    router.push(
+      `${PRODUCT_PATH_URL.PRODUCT_LIST}?${updatedSearchParams.toString()}`
+    );
   };
   return (
     <Container
       sx={{
         mt: "184px",
-        p: isMobile ? "20px!important" : "0 88px!important",
+        p: { xs: "20px!important", sm: "0 88px!important" },
         maxWidth: `${MAX_WIDTH_APP}!important`,
         fontFamily: theme.fontFamily.secondary,
       }}
     >
-      <RelevantCategoryFilter />
-      {keyword && (
+      {cate_name && <RelevantCategoryFilter />}
+      {keyword && data?.metadata?.total_data && (
         <Typography fontFamily={theme.fontFamily.secondary} mb={"20px"}>
-          {`Showing ${data?.total}+ products for "${keyword}"`}
+          {`Showing ${
+            data?.metadata?.total_data || 0
+          }+ products for "${keyword}"`}
         </Typography>
       )}
-      {!keyword && (
+      {!keyword && !keyword_by_category && !cate_name && (
         <Typography fontFamily={theme.fontFamily.secondary} mb={"20px"}>
-          {`Showing ${data?.total}+ products recommendations`}
+          {`Showing ${
+            data?.metadata?.total_data || 0
+          }+ products recommendations`}
         </Typography>
+      )}
+      {keyword_by_category && cate_name && (
+        <Typography fontFamily={theme.fontFamily.secondary} mb={"20px"}>
+          {`Showing ${
+            data?.metadata?.total_data || 0
+          }+ products for "${keyword_by_category}" in ${cate_name}`}
+        </Typography>
+      )}
+      {cate_name && !keyword_by_category && (
+        <Box
+          fontFamily={theme.fontFamily.secondary}
+          mb={"20px"}
+          display={"flex"}
+        >
+          Browser&nbsp;
+          <Typography
+            fontFamily={theme.fontFamily.secondary}
+            fontWeight={theme.fontWeight.semiBold}
+          >
+            All Products&nbsp;
+          </Typography>
+          {`in ${cate_name}`}
+        </Box>
       )}
       <Box display={"flex"}>
         <Box
@@ -137,6 +267,7 @@ const Product = () => {
           borderRadius={"16px"}
           height={"fit-content"}
           mr={"10px"}
+          // position={"fixed"}
         >
           <Typography
             fontFamily={theme.fontFamily.secondary}
@@ -182,14 +313,17 @@ const Product = () => {
                     </Box>
                   );
                 })}
-              <Box
-                component={"button"}
-                fontFamily={theme.fontFamily.secondary}
-                fontSize={14}
-                color={theme.palette.primary.main}
-              >
-                Show more
-              </Box>
+              {data?.categories &&
+                Object.entries(data?.categories).length > 5 && (
+                  <Box
+                    component={"button"}
+                    fontFamily={theme.fontFamily.secondary}
+                    fontSize={14}
+                    color={theme.palette.primary.main}
+                  >
+                    Show more
+                  </Box>
+                )}
             </Box>
             <Box
               display={"flex"}
@@ -206,34 +340,35 @@ const Product = () => {
               >
                 Suppliers Country
               </Typography>
-              {listCountryFilter &&
-                listCountryFilter.map((country) => {
-                  return (
-                    <Box display={"flex"} gap={1} key={country}>
-                      <CheckboxComponent
-                        id={country}
-                        handleOnCheck={handleOnCheckCountry}
-                        checked={countryCheckedList.includes(country)}
-                      />
-                      <Typography
-                        sx={{
-                          fontFamily: theme.fontFamily.secondary,
-                          fontSize: 14,
-                        }}
-                      >
-                        {country}
-                      </Typography>
-                    </Box>
-                  );
-                })}
-              <Box
-                component={"button"}
-                fontFamily={theme.fontFamily.secondary}
-                fontSize={14}
-                color={theme.palette.primary.main}
-              >
-                Show more
-              </Box>
+              {listCountryFilter?.map((country) => {
+                return (
+                  <Box display={"flex"} gap={1} key={country}>
+                    <CheckboxComponent
+                      id={country}
+                      handleOnCheck={handleOnCheckCountry}
+                      checked={countryCheckedList.includes(country)}
+                    />
+                    <Typography
+                      sx={{
+                        fontFamily: theme.fontFamily.secondary,
+                        fontSize: 14,
+                      }}
+                    >
+                      {country}
+                    </Typography>
+                  </Box>
+                );
+              })}
+              {data?.countries && data.countries.length > 5 && (
+                <Box
+                  component={"button"}
+                  fontFamily={theme.fontFamily.secondary}
+                  fontSize={14}
+                  color={theme.palette.primary.main}
+                >
+                  Show more
+                </Box>
+              )}
             </Box>
             <Box
               display={"flex"}
@@ -311,7 +446,7 @@ const Product = () => {
                 />
               </Box>
             </Box>
-            
+
             <Box
               display={"flex"}
               flexDirection={"column"}
@@ -351,11 +486,7 @@ const Product = () => {
                 }}
               />
             </Box>
-            <Box
-              width={"100%"}
-              display={"flex"}
-            >
-              
+            <Box width={"100%"} display={"flex"}>
               <Box
                 onClick={handleClearAll}
                 component={"button"}
@@ -390,9 +521,28 @@ const Product = () => {
           </>
         </Box>
         {data?.products && data?.products?.length > 0 ? (
-          <ProductList data={data?.products} />
+          <Box
+            display={"flex"}
+            flexDirection={"column"}
+            alignItems={"center"}
+            width={"100%"}
+          >
+            <ProductList data={data?.products} />
+            {data.metadata.total_page && data.metadata.total_page > 1 && (
+              <Pagination
+                count={data.metadata.total_page || 1}
+                color="primary"
+                shape="rounded"
+                sx={{ justifyContent: "center", mt: "20px" }}
+                page={page ? parseInt(page) : 1}
+                onChange={(e: ChangeEvent<unknown>, page: number) =>
+                  handleChangePage(e, page)
+                }
+              />
+            )}
+          </Box>
         ) : (
-          <NotFound caseValue={1} />
+          <NotFound caseValue={keyword ? 2 : 1} />
         )}
       </Box>
     </Container>

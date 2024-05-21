@@ -5,6 +5,7 @@ import { RiArrowRightLine } from "react-icons/ri";
 import Light from "@/assets/icons/light.svg";
 import { useState } from "react";
 import { CategoryDto } from "@/interface/common";
+import { convertImage } from "@/utils";
 
 type CategoryItemType = {
   data?: CategoryDto;
@@ -13,21 +14,7 @@ type CategoryItemType = {
 const CategoryItem = ({ data }: CategoryItemType) => {
   const theme = useTheme();
   const [openArrowButton, setOpenArrowButton] = useState(false);
-  const convertImage = (image: string | null | undefined) => {
-    if (image) {
-      if (
-        image.includes("https://localhost:8000") &&
-        process.env.NEXT_APP_API_URL
-      ) {
-        return image.replace(
-          "https://localhost:8000",
-          process.env.NEXT_APP_API_URL
-        );
-      } else if (process.env.NEXT_APP_API_URL) {
-        return `${process.env.NEXT_APP_API_URL}/${image}`;
-      }
-    }
-  };
+  
   return (
     <Box
       component={"button"}

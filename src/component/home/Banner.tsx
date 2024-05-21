@@ -9,6 +9,7 @@ import useDevices from "@/hook/useDevices";
 import { useGetAllBanner } from "@/api/banner/query";
 import Image from "next/image";
 import BannerImage from "@/assets/images/banner.jpg";
+import { convertImage } from "@/utils";
 var settings = {
   dots: true,
   infinite: true,
@@ -37,21 +38,7 @@ const Banner = () => {
   useEffect(() => {
     getAllBanner();
   }, []);
-  const convertImage = (image: string | null) => {
-    if (image) {
-      if (
-        image.includes("https://localhost:8000") &&
-        process.env.NEXT_APP_API_URL
-      ) {
-        return image.replace(
-          "https://localhost:8000",
-          process.env.NEXT_APP_API_URL
-        );
-      } else if (process.env.NEXT_APP_API_URL) {
-        return `${process.env.NEXT_APP_API_URL}/${image}`;
-      }
-    }
-  };
+
   return (
     <Box
       sx={{

@@ -4,6 +4,7 @@ import AppLogo from "@/assets/icons/logo.svg";
 import SuccessModal from "@/component/auth/SuccessModal";
 import { InputComponent } from "@/component/common/InputComponent";
 import { ValidatePasswordForm } from "@/component/common/ValidatePasswordForm";
+import { AUTH_PATH_URL } from "@/constant/pathUrl";
 import {
   CheckSpecial,
   checkLength,
@@ -177,7 +178,7 @@ const ChangePasswordFormPage = () => {
           </form>
           <div
             className="hover:underline font-medium text-[#0C71BA] hover:cursor-pointer mt-5 flex gap-1"
-            onClick={() => router.push(`/${locale}/auth/login`)}
+            onClick={() => router.push(AUTH_PATH_URL.LOGIN)}
           >
             <IoMdArrowBack size={24} />
             Back to Login

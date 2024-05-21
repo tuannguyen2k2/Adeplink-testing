@@ -27,6 +27,7 @@ import { SubmitHandler, useForm } from "react-hook-form";
 import { MdOutlineKeyboardArrowDown } from "react-icons/md";
 import { Country, State, City } from "country-state-city";
 import { ICountry, IState, ICity } from "country-state-city";
+import { AUTH_PATH_URL } from "@/constant/pathUrl";
 const SignupFormPage = () => {
   const locale = Cookies.get("NEXT_LOCALE");
   const { Option } = Select;
@@ -141,7 +142,7 @@ const SignupFormPage = () => {
           Already have an account?&nbsp;
           <span
             className="text-[#0C71BA] underline hover:cursor-pointer font-medium"
-            onClick={() => router.push(`/${locale}/auth/login`)}
+            onClick={() => router.push(AUTH_PATH_URL.LOGIN)}
           >
             Login
           </span>

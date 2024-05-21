@@ -103,11 +103,20 @@ const Category = () => {
           },
         }}
       >
-        <SliderContent settings={settings}>
-          {data?.map((category, index) => (
-            <CategoryItem key={index} data={category} />
-          ))}
-        </SliderContent>
+        {data && data?.length <= 4 && (
+          <Box width={"100%"} display={"flex"}>
+            {data?.map((category, index) => (
+              <CategoryItem key={index} data={category} />
+            ))}
+          </Box>
+        )}
+        {data && data?.length > 4 && (
+          <SliderContent settings={settings}>
+            {data?.map((category, index) => (
+              <CategoryItem key={index} data={category} />
+            ))}
+          </SliderContent>
+        )}
       </Box>
     </Box>
   );
