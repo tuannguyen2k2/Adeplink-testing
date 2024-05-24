@@ -1,6 +1,6 @@
 import ProductDetail from "@/component/product-detail";
 
-const ProductDetailPage = () => {
+const ProductDetailPage = ({ params }: { params: { slug: string } }) => {
   return <ProductDetail slug={params.slug[0]} />;
 };
 
