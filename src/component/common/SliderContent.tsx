@@ -1,9 +1,8 @@
 "use client";
-import { ReactNode } from "react";
+import { LegacyRef, ReactNode, RefObject } from "react";
 import Slider, { ResponsiveObject } from "react-slick";
 import "slick-carousel/slick/slick-theme.css";
 import "slick-carousel/slick/slick.css";
-
 
 type SettingsType = {
   dots?: boolean;
@@ -25,15 +24,18 @@ type SliderContentType = {
   children: ReactNode;
   settings: SettingsType;
   className?: string;
+  ref?: LegacyRef<Slider>;
 };
 
 const SliderContent = ({
   children,
   settings,
   className = "w-full h-full",
+  ref,
 }: SliderContentType) => {
+  console.log(ref);
   return (
-    <Slider {...settings} className={className}>
+    <Slider {...settings} className={className} ref={ref}>
       {children}
     </Slider>
   );

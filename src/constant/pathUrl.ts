@@ -11,6 +11,7 @@ export const AUTH_PATH_URL = {
 
 export const PRODUCT_PATH_URL = {
   PRODUCT_LIST: `/${locale}/product`,
+  PRODUCT_DETAIL: `/${locale}/product/product-detail`,
 };
 
 export const SUPPLIER_PATH_URL = {

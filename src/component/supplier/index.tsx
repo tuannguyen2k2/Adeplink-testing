@@ -4,73 +4,15 @@ import { MAX_WIDTH_APP } from "@/constant/css";
 import { Box, Button, Container, Grid, Icon, Pagination, TextField, Typography, useTheme } from "@mui/material";
 import { useSearchParams } from "next/navigation";
 import { ChangeEvent, SetStateAction, useState } from "react";
-import { FilterSupplierDto, SupplierDto } from "@/interface/common";
+import { FilterSupplierDto, PaginationDto, SupplierDto } from "@/interface/common";
 import FilterComponent from "./Filter";
 import SortComponent from "./SortComponent";
 import Image from "next/image";
 import { LocationOnOutlined } from "@mui/icons-material";
 import ChatIcon from "@/assets/icons/chat.svg";
-
-const dummyCategory = ["Cereals", "Fiber Crops", "Fodder & Forage", "Fruits", "Herbs & Spice Crops", "test category", "con con 2", "con 1", "con 2"];
-const dummyCountry = ["Austrialia", "Belgium", "Canada", "China", "Denmark", "Việt Nam", "Viet Nam"];
-const dummyData = [
-  {
-    id: 1,
-    name: "Long name of supplier supplier supplier supplier... supplier... supplier... supplier...",
-    image: "https://vietnamnomad.com/wp-content/uploads/2020/04/Best-places-to-visit-in-Vietnam-in-2021-Ha-Long-Bay-1024x640.jpg",
-    category: "Category",
-    location: "Location",
-  },
-  {
-    id: 1,
-    name: "Long name of supplier supplier supplier supplier... supplier... supplier... supplier...",
-    image: "https://vietnamnomad.com/wp-content/uploads/2020/04/Best-places-to-visit-in-Vietnam-in-2021-Ha-Long-Bay-1024x640.jpg",
-    category: "Category",
-    location: "Location",
-  },
-  {
-    id: 1,
-    name: "Long name of supplier supplier supplier supplier... supplier... supplier... supplier...",
-    image: "https://vietnamnomad.com/wp-content/uploads/2020/04/Best-places-to-visit-in-Vietnam-in-2021-Ha-Long-Bay-1024x640.jpg",
-    category: "Category",
-    location: "Location",
-  },
-  {
-    id: 1,
-    name: "Long name of supplier supplier supplier supplier... supplier... supplier... supplier...",
-    image: "https://vietnamnomad.com/wp-content/uploads/2020/04/Best-places-to-visit-in-Vietnam-in-2021-Ha-Long-Bay-1024x640.jpg",
-    category: "Category",
-    location: "Location",
-  },
-  {
-    id: 1,
-    name: "Long name of supplier supplier supplier supplier... supplier... supplier... supplier...",
-    image: "https://vietnamnomad.com/wp-content/uploads/2020/04/Best-places-to-visit-in-Vietnam-in-2021-Ha-Long-Bay-1024x640.jpg",
-    category: "Category",
-    location: "Location",
-  },
-  {
-    id: 1,
-    name: "Long name of supplier supplier supplier supplier... supplier... supplier... supplier...",
-    image: "https://vietnamnomad.com/wp-content/uploads/2020/04/Best-places-to-visit-in-Vietnam-in-2021-Ha-Long-Bay-1024x640.jpg",
-    category: "Category",
-    location: "Location",
-  },
-  {
-    id: 1,
-    name: "Long name of supplier supplier supplier supplier... supplier... supplier... supplier...",
-    image: "https://vietnamnomad.com/wp-content/uploads/2020/04/Best-places-to-visit-in-Vietnam-in-2021-Ha-Long-Bay-1024x640.jpg",
-    category: "Category",
-    location: "Location",
-  },
-  {
-    id: 1,
-    name: "Long name of supplier supplier supplier supplier... supplier... supplier... supplier...",
-    image: "https://vietnamnomad.com/wp-content/uploads/2020/04/Best-places-to-visit-in-Vietnam-in-2021-Ha-Long-Bay-1024x640.jpg",
-    category: "Category",
-    location: "Location",
-  },
-];
+import { useQuery } from "@tanstack/react-query";
+import { getAllSupplier } from "@/api/supplier";
+import { SUPPLIER_KEY } from "@/constant/queryKey";
 
 const Supplier = ({ params }: { params: { slug: string } }) => {
   const { isMobile } = useDevices();
@@ -83,8 +25,18 @@ const Supplier = ({ params }: { params: { slug: string } }) => {
     category_ids: [],
     countries: [],
   });
-  const [sortOrder, setSortOrder] = useState<string>('');
+  const [sortOrder, setSortOrder] = useState<string>("");
+  const [pagination, setPagination] = useState<PaginationDto>({ page: 1, limit: 5 });
 
+  const { data: supplierData, isLoading } = useQuery({
+    queryKey: [SUPPLIER_KEY, pagination],
+    queryFn: async () =>
+      await getAllSupplier({ page: pagination.page, limit: pagination.limit }).then((response) => {
+        setPagination({ ...pagination, totalPage: response.data.metadata.total_page });
+        return response.data;
+      }),
+  });
+  console.log("TTTTTTTTTTTTTTTTTTTTTTT", supplierData);
   console.log(params, "RRRRRRRRRRRRRRRRRRRRRRRRRRR", filter);
   console.log(params, "SSSSSSSSSSSSSSSSSSSSSSSSSSS", sortOrder);
 
@@ -92,31 +44,30 @@ const Supplier = ({ params }: { params: { slug: string } }) => {
     <Grid
       container
       sx={{
+        mx: "auto",
         mt: "184px",
         p: isMobile ? "20px!important" : "0 88px!important",
         maxWidth: `${MAX_WIDTH_APP}!important`,
         fontFamily: theme.fontFamily.secondary,
-        display: "gri",
       }}
     >
-      <Grid component={Box} item xs={12} display={"flex"} justifyContent={"space-between"}>
-        <Box>aadad</Box>
+      <Grid component={Box} container xs={12} display={"flex"} justifyContent={"space-between"}>
+        <Typography>aadad</Typography>
         <SortComponent sortOrder={sortOrder} setSortOrder={setSortOrder} />
       </Grid>
       <Grid component={Box} item xs={3}>
-        <FilterComponent filter={filter} setFilter={setFilter} categoryData={dummyCategory} countryData={dummyCountry} />
+        <FilterComponent filter={filter} setFilter={setFilter} categoryData={supplierData?.categories} countryData={supplierData?.countries} />
       </Grid>
       <Grid component={Box} item xs={9} sx={{ paddingLeft: 3 }}>
         <Box display={"flex"} flexDirection={"column"} justifyContent={"start"} alignItems={"center"} width={"100%"}>
           <Grid container spacing={10} width={"100%"} marginLeft={0} mt={0}>
-            {dummyData?.map((supplier: SupplierDto, index: number) => (
+            {supplierData?.companies?.map((supplier: SupplierDto) => (
               <Grid
                 component={Box}
                 key={supplier?.id}
                 width={"100%"}
                 height={"100%"}
                 display={"flex"}
-                // flexDirection={"column"}
                 bgcolor={"common.white"}
                 p={"16px"}
                 mb={3}
@@ -125,7 +76,14 @@ const Supplier = ({ params }: { params: { slug: string } }) => {
               >
                 <Grid item xs={1.5} display={"flex"} justifyContent={"left"} alignItems={"center"}>
                   <Box width={88} height={88} position={"absolute"}>
-                    <Image src={supplier.image} alt="product" fill objectFit="fill" className="rounded-lg" />
+                    <Image
+                      src={"https://vietnamnomad.com/wp-content/uploads/2020/04/Best-places-to-visit-in-Vietnam-in-2021-Ha-Long-Bay-1024x640.jpg"}
+                      alt="product"
+                      fill
+                      objectFit="fill"
+                      className="rounded-lg"
+                    />
+                    {/* <Image src={supplier.image} alt="product" fill objectFit="fill" className="rounded-lg" /> */}
                   </Box>
                 </Grid>
 
@@ -143,7 +101,7 @@ const Supplier = ({ params }: { params: { slug: string } }) => {
                       mb: 1,
                     }}
                   >
-                    {supplier.name}
+                    {supplier.company_name}
                   </Typography>
                   <Box>
                     <Typography
@@ -155,7 +113,7 @@ const Supplier = ({ params }: { params: { slug: string } }) => {
                       fontWeight={theme.fontWeight.regular}
                       fontFamily={theme.fontFamily.secondary}
                     >
-                      {supplier.category}
+                      {supplier.main_category}
                     </Typography>
                     <Typography
                       color={theme.black[200]}
@@ -171,7 +129,7 @@ const Supplier = ({ params }: { params: { slug: string } }) => {
                       }}
                     >
                       <Icon component={LocationOnOutlined} sx={{ color: theme.palette.primary.main }} width={24} height={24} />
-                      {supplier.location}
+                      {supplier.country}
                     </Typography>
                   </Box>
                 </Grid>
@@ -196,7 +154,19 @@ const Supplier = ({ params }: { params: { slug: string } }) => {
               </Grid>
             ))}
           </Grid>
-          <Pagination count={10} color="primary" shape="rounded" sx={{ justifyContent: "center", mt: "20px" }} />
+          <Pagination
+            count={supplierData?.metadata.total_page}
+            color="primary"
+            shape="rounded"
+            sx={{
+              justifyContent: "center",
+              mt: "20px",
+              "& .Mui-selected": {
+                borderRadius: "8px",
+              },
+            }}
+            onChange={(event, page) => { setPagination({ ...pagination, page: page }) }}
+          />
         </Box>
       </Grid>
       {/* <RelevantCategoryFilter />

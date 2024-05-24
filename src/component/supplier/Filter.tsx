@@ -5,7 +5,6 @@ import { ChangeEvent, FC, MouseEventHandler, ReactNode, SetStateAction, useRef, 
 import { IoMdSearch } from "react-icons/io";
 import { MdArrowBackIos, MdArrowForwardIos, MdKeyboardArrowDown, MdKeyboardArrowUp } from "react-icons/md";
 import SliderContent from "../common/SliderContent";
-import Image from "next/image";
 import { FilterSupplierDto } from "@/interface/common";
 import CheckboxComponent from "../common/CheckboxComponent";
 
@@ -58,7 +57,7 @@ const FilterComponent = ({ filter, setFilter, categoryData, countryData }: Filte
       const newValue = { ...filter, category_ids: [...(filter.category_ids as string[]), categoryId] };
       setFilter(newValue);
     } else {
-      const newValue = { ...filter, category_ids: filter.category_ids?.filter((item) => item === categoryId) };
+      const newValue = { ...filter, category_ids: filter.category_ids?.filter((item) => item !== categoryId) };
       setFilter(newValue);
     }
   };
@@ -68,70 +67,66 @@ const FilterComponent = ({ filter, setFilter, categoryData, countryData }: Filte
       const newValue = { ...filter, countries: [...(filter.countries as string[]), country] };
       setFilter(newValue);
     } else {
-      const newValue = { ...filter, countries: filter.countries?.filter((item) => item === country) };
+      const newValue = { ...filter, countries: filter.countries?.filter((item) => item !== country) };
       setFilter(newValue);
     }
   };
+
+  if (!categoryData || !countryData) return <div>Loading...</div>;
 
   return (
     <Box width={"100%"} p={"24px"} mb={"20px"} border={`1px solid ${theme.blue[100]}`} borderRadius={"16px"} sx={{ backgroundColor: theme.blue[100] }}>
       <Typography fontFamily={theme.fontFamily.secondary} fontWeight={theme.fontWeight.bold} fontSize={24} mb={"16px"}>
         Filters
       </Typography>
-      <Box
-        // width={"40%"}
-        // borderRadius={"8px"}
-        // display={"flex"}
-        ref={searchBoxRef}
-        // alignItems={"center"}
-        mb={"16px"}
-        // px={"16px"}
-        // border={isFocusInput ? `1px solid ${theme.palette.primary.main}` : `1px solid ${theme.palette.grey[100]}`}
-      >
+      <Box ref={searchBoxRef} mb={"16px"}>
         <Typography fontFamily={theme.fontFamily.secondary} fontWeight={theme.fontWeight.bold} fontSize={14} color={"#434447"}>
           Matching Categories
         </Typography>
         <Box>
-          {categoryData?.slice(0, isShowMoreCategory ? -1 : 5).map((item: string) => (
-            <Box key={item} sx={{ display: "flex", alignItems: "center" }}>
-              <Checkbox style={{ width: "20px" }} checked={filter.category_ids?.includes(item)} onChange={(event) => handleSelectCategory(event, item)} />
-              <Typography sx={{ fontSize: 14, color: "#0C0C0C", marginLeft: 1 }}>{item}</Typography>
+          {Object.entries(categoryData)
+            .slice(0, isShowMoreCategory ? -1 : 5)
+            .map(([id, name]) => (
+              <Box key={id} sx={{ display: "flex" }}>
+                <CheckboxComponent id={id} handleOnCheck={(event) => handleSelectCategory(event, name as string)} checked={!!filter.category_ids?.includes(name as string)} />
+                <Typography sx={{ fontSize: 14, color: "#0C0C0C", marginLeft: 1 }}>{name as string}</Typography>
+              </Box>
+            ))}
+          {categoryData.length > 5 && (
+            <Box
+              component={"button"}
+              fontFamily={theme.fontFamily.secondary}
+              fontSize={14}
+              color={theme.palette.primary.main}
+              onClick={() => setShowMoreCategory(!isShowMoreCategory)}
+            >
+              {isShowMoreCategory ? "Show Less" : "Show More"}
             </Box>
-          ))}
-          <Box
-            component={"button"}
-            fontFamily={theme.fontFamily.secondary}
-            fontSize={14}
-            color={theme.palette.primary.main}
-            onClick={() => setShowMoreCategory(!isShowMoreCategory)}
-          >
-            {isShowMoreCategory ? "Show Less" : "Show More"}
-          </Box>
+          )}
         </Box>
       </Box>
-      <Box
-        // width={"40%"}
-        // borderRadius={"8px"}
-        // display={"flex"}
-        ref={searchBoxRef}
-        // alignItems={"center"}
-        mb={"16px"}
-        // px={"16px"}
-        // border={isFocusInput ? `1px solid ${theme.palette.primary.main}` : `1px solid ${theme.palette.grey[100]}`}
-      >
+      <Box ref={searchBoxRef} mb={"16px"}>
         <Typography fontFamily={theme.fontFamily.secondary} fontWeight={theme.fontWeight.bold} fontSize={14} color={"#434447"}>
           Country
         </Typography>
         <Box>
           {countryData?.slice(0, isShowMoreCountry ? -1 : 5).map((item: string) => (
-            <Box key={item} sx={{ display: "flex", alignItems: "center" }}>
-              <Checkbox style={{ width: "20px" }} checked={filter.countries?.includes(item)} onChange={(event) => handleSelectCountry(event, item)} />
+            <Box key={item} sx={{ display: "flex" }}>
+              <CheckboxComponent id={item} handleOnCheck={(event) => handleSelectCountry(event, item)} checked={!!filter.countries?.includes(item)} />
               <Typography sx={{ fontSize: 14, color: "#0C0C0C", marginLeft: 1 }}>{item}</Typography>
             </Box>
           ))}
-          <Box component={"button"} fontFamily={theme.fontFamily.secondary} fontSize={14} color={theme.palette.primary.main} onClick={() => setShowMoreCountry(!isShowMoreCountry)}>
-            {isShowMoreCountry ? "Show Less" : "Show More"}
-          </Box>
+          {countryData.length > 5 && (
+            <Box
+              component={"button"}
+              fontFamily={theme.fontFamily.secondary}
+              fontSize={14}
+              color={theme.palette.primary.main}
+              onClick={() => setShowMoreCountry(!isShowMoreCountry)}
+            >
+              {isShowMoreCountry ? "Show Less" : "Show More"}
+            </Box>
+          )}
         </Box>
       </Box>
       <Box
@@ -143,7 +138,7 @@ const FilterComponent = ({ filter, setFilter, categoryData, countryData }: Filte
         fontSize={14}
         fontWeight={theme.fontWeight.medium}
         color={theme.palette.primary.main}
-        onClick={() => setFilter({category_ids: [], countries: []})}
+        onClick={() => setFilter({ category_ids: [], countries: [] })}
       >
         <Typography>Clear All</Typography>
       </Box>

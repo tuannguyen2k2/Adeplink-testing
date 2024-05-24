@@ -84,7 +84,7 @@ const SearchResult = ({
               <SearchResultItem
                 key={value.id}
                 text={value.name}
-                id={value.id}
+                id={value.slug}
               />
             );
           })}
@@ -150,12 +150,15 @@ const SearchResultItem = ({
   const handleClickItem = () => {
     if (!id) {
       router.push(
-        `${PRODUCT_PATH_URL.PRODUCT_LIST}/product?${
+        `${PRODUCT_PATH_URL.PRODUCT_LIST}?${
           isSearchHeader
             ? `keyword=${text}`
             : `keyword_by_category=${text}&${getCateUrl()}`
         }`
       );
+      setIsFocusInput && setIsFocusInput(false);
+    } else {
+      router.push(`${PRODUCT_PATH_URL.PRODUCT_DETAIL}/${id}`);
       setIsFocusInput && setIsFocusInput(false);
     }
   };

@@ -1,5 +1,5 @@
 import React, { SetStateAction } from "react";
-import { Autocomplete, Button, Icon, Menu, MenuItem, TextField, useTheme } from "@mui/material";
+import { Button, Icon, Menu, MenuItem, useTheme } from "@mui/material";
 import { KeyboardArrowDown } from "@mui/icons-material";
 
 type SortComponentProps = {

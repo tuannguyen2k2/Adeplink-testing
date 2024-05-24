@@ -41,11 +41,19 @@ export const getProductSearch = async (data: FilterProductDto) => {
     });
 };
 
-export const getProductByCategory = async (
-  data: FilterProductDto
-) => {
+export const getProductDetailBySlug = async (slug: string) => {
+  return await axiosConfig
+    .get(`product/${slug}`)
+    .then((response) => response.data.data)
+    .catch((error) => {
+      throw error;
+    });
+};
+
+export const getProductByCategory = async (data: FilterProductDto) => {
   const params = new URLSearchParams();
-  data.product_category_id && params.append("product_category_id", data.product_category_id);
+  data.product_category_id &&
+    params.append("product_category_id", data.product_category_id);
   if (data.category_ids) {
     data.category_ids.forEach((categoryId) => {
       params.append("category_ids", categoryId);

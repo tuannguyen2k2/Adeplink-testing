@@ -1,15 +1,18 @@
 "use client";
 import Product2 from "@/assets/images/product2.jpg";
+import { PRODUCT_PATH_URL } from "@/constant/pathUrl";
 import { ProductSearchDto } from "@/interface/common";
 import { convertImage } from "@/utils";
 import { Box, Grid, Pagination, Typography, useTheme } from "@mui/material";
 import Image from "next/image";
+import { useRouter } from "next/navigation";
 
 type ProductListType = {
   data?: ProductSearchDto[];
 };
 
 const ProductList = ({ data }: ProductListType) => {
+  const router = useRouter();
   const theme = useTheme();
   return (
     <Box
@@ -51,6 +54,7 @@ const ProductList = ({ data }: ProductListType) => {
                 alt="product"
                 width={268}
                 height={268}
+                style={{ borderRadius: "8px" }}
               />
               <Box>
                 <Typography
@@ -63,21 +67,31 @@ const ProductList = ({ data }: ProductListType) => {
                 >
                   {product.category}
                 </Typography>
-                <Typography
-                  color={theme.black[200]}
-                  fontWeight={theme.fontWeight.semiBold}
-                  fontFamily={theme.fontFamily.secondary}
-                  sx={{
-                    display: "-webkit-box",
-                    WebkitBoxOrient: "vertical",
-                    WebkitLineClamp: 2,
-                    overflow: "hidden",
-                    mb: 1,
-                    cursor: "pointer",
-                  }}
+                <Box
+                  component={"button"}
+                  onClick={() =>
+                    router.push(
+                      `${PRODUCT_PATH_URL.PRODUCT_DETAIL}/${product.slug}`
+                    )
+                  }
                 >
-                  {product.name}
-                </Typography>
+                  <Typography
+                    color={theme.black[200]}
+                    fontWeight={theme.fontWeight.semiBold}
+                    fontFamily={theme.fontFamily.secondary}
+                    textAlign={"start"}
+                    sx={{
+                      display: "-webkit-box",
+                      WebkitBoxOrient: "vertical",
+                      WebkitLineClamp: 2,
+                      overflow: "hidden",
+                      mb: 1,
+                      cursor: "pointer",
+                    }}
+                  >
+                    {product.name}
+                  </Typography>
+                </Box>
                 <Box
                   height={"1px"}
                   width={1}

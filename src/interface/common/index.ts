@@ -29,6 +29,17 @@ export interface CategoriesHierarchyDto {
   image?: string;
 }
 
+export type PriceType = {
+  min_amount: string;
+  max_amount: string;
+  price: string;
+};
+
+export type VariantAttriButesType = {
+  color?: string[];
+  size?: string[];
+};
+
 export type ProductDto = {
   name: string;
   description: string;
@@ -48,6 +59,8 @@ export type ProductDto = {
   port: string;
   lead_time: Date;
   is_showcase: boolean;
+  price: PriceType[];
+  variant_attributes?: VariantAttriButesType;
 };
 type ImageType = {
   id: string;
@@ -66,6 +79,7 @@ export type ProductSearchDto = {
     max_price: number;
   };
   min_order: number;
+  slug: string;
 };
 
 export type FilterProductDto = {
@@ -105,10 +119,57 @@ export type FilterSupplierDto = {
   countries?: string[];
 };
 
+export type CompanyDto = {
+  address: string;
+  category_id: string;
+  city: string;
+  company_name: string;
+  country: string;
+  created_at: string;
+  id: string;
+  introduction: string;
+  is_feature: boolean;
+  number_of_employees: number;
+  slug: string;
+  state: string;
+  type: string;
+  updated_at: string;
+  user_id: string;
+  website: string;
+  year_established: number;
+};
+
 export type SupplierDto = {
-  id: any;
-  name: string;
+  id: string;
+  company_name: string;
+  main_category: string;
+  country: string;
   image: string;
-  category: string;
-  location: string;
+};
+
+export type PaginationDto = {
+  page: number;
+  limit: number;
+  totalPage?: number;
+};
+
+export interface IResponse<T> {
+  data: T;
+  status: number;
+  status_code: number;
+}
+export type IResponseWithMetadata<T> = {
+  data: T;
+  code: string;
+  message: string;
+  metadata?: Metadata;
+};
+
+export type Metadata = {
+  prev_page: number;
+  current_page: number;
+  next_page: number;
+  total_page: number;
+  limit: number;
+  total_data: number;
 };
