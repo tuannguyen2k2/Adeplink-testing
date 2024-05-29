@@ -10,6 +10,7 @@ import {
   Button,
   Container,
   Pagination,
+  Skeleton,
   TextField,
   Typography,
   useTheme,
@@ -24,6 +25,7 @@ import { isEqual } from "lodash";
 import { ProductSearchResultDto } from "@/interface/common";
 import { PRODUCT_LIST_LIMIT } from "@/constant";
 import { PRODUCT_PATH_URL } from "@/constant/pathUrl";
+import FilterSkeleton from "../common/skeleton/FilterSkeleton";
 const Product = () => {
   const { isMobile } = useDevices();
   const theme = useTheme();
@@ -293,7 +295,7 @@ const Product = () => {
               >
                 Matching Products Categories
               </Typography>
-              {listCategoryFilter &&
+              {listCategoryFilter ? (
                 Object.entries(listCategoryFilter).map(([id, name]) => {
                   return (
                     <Box display={"flex"} gap={1} mb={2} key={id}>
@@ -312,7 +314,10 @@ const Product = () => {
                       </Typography>
                     </Box>
                   );
-                })}
+                })
+              ) : (
+                <FilterSkeleton />
+              )}
               {data?.categories &&
                 Object.entries(data?.categories).length > 5 && (
                   <Box
@@ -340,25 +345,29 @@ const Product = () => {
               >
                 Suppliers Country
               </Typography>
-              {listCountryFilter?.map((country) => {
-                return (
-                  <Box display={"flex"} gap={1} key={country}>
-                    <CheckboxComponent
-                      id={country}
-                      handleOnCheck={handleOnCheckCountry}
-                      checked={countryCheckedList.includes(country)}
-                    />
-                    <Typography
-                      sx={{
-                        fontFamily: theme.fontFamily.secondary,
-                        fontSize: 14,
-                      }}
-                    >
-                      {country}
-                    </Typography>
-                  </Box>
-                );
-              })}
+              {listCountryFilter ? (
+                listCountryFilter?.map((country) => {
+                  return (
+                    <Box display={"flex"} gap={1} key={country}>
+                      <CheckboxComponent
+                        id={country}
+                        handleOnCheck={handleOnCheckCountry}
+                        checked={countryCheckedList.includes(country)}
+                      />
+                      <Typography
+                        sx={{
+                          fontFamily: theme.fontFamily.secondary,
+                          fontSize: 14,
+                        }}
+                      >
+                        {country}
+                      </Typography>
+                    </Box>
+                  );
+                })
+              ) : (
+                <FilterSkeleton />
+              )}
               {data?.countries && data.countries.length > 5 && (
                 <Box
                   component={"button"}

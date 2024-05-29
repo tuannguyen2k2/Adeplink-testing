@@ -3,6 +3,7 @@ import { Box, Divider, Typography, useTheme } from "@mui/material";
 import Image from "next/image";
 import React from "react";
 import { Price } from "./Price";
+import { convertImage } from "@/utils";
 
 const ProductItemComponent = ({ product }: { product: ProductDto }) => {
   const theme = useTheme();
@@ -19,7 +20,7 @@ const ProductItemComponent = ({ product }: { product: ProductDto }) => {
       <Box width={210} height={210} position={"relative"}>
         <Image
           src={
-            product.image[0]?.image_url ||
+            convertImage(product.image[0]?.image_url) ||
             "https://th.bing.com/th/id/OIP.Zfeg2aQarGBA5op6udDRXAHaEc?w=1000&h=600&rs=1&pid=ImgDetMain"
           }
           alt={"image"}

@@ -7,6 +7,7 @@ import { MdArrowBackIos, MdArrowForwardIos, MdKeyboardArrowDown, MdKeyboardArrow
 import SliderContent from "../common/SliderContent";
 import { FilterSupplierDto } from "@/interface/common";
 import CheckboxComponent from "../common/CheckboxComponent";
+import FilterSkeleton from "../common/skeleton/FilterSkeleton";
 
 interface ArrowProps {
   className?: string;
@@ -103,14 +104,7 @@ const FilterComponent = ({ filter, setFilter, categoryData, countryData }: Filte
             )}
           </Box>
         ) : (
-          <>
-            {Array.from(Array(4)).map((_, id) => (
-              <Box key={id} display={"flex"} sx={{ mb: 2 }}>
-                <Skeleton variant="rectangular" animation="wave" width={18} height={18} sx={{ borderRadius: 1 }} />
-                <Skeleton variant="rectangular" animation="wave" width={140} height={18} sx={{ ml: 1, borderRadius: 1 }} />
-              </Box>
-            ))}
-          </>
+          <FilterSkeleton />
         )}
       </Box>
       <Box ref={searchBoxRef} mb={"16px"}>
@@ -141,14 +135,7 @@ const FilterComponent = ({ filter, setFilter, categoryData, countryData }: Filte
             )}
           </Box>
         ) : (
-          <>
-            {Array.from(Array(4)).map((_, id) => (
-              <Box key={id} display={"flex"} sx={{ mb: 2 }}>
-                <Skeleton variant="rectangular" animation="wave" width={18} height={18} sx={{ borderRadius: 1 }} />
-                <Skeleton variant="rectangular" animation="wave" width={140} height={18} sx={{ ml: 1, borderRadius: 1 }} />
-              </Box>
-            ))}
-          </>
+          <FilterSkeleton />
         )}
       </Box>
       <Box

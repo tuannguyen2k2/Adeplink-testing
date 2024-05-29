@@ -3,15 +3,7 @@ import { Box, Button, Icon, Typography, useTheme } from "@mui/material";
 import Image from "next/image";
 import ChatIcon from "@/assets/icons/chat.svg";
 import { SupplierDto } from "@/interface/common";
-
-const supplierData = {
-  id: 1,
-  name: "Long name of supplier supplier supplier supplier... supplier... supplier... supplier...",
-  image:
-    "https://vietnamnomad.com/wp-content/uploads/2020/04/Best-places-to-visit-in-Vietnam-in-2021-Ha-Long-Bay-1024x640.jpg",
-  category: "Category",
-  location: "Location",
-};
+import { convertImage } from "@/utils";
 
 const SupplierInfo = ({ data }: { data?: SupplierDto }) => {
   const theme = useTheme();
@@ -31,13 +23,13 @@ const SupplierInfo = ({ data }: { data?: SupplierDto }) => {
       <Box width={88} height={88}>
         <Image
           src={
-            data?.image ||
+            convertImage(data?.image) ||
             "https://vietnamnomad.com/wp-content/uploads/2020/04/Best-places-to-visit-in-Vietnam-in-2021-Ha-Long-Bay-1024x640.jpg"
           }
           alt="product"
           width={88}
           height={88}
-          style={{ width: "100%", height: "100%" }}
+          style={{ maxWidth: "88px", height: "100%" }}
           className="rounded-lg"
         />
       </Box>

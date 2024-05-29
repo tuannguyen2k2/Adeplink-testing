@@ -50,13 +50,18 @@ const ProductList = ({ data }: ProductListType) => {
               borderRadius={"10px"}
               border={`1px solid ${theme.blue[100]}`}
             >
-              <Image
-                src={convertImage(product?.image[0]?.image_url) || ""}
-                alt="product"
-                width={268}
-                height={268}
-                style={{ borderRadius: "8px" }}
-              />
+              <Box width={268} height={268}>
+                <Image
+                  src={
+                    convertImage(product?.image[0]?.image_url) ||
+                    "https://th.bing.com/th/id/OIP.Zfeg2aQarGBA5op6udDRXAHaEc?w=1000&h=600&rs=1&pid=ImgDetMain"
+                  }
+                  alt="product"
+                  width={268}
+                  height={268}
+                  style={{ borderRadius: "8px", height: "100%" }}
+                />
+              </Box>
               <Box>
                 <Typography
                   color={theme.blue[500]}
@@ -117,8 +122,5 @@ const ProductList = ({ data }: ProductListType) => {
     </Box>
   );
 };
-
-
-
 
 export default ProductList;

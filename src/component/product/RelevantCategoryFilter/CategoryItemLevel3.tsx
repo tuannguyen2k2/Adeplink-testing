@@ -44,16 +44,25 @@ const CategoryItemLevel3 = ({
         sx={{ cursor: "pointer" }}
         onClick={() =>
           router.push(
-            `${PRODUCT_PATH_URL.PRODUCT_LIST}?cate_level1_id=${cate_level1_id}&cate_level2_id=${categoryLevel3.parent_category_id}&cate_level3_id=${categoryLevel3.id}&cate_name=${encodeURIComponent(categoryLevel3?.name)}`
+            `${
+              PRODUCT_PATH_URL.PRODUCT_LIST
+            }?cate_level1_id=${cate_level1_id}&cate_level2_id=${
+              categoryLevel3.parent_category_id
+            }&cate_level3_id=${
+              categoryLevel3.id
+            }&cate_name=${encodeURIComponent(categoryLevel3?.name)}`
           )
         }
       >
-        <Image
-          src={convertImage(categoryLevel3.image) ?? ""}
-          alt=""
-          width={88}
-          height={88}
-        />
+        <Box width={88} height={88} >
+          <Image
+            src={convertImage(categoryLevel3.image) ?? ""}
+            alt=""
+            width={88}
+            height={88}
+            style={{ height: "100%", borderRadius: "8px" }}
+          />
+        </Box>
         <Typography
           mt={"10px"}
           fontSize={14}

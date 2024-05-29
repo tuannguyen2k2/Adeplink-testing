@@ -105,7 +105,8 @@ const SliderProduct = ({ images }: { images?: ImageType[] }) => {
         >
           <Image
             src={
-              (images && convertImage(images[imageSelected]?.image_url)) || ""
+              (images && convertImage(images[imageSelected]?.image_url)) ||
+              "https://th.bing.com/th/id/OIP.Zfeg2aQarGBA5op6udDRXAHaEc?w=1000&h=600&rs=1&pid=ImgDetMain"
             }
             alt={""}
             width={623}
@@ -161,6 +162,7 @@ const SliderProduct = ({ images }: { images?: ImageType[] }) => {
         <SliderContent settings={settingMultipleSlider}>
           {images &&
             images?.map((image, index) => {
+              console.log(convertImage(image?.image_url));
               return (
                 <Box
                   component={"button"}
@@ -177,7 +179,10 @@ const SliderProduct = ({ images }: { images?: ImageType[] }) => {
                   }}
                 >
                   <Image
-                    src={convertImage(image?.image_url) || ""}
+                    src={
+                      convertImage(image?.image_url) ||
+                      "https://th.bing.com/th/id/OIP.Zfeg2aQarGBA5op6udDRXAHaEc?w=1000&h=600&rs=1&pid=ImgDetMain"
+                    }
                     alt={image?.id}
                     width={88}
                     height={88}
@@ -233,7 +238,10 @@ const SliderProduct = ({ images }: { images?: ImageType[] }) => {
                   }}
                 >
                   <Image
-                    src={convertImage(image?.image_url) || ""}
+                    src={
+                      convertImage(image?.image_url) ||
+                      "https://th.bing.com/th/id/OIP.Zfeg2aQarGBA5op6udDRXAHaEc?w=1000&h=600&rs=1&pid=ImgDetMain"
+                    }
                     alt={image?.id}
                     width={623}
                     height={623}
@@ -259,7 +267,10 @@ const SliderProduct = ({ images }: { images?: ImageType[] }) => {
                   }}
                 >
                   <Image
-                    src={convertImage(image.image_url) || ""}
+                    src={
+                      convertImage(image.image_url) ||
+                      "https://th.bing.com/th/id/OIP.Zfeg2aQarGBA5op6udDRXAHaEc?w=1000&h=600&rs=1&pid=ImgDetMain"
+                    }
                     alt={image.id}
                     width={88}
                     height={88}
