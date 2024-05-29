@@ -3,12 +3,13 @@ import { PRODUCT_PATH_URL } from "@/constant/pathUrl";
 import { useClickOutside } from "@/hook/useClickOutside";
 import useDebounce from "@/hook/useDebounce";
 import { Box, CircularProgress, TextField, useTheme } from "@mui/material";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useSearchParams } from "next/navigation";
 import { ChangeEvent, KeyboardEvent, useEffect, useRef, useState } from "react";
 import { IoMdSearch } from "react-icons/io";
 import { makeStyles } from "@mui/styles";
 import SearchResult from "@/component/header/search/SearchResult";
 import { getCateUrl } from "@/utils";
+import { useRouter } from "next-nprogress-bar";
 const useStyles = makeStyles(() => ({
   spinner: {
     marginRight: "20px",
@@ -148,6 +149,7 @@ const Search = () => {
       )}
       {isFocusInput && (
         <SearchResult
+          selectedSearchOption="product"
           debouncedValue={debouncedValue}
           data={debouncedValue !== "" ? productByCategory?.products : undefined}
           setIsFocusInput={setIsFocusInput}

@@ -31,13 +31,14 @@ import {
 import SliderContent from "../../common/SliderContent";
 import Image from "next/image";
 import { MdKeyboardArrowRight } from "react-icons/md";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useSearchParams } from "next/navigation";
 import { useGetCategoriesChildren } from "@/api/category/query";
 import { CategoriesHierarchyDto } from "@/interface/common";
 import CategoryItemLevel3 from "./CategoryItemLevel3";
 import Cookies from "js-cookie";
 import { PRODUCT_PATH_URL } from "@/constant/pathUrl";
 import Search from "./Search";
+import { useRouter } from "next-nprogress-bar";
 
 interface ArrowProps {
   className?: string;

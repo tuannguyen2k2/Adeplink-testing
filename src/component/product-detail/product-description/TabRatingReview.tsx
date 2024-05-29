@@ -1,15 +1,22 @@
-import React, { useState } from "react";
+"use client";
+import React, { useEffect, useRef, useState } from "react";
+import RatingComponent from "@/component/common/RatingComponent";
+import { RatingOption, RatingType } from "@/constant/enum";
+import { PaginationDto, RatingFilter } from "@/interface/common";
+import { useGetRatingByProductId } from "@/api/product/query";
 import { Box, Rating, Typography, useTheme } from "@mui/material";
+import { useDraggable } from "react-use-draggable-scroll";
 import moment from "moment";
 import Image from "next/image";
+import { convertImage } from "@/utils";
+import NoImage from "@/assets/images/no-image.png";
 
 const reviewData = [
   {
     id: 1,
     user: "User 1",
     ratingValue: 4,
-    ratingContent:
-      "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor",
+    ratingContent: "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor",
     date: "19/05/2024",
     image: [
       {
@@ -33,8 +40,7 @@ const reviewData = [
     id: 1,
     user: "User 2",
     ratingValue: 5,
-    ratingContent:
-      "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor",
+    ratingContent: "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor",
     date: "19/05/2024",
     image: [
       {
@@ -55,8 +61,7 @@ const reviewData = [
     id: 1,
     user: "User 3",
     ratingValue: 4,
-    ratingContent:
-      "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor",
+    ratingContent: "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor",
     date: "19/05/2024",
     image: [
       {
@@ -74,8 +79,7 @@ const reviewData = [
     id: 1,
     user: "User 4",
     ratingValue: 3,
-    ratingContent:
-      "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor",
+    ratingContent: "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor",
     date: "19/05/2024",
     image: [
       {
@@ -97,18 +101,54 @@ const reviewData = [
   },
 ];
 
-const TabRatingReview = () => {
-  const [filterReview, setFilterReview] = useState("All");
+const TabRatingReview = ({ productId }: { productId: string }) => {
+  const ref = useRef<HTMLDivElement>() as React.MutableRefObject<HTMLInputElement>;
+  const { events } = useDraggable(ref);
   const theme = useTheme();
-  const ratingOption = [
-    { id: "All", title: "All", value: 100 },
-    { id: "photo-video", title: "With photos/videos", value: 45 },
-    { id: "5-start", title: "5 starts", value: 12 },
-    { id: "4-start", title: "4 starts", value: 23 },
-    { id: "3-start", title: "3 starts", value: 34 },
-    { id: "2-start", title: "2 starts", value: 45 },
-    { id: "1-start", title: "1 starts", value: 56 },
-  ];
+  const { getRatingByProductId, data: reviewData } = useGetRatingByProductId();
+  const [reviewFilter, setReviewFilter] = useState<PaginationDto & RatingFilter>({ star: null, with_media: null, page: 1, limit: 10, totalPage: 0 });
+  const [filterReview, setFilterReview] = useState<string>(RatingOption.All);
+  useEffect(() => {
+    getRatingByProductId("29b89cab-06bf-496a-95ce-9ca0a2d008bc");
+    // getRatingByProductId(productId);
+  }, [productId]);
+
+  const handleChangeFilter = (option: string) => {
+    setFilterReview(option);
+    setFilter({ ...filter, with_media: null, star: null });
+    switch (option) {
+      case RatingOption.All: {
+        setFilter({ ...filter, with_media: false, star: null });
+        break;
+      }
+      case RatingOption.With_photo_video: {
+        setFilter({ ...filter, with_media: true });
+        break;
+      }
+      case RatingOption.start_5: {
+        setFilter({ ...filter, star: 5 });
+        break;
+      }
+      case RatingOption.start_4: {
+        setFilter({ ...filter, star: 4 });
+        break;
+      }
+      case RatingOption.start_3: {
+        setFilter({ ...filter, star: 3 });
+        break;
+      }
+      case RatingOption.start_2: {
+        setFilter({ ...filter, star: 2 });
+        break;
+      }
+      case RatingOption.start_1: {
+        setFilter({ ...filter, star: 1 });
+        break;
+      }
+    }
+  };
+
+  console.log("IIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIII", reviewData);
   return (
     <React.Fragment>
       <Box
@@ -127,24 +167,34 @@ const TabRatingReview = () => {
               alignItems: "baseline",
             }}
           >
-            <Typography
-              sx={{ fontWeight: theme.fontWeight.bold, fontSize: 24 }}
-            >
-              4.1
-            </Typography>
+            <Typography sx={{ fontWeight: theme.fontWeight.bold, fontSize: 24 }}>{reviewData?.average}</Typography>
             <Typography>&nbsp;out of 5</Typography>
           </Box>
-          <Rating
-            precision={0.1}
-            sx={{ color: theme.yellow[100] }}
-            value={4.3}
-            readOnly
-          />
+          <Rating precision={0.1} sx={{ color: theme.yellow[100] }} value={reviewData?.average} readOnly />
         </Box>
-        <Box sx={{ display: "flex", overflowX: "scroll", ml: 3 }}>
-          {ratingOption.map((item) => (
+        <Box sx={{ display: "flex", overflowX: "hidden", ml: 3 }} {...events} ref={ref}>
+          {/* <Box sx={{ display: "flex", overflowX: "scrool", ml: 3 }}>  dòng này để backup nếu muốn scrool  */}
+          {/* {
+        Object.entries(RatingOption).filter(([key, value]) => {
+          if (key === RatingOption.All || key === RatingOption.With_photo_video) {
+            return key;
+          }
+          const starCount = Number(key.replace("start_", ""));
+          if (typeof starCount === "number") {
+            return data.company_star[starCount] > 0;
+          }
+        })
+        .map(([key, value]) => {
+          const starCount = Number(key.replace('start_', ''));
+          const count = data.company_star[starCount];
+          return `${value} (${count})`;
+        }).map((option) => (
+          <div key={option}>{option}</div>
+        ))
+      } */}
+          {Object.values(RatingOption).map((item, id) => (
             <Box
-              key={item.id}
+              key={id}
               height={42}
               sx={(theme) => ({
                 display: "flex",
@@ -153,76 +203,102 @@ const TabRatingReview = () => {
                 mr: 1,
                 fontSize: 14,
                 borderRadius: "4px",
-                borderColor:
-                  filterReview === item.id
-                    ? theme.palette.primary.main
-                    : "#F0F6FF",
+                borderColor: filterReview === item ? theme.palette.primary.main : "#F0F6FF",
               })}
-              onClick={() => setFilterReview(item.id)}
+              onClick={() => handleChangeFilter(item)}
             >
               <Typography
-                sx={{ textWrap: "nowrap", px: "16px" }}
-              >{`${item.title} (${item.value})`}</Typography>
+                sx={{
+                  textWrap: "nowrap",
+                  px: "16px",
+                  "&:hover": {
+                    cursor: "pointer",
+                  },
+                }}
+              >{`${item} (45)`}</Typography>
             </Box>
           ))}
         </Box>
       </Box>
-      {reviewData.map((item, id) => (
-        <Box
-          key={id}
-          sx={{
-            border: "1px solid #F0F6FF",
-            borderRadius: "8px",
-            padding: "16px",
-            mt: 2,
-          }}
-        >
-          <Typography
+      {reviewData ? (
+        reviewData.review.products.map((item: any, id: number) => (
+          <Box
+            key={id}
             sx={{
-              fontWeight: theme.fontWeight.semiBold,
-              fontFamily: theme.fontFamily.secondary,
-            }}
-            fontSize={14}
-          >
-            {item.user}
-          </Typography>
-          <Rating
-            sx={{ color: theme.yellow[100], mt: 1.5 }}
-            value={4.3}
-            readOnly
-          />
-          <Typography
-            sx={{
-              fontWeight: theme.fontWeight.regular,
-              color: theme.palette.grey[400],
+              border: "1px solid #F0F6FF",
+              borderRadius: "8px",
+              padding: "16px",
+              mt: 2,
             }}
           >
-            {moment("12/25/1995").format("Do MMMM YYYY")}
-          </Typography>
-          <Typography sx={{ mt: 2 }}>{item.ratingContent}</Typography>
-          <Box sx={{ display: "flex" }}>
-            {item.image.map((item, id) => (
-              <Box
-                key={id}
-                sx={{
-                  width: "72px",
-                  height: "72px",
-                  mr: 2,
-                  position: "relative",
-                }}
-              >
-                <Image
-                  src={item.url}
-                  alt=""
-                  fill
-                  objectFit="fill"
-                  className="rounded-lg"
-                />
+            <Typography
+              sx={{
+                fontWeight: theme.fontWeight.semiBold,
+                fontFamily: theme.fontFamily.secondary,
+              }}
+              fontSize={14}
+            >
+              {item.user}
+            </Typography>
+            <Rating sx={{ color: theme.yellow[100], mt: 1.5 }} value={item.vote_score} readOnly />
+            <Typography
+              sx={{
+                fontWeight: theme.fontWeight.regular,
+                color: theme.palette.grey[400],
+                fontSize: 14,
+              }}
+            >
+              {moment(item.created_at).format("Do MMMM YYYY")}
+            </Typography>
+            <Typography sx={{ mt: 2, fontFamily: theme.fontFamily.secondary, fontWeight: theme.fontWeight.regular, fontSize: 14, color: theme.black[200] }}>
+              {item.comment}
+            </Typography>
+            <Box sx={{ display: "flex", mt: 1 }}>
+              {item.images.map((item: string, id: number) => (
+                <Box
+                  key={id}
+                  sx={{
+                    width: "72px",
+                    height: "72px",
+                    mr: 2,
+                    position: "relative",
+                  }}
+                >
+                  <Image src={convertImage(item) || NoImage} alt="" fill objectFit="fill" className="rounded-lg" />
+                </Box>
+              ))}
+            </Box>
+            {item.supplierResponse && (
+              <Box sx={{ bgcolor: theme.blue[100], borderRadius: "8px", p: "10px", mt: 2 }}>
+                <Typography sx={{ fontFamily: theme.fontFamily.secondary, fontWeight: theme.fontWeight.medium, fontSize: 16, color: theme.blue[500] }}>
+                  Supplier’s Response
+                </Typography>
+                <Box sx={{ fontFamily: theme.fontFamily.secondary, fontWeight: theme.fontWeight.regular, fontSize: 14, color: theme.black[200] }}>{item.supplierResponse}</Box>
               </Box>
-            ))}
+            )}
           </Box>
+        ))
+      ) : (
+        <div>null</div>
+      )}
+      {Number(filter?.totalPage) > 1 && (
+        <Box sx={{ display: "flex", justifyContent: "center" }}>
+          <Pagination
+            count={filter.totalPage}
+            shape="rounded"
+            onChange={(event, page) => {
+              setFilter({ ...filter, page: page });
+            }}
+            sx={{
+              "& .Mui-selected": {
+                borderRadius: "8px",
+                bgcolor: theme.palette.primary.main,
+                color: "white",
+              },
+            }}
+          />
         </Box>
-      ))}
+      )}
     </React.Fragment>
   );
 };

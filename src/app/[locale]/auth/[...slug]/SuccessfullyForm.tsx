@@ -3,13 +3,14 @@ import React, { useEffect, useState } from "react";
 import Image from "next/image";
 import AppLogo from "@/assets/icons/logo.svg";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
+import { useRouter } from "next-nprogress-bar";
 import { useCountdown } from "@/hook/useCountdown";
+import { HOME_PATH_URL } from "@/constant/pathUrl";
 
 const SuccessfullyForm = () => {
   const router = useRouter();
   const { remaining, handleRunCountDown } = useCountdown(5, () =>
-    router.push("/")
+    router.replace(HOME_PATH_URL)
   );
   useEffect(() => {
     handleRunCountDown();
@@ -29,7 +30,7 @@ const SuccessfullyForm = () => {
 
       <div className="flex justify-center">
         <Link
-          href={"/"}
+          href={HOME_PATH_URL}
           className=" text-white bg-[#0C71BA] mt-5 px-14 py-2 rounded-lg font-semibold "
         >
           Go to Homepage now

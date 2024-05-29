@@ -1,27 +1,39 @@
 "use client";
+import { useGetProductSearch } from "@/api/product/query";
+import { getAllSupplier } from "@/api/supplier";
+import {
+  RECENTLY_SEARCH_PRODUCT_RESULT,
+  RECENTLY_SEARCH_SUPPLIER_RESULT,
+} from "@/constant/cookies";
+import { PRODUCT_PATH_URL, SUPPLIER_PATH_URL } from "@/constant/pathUrl";
+import { SUPPLIER_KEY } from "@/constant/queryKey";
 import { useClickOutside } from "@/hook/useClickOutside";
+import useDebounce from "@/hook/useDebounce";
 import useDevices from "@/hook/useDevices";
+import { FilterSupplierDto } from "@/interface/common";
+import { CircularProgress } from "@material-ui/core";
 import {
   Box,
   IconButton,
   MenuItem,
   Select,
+  SelectChangeEvent,
   TextField,
   useTheme,
 } from "@mui/material";
-import { useTranslations } from "next-intl";
-import { ChangeEvent, KeyboardEvent, useEffect, useRef, useState } from "react";
-import { IoIosArrowDown, IoIosArrowUp, IoMdSearch } from "react-icons/io";
-import SearchResult from "./SearchResult";
-import Cookies from "js-cookie";
-import { RECENTLY_SEARCH_RESULT } from "@/constant/cookies";
-import { IoMdClose } from "react-icons/io";
-import useDebounce from "@/hook/useDebounce";
-import { useGetProductSearch } from "@/api/product/query";
 import { makeStyles } from "@mui/styles";
-import { CircularProgress } from "@material-ui/core";
-import { useRouter } from "next/navigation";
-import { PRODUCT_PATH_URL } from "@/constant/pathUrl";
+import { useQuery } from "@tanstack/react-query";
+import Cookies from "js-cookie";
+import { useTranslations } from "next-intl";
+import { useRouter } from "next-nprogress-bar";
+import { ChangeEvent, KeyboardEvent, useEffect, useRef, useState } from "react";
+import {
+  IoIosArrowDown,
+  IoIosArrowUp,
+  IoMdClose,
+  IoMdSearch,
+} from "react-icons/io";
+import SearchResult from "./SearchResult";
 
 const useStyles = makeStyles((theme) => ({
   spinner: {
@@ -48,9 +60,38 @@ const Search = () => {
   const [valueInput, setValueInput] = useState<string>("");
   const [loading, setLoading] = useState(false);
   const { getProductSearch, isSuccess, data } = useGetProductSearch();
+  const pagination = {
+    page: 1,
+    limit: 5,
+  };
+  const [selectedSearchOption, setSelectedSearchOption] = useState<
+    "product" | "supplier"
+  >("product");
   const debouncedValue = useDebounce(valueInput, 500);
+  const [recentlySearchResult, setRecentlySearchResult] = useState(
+    Cookies.get(RECENTLY_SEARCH_PRODUCT_RESULT)
+  );
   const searchBoxRef = useRef<HTMLElement | null>(null);
-  const recentlySearchResult = Cookies.get(RECENTLY_SEARCH_RESULT);
+  const [filter, setFilter] = useState<FilterSupplierDto>({
+    keyword: "",
+    category_ids: [],
+    countries: [],
+  });
+  const sortOrder = "";
+  const {
+    data: supplierData,
+    isLoading,
+    isSuccess: supplierSuccess,
+  } = useQuery({
+    queryKey: [SUPPLIER_KEY, pagination, filter, sortOrder],
+    queryFn: async () =>
+      await getAllSupplier(filter, sortOrder, {
+        page: pagination.page,
+        limit: pagination.limit,
+      }).then((response) => {
+        return response.data;
+      }),
+  });
   const handleClickOutSide = () => {
     setIsFocusInput(false);
   };
@@ -64,6 +105,12 @@ const Search = () => {
   };
 
   const handleKeyDown = (e: KeyboardEvent<HTMLInputElement>) => {
+    let RECENTLY_SEARCH_RESULT;
+    if (selectedSearchOption === "product") {
+      RECENTLY_SEARCH_RESULT = RECENTLY_SEARCH_PRODUCT_RESULT;
+    } else {
+      RECENTLY_SEARCH_RESULT = RECENTLY_SEARCH_SUPPLIER_RESULT;
+    }
     if (e.key === "Enter") {
       if (valueInput === "") {
         return;
@@ -86,7 +133,12 @@ const Search = () => {
       } else {
         Cookies.set(RECENTLY_SEARCH_RESULT, JSON.stringify([searchValue]));
       }
-      router.push(`${PRODUCT_PATH_URL.PRODUCT_LIST}?keyword=${valueInput}`);
+      if (selectedSearchOption === "product") {
+        router.push(`${PRODUCT_PATH_URL.PRODUCT_LIST}?keyword=${valueInput}`);
+      } else {
+        router.push(`${SUPPLIER_PATH_URL.SUPPLIER_LIST}?keyword=${valueInput}`);
+      }
+      
     }
   };
 
@@ -100,20 +152,29 @@ const Search = () => {
 
   useEffect(() => {
     if (debouncedValue == "") {
+      if (selectedSearchOption === "product") {
+        setRecentlySearchResult(Cookies.get(RECENTLY_SEARCH_PRODUCT_RESULT));
+      } else if (selectedSearchOption === "supplier") {
+        setRecentlySearchResult(Cookies.get(RECENTLY_SEARCH_SUPPLIER_RESULT));
+      }
       return;
     }
-    setLoading(true);
-    getProductSearch({ keyword: debouncedValue, limit: "5" });
+    if (selectedSearchOption === "product") {
+      setLoading(true);
+      getProductSearch({ keyword: debouncedValue, limit: "5" });
+    } else if (selectedSearchOption === "supplier") {
+      setFilter({ keyword: debouncedValue });
+    }
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [debouncedValue]);
+  }, [debouncedValue, selectedSearchOption]);
 
   useEffect(() => {
-    if (isSuccess) {
+    if (isSuccess || supplierSuccess) {
       setLoading(false);
     }
-  }, [isSuccess]);
-
+  }, [isSuccess, supplierSuccess]);
+  console.log(supplierSuccess);
   return (
     <Box
       ref={searchBoxRef}
@@ -142,7 +203,10 @@ const Search = () => {
           },
         }}
         id="search-select"
-        defaultValue={30}
+        defaultValue={"product"}
+        onChange={(event: SelectChangeEvent) =>
+          setSelectedSearchOption(event.target.value as "supplier" | "product")
+        }
         IconComponent={() => {
           if (openSelect) {
             return (
@@ -166,7 +230,7 @@ const Search = () => {
         onClose={() => setOpenSelect(false)}
       >
         <MenuItem
-          value={30}
+          value={"product"}
           sx={{
             fontFamily: theme.fontFamily.secondary,
             fontSize: 14,
@@ -177,7 +241,7 @@ const Search = () => {
           {translate("products")}
         </MenuItem>
         <MenuItem
-          value={10}
+          value={"supplier"}
           sx={{
             fontFamily: theme.fontFamily.secondary,
             fontSize: 14,
@@ -223,24 +287,42 @@ const Search = () => {
             },
           }}
         />
-        {isFocusInput && valueInput !== "" && !loading && (
+        {isFocusInput && valueInput !== "" && !loading && !isLoading && (
           <IconButton sx={{ mr: "10px" }} onClick={() => setValueInput("")}>
             <IoMdClose color="#0C71B9" size={18} />
           </IconButton>
         )}
-        {loading && (
-          <CircularProgress
-            className={classes.spinner}
-            size={16}
-            color="primary"
-          />
-        )}
+        {loading ||
+          (isLoading && (
+            <CircularProgress
+              className={classes.spinner}
+              size={16}
+              color="primary"
+            />
+          ))}
         {isFocusInput && (
           <SearchResult
             debouncedValue={debouncedValue}
-            data={debouncedValue !== "" ? data?.products : undefined}
+            selectedSearchOption={selectedSearchOption}
+            data={
+              debouncedValue !== ""
+                ? selectedSearchOption === "product"
+                  ? data?.products.map((product) => ({
+                      name: product.name,
+                      id: product.slug,
+                    }))
+                  : supplierData?.companies.map((company) => ({
+                      name: company.company_name,
+                      id: company.slug,
+                    }))
+                : undefined
+            }
             setIsFocusInput={setIsFocusInput}
-            totalData={data?.metadata.total_data}
+            totalData={
+              selectedSearchOption === "product"
+                ? data?.metadata.total_data
+                : supplierData?.metadata.total_data
+            }
             recentlySearchResultParse={
               recentlySearchResult && JSON.parse(recentlySearchResult)
             }

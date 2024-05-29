@@ -19,7 +19,7 @@ import { useTranslations } from "next-intl";
 import SearchMobile from "./mobile/SearchMobile";
 import { userSelector } from "@/store/selector";
 import { useSelector } from "react-redux";
-import { useRouter } from "next/navigation";
+import { useRouter } from "next-nprogress-bar";
 import { useLogout } from "@/api/auth/query";
 import Cookies from "js-cookie";
 import useDevices from "@/hook/useDevices";
@@ -28,11 +28,11 @@ import { AUTH_PATH_URL } from "@/constant/pathUrl";
 const Personal = () => {
   const theme = useTheme();
   const translate = useTranslations();
-  const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
   const { isMobile } = useDevices();
   const user = useSelector(userSelector);
   const locale = Cookies.get("NEXT_LOCALE");
   const router = useRouter();
+  const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
   const open = Boolean(anchorEl);
   const handleOpenMenu = (event: React.MouseEvent<HTMLElement>) => {
     setAnchorEl(event.currentTarget);

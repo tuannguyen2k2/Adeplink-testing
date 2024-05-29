@@ -1,7 +1,6 @@
 "use client";
-import { RECENTLY_SEARCH_RESULT } from "@/constant/cookies";
-import { PRODUCT_PATH_URL } from "@/constant/pathUrl";
-import { ProductSearchDto, SearchCookiesType } from "@/interface/common";
+import { PRODUCT_PATH_URL, SUPPLIER_PATH_URL } from "@/constant/pathUrl";
+import { SearchCookiesType } from "@/interface/common";
 import { getCateUrl } from "@/utils";
 import {
   Box,
@@ -10,19 +9,22 @@ import {
   ListItemButton,
   ListItemIcon,
   ListItemText,
-  Menu,
-  MenuItem,
   Paper,
   Typography,
   useTheme,
 } from "@mui/material";
-import Cookies from "js-cookie";
-import { useRouter, useSearchParams } from "next/navigation";
-import React, { Dispatch, SetStateAction, useEffect, useState } from "react";
+import { useRouter } from "next-nprogress-bar";
+import { Dispatch, SetStateAction } from "react";
 import { LuClock5 } from "react-icons/lu";
+type ResultDataType = {
+  name: string;
+  id: string;
+};
+
 type SearchResultType = {
   debouncedValue: string;
-  data?: ProductSearchDto[];
+  data?: ResultDataType[];
+  selectedSearchOption: "supplier" | "product";
   setIsFocusInput: Dispatch<SetStateAction<boolean>>;
   recentlySearchResultParse?: { keyword: string; id: string }[];
   isSearchHeader?: boolean;
@@ -40,6 +42,7 @@ const SearchResult = ({
   debouncedValue,
   data,
   setIsFocusInput,
+  selectedSearchOption,
   recentlySearchResultParse,
   css,
   isSearchHeader = false,
@@ -70,6 +73,7 @@ const SearchResult = ({
                 <SearchResultItem
                   key={index}
                   text={value.keyword}
+                  selectedSearchOption={selectedSearchOption}
                   id={value.id}
                   isRecently
                   setIsFocusInput={setIsFocusInput}
@@ -79,12 +83,13 @@ const SearchResult = ({
             }
           )}
         {debouncedValue !== "" &&
-          data?.map((value: ProductSearchDto, index: number) => {
+          data?.map((value: ResultDataType, index: number) => {
             return (
               <SearchResultItem
                 key={value.id}
+                selectedSearchOption={selectedSearchOption}
                 text={value.name}
-                id={value.slug}
+                id={value.id}
               />
             );
           })}
@@ -100,7 +105,7 @@ const SearchResult = ({
             No results found
           </Typography>
         )}
-        {totalData && totalData > 5 && (
+        {totalData && totalData > 5 ? (
           <Box
             component={"button"}
             width={"100%"}
@@ -124,7 +129,7 @@ const SearchResult = ({
               View all
             </Typography>
           </Box>
-        )}
+        ) : null}
       </List>
     </Paper>
   );
@@ -134,6 +139,7 @@ type SearchResultItemType = {
   text: string;
   id: string | null;
   isRecently?: boolean;
+  selectedSearchOption: "supplier" | "product";
   setIsFocusInput?: Dispatch<SetStateAction<boolean>>;
   isSearchHeader?: boolean;
 };
@@ -142,24 +148,35 @@ const SearchResultItem = ({
   text,
   id,
   isRecently,
+  selectedSearchOption,
   setIsFocusInput,
   isSearchHeader,
 }: SearchResultItemType) => {
   const theme = useTheme();
   const router = useRouter();
   const handleClickItem = () => {
-    if (!id) {
-      router.push(
-        `${PRODUCT_PATH_URL.PRODUCT_LIST}?${
-          isSearchHeader
-            ? `keyword=${text}`
-            : `keyword_by_category=${text}&${getCateUrl()}`
-        }`
-      );
-      setIsFocusInput && setIsFocusInput(false);
+    if (selectedSearchOption == "product") {
+      if (!id) {
+        router.push(
+          `${PRODUCT_PATH_URL.PRODUCT_LIST}?${
+            isSearchHeader
+              ? `keyword=${text}`
+              : `keyword_by_category=${text}&${getCateUrl()}`
+          }`
+        );
+        setIsFocusInput && setIsFocusInput(false);
+      } else {
+        router.push(`${PRODUCT_PATH_URL.PRODUCT_DETAIL}/${id}`);
+        setIsFocusInput && setIsFocusInput(false);
+      }
     } else {
-      router.push(`${PRODUCT_PATH_URL.PRODUCT_DETAIL}/${id}`);
-      setIsFocusInput && setIsFocusInput(false);
+      if (!id) {
+        router.push(`${SUPPLIER_PATH_URL.SUPPLIER_LIST}?keyword=${text}`);
+        setIsFocusInput && setIsFocusInput(false);
+      } else {
+        router.push(`${SUPPLIER_PATH_URL.SUPPLIER_DETAIL}/${id}`);
+        setIsFocusInput && setIsFocusInput(false);
+      }
     }
   };
   return (

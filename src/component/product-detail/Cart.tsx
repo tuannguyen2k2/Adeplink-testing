@@ -85,6 +85,8 @@ const Cart = () => {
           <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
             <Typography
               sx={{
+                display: "flex",
+                alignItems: "center",
                 fontWeight: theme.fontWeight.semiBold,
                 fontSize: 20,
                 fontFamily: theme.fontFamily.secondary,
@@ -179,7 +181,7 @@ const Cart = () => {
               <Typography sx={{ fontFamily: theme.fontFamily.secondary, fontSize: 16, fontWeight: theme.fontWeight.semiBold }}>Subtotal</Typography>
               <Typography sx={{ fontFamily: theme.fontFamily.secondary, fontSize: 16, fontWeight: theme.fontWeight.semiBold }}>$999</Typography>
             </Box>
-            <Button sx={{ width: "100%", bgcolor: `${theme.palette.primary.main}!important`, color: "white", borderRadius: "8px" }}>Continue to order</Button>
+            <Button sx={{ width: "100%", bgcolor: `${theme.palette.primary.main}!important`, color: "white", borderRadius: "8px", py: "12px" }}>Continue to order</Button>
           </Box>
         </Box>
       </Drawer>

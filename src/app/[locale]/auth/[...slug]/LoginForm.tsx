@@ -13,9 +13,9 @@ import GoogleIcon from "@/assets/icons/google-icon.png";
 import { useDispatch, useSelector } from "react-redux";
 import { setUser } from "@/store/slice/accountSlice";
 import { userSelector } from "@/store/selector";
-import { useRouter } from "next/navigation";
+import { useRouter } from "next-nprogress-bar";
 import Cookies from "js-cookie";
-import { AUTH_PATH_URL } from "@/constant/pathUrl";
+import { AUTH_PATH_URL, HOME_PATH_URL } from "@/constant/pathUrl";
 
 const LoginFormPage = () => {
   const [showPassword, setShowPassword] = useState<boolean>(false);
@@ -34,7 +34,7 @@ const LoginFormPage = () => {
       <div className="flex flex-col items-center">
         <div
           className="flex justify-center mt-10 lg:mt-[100px] mr-7 cursor-pointer"
-          onClick={() => router.push("/")}
+          onClick={() => router.push(HOME_PATH_URL)}
         >
           <Image src={AppLogo} alt={""} />
           <span className="text-[#0B7ECA] text-[48px] font-bold">

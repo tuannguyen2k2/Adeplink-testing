@@ -2,6 +2,8 @@ import Cookies from "js-cookie";
 
 const locale = Cookies.get("NEXT_LOCALE");
 
+export const HOME_PATH_URL = `/${locale}`;
+
 export const AUTH_PATH_URL = {
   LOGIN: `/${locale}/auth/login`,
   SIGN_UP: `/${locale}/auth/signup`,
@@ -16,4 +18,5 @@ export const PRODUCT_PATH_URL = {
 
 export const SUPPLIER_PATH_URL = {
   SUPPLIER_LIST: `/${locale}/supplier`,
+  SUPPLIER_DETAIL: `/${locale}/supplier/supplier-detail`,
 };

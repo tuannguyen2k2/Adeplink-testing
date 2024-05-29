@@ -1,4 +1,4 @@
-import { notFound } from "next/navigation";
+import { notFound } from "next-nprogress-bar";
 import { getRequestConfig } from "next-intl/server";
 
 const locales = ["en", "vn"];

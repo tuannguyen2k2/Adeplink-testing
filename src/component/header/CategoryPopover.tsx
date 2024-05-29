@@ -16,7 +16,7 @@ import {
 import { makeStyles } from "@mui/styles";
 import Cookies from "js-cookie";
 import { useTranslations } from "next-intl";
-import { useRouter } from "next/navigation";
+import { useRouter } from "next-nprogress-bar";
 import {
   AwaitedReactNode,
   JSXElementConstructor,
@@ -130,7 +130,8 @@ const CategoryPopover = ({ data }: CategoryPopoverType) => {
               overflowY: "auto",
             }}
           >
-            {data && data?.length > 0 &&
+            {data &&
+              data?.length > 0 &&
               data?.map((categoryLevel1, index) => {
                 return (
                   <ListItemButton

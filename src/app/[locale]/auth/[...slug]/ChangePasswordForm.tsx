@@ -4,7 +4,7 @@ import AppLogo from "@/assets/icons/logo.svg";
 import SuccessModal from "@/component/auth/SuccessModal";
 import { InputComponent } from "@/component/common/InputComponent";
 import { ValidatePasswordForm } from "@/component/common/ValidatePasswordForm";
-import { AUTH_PATH_URL } from "@/constant/pathUrl";
+import { AUTH_PATH_URL, HOME_PATH_URL } from "@/constant/pathUrl";
 import {
   CheckSpecial,
   checkLength,
@@ -17,7 +17,8 @@ import { Icon } from "@mui/material";
 import { Tooltip } from "antd";
 import Cookies from "js-cookie";
 import Image from "next/image";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useRouter } from "next-nprogress-bar";
+import { useSearchParams } from "next/navigation";
 import React, { useEffect, useState } from "react";
 import { SubmitHandler, useForm } from "react-hook-form";
 import { IoMdArrowBack } from "react-icons/io";
@@ -76,7 +77,7 @@ const ChangePasswordFormPage = () => {
         <div className="w-[80%] mx-auto flex flex-col items-center">
           <div
             className="flex justify-center mt-10 lg:mt-[100px] mr-7 cursor-pointer"
-            onClick={() => router.push("/")}
+            onClick={() => router.replace(HOME_PATH_URL)}
           >
             <Image src={AppLogo} alt={""} />
             <span className="text-[#0B7ECA] text-[48px] font-bold">

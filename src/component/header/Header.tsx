@@ -9,20 +9,23 @@ import {
   useTheme,
 } from "@mui/material";
 import { useTranslations } from "next-intl";
-import { useRouter } from "next/navigation";
+import { useRouter } from "next-nprogress-bar";
 import CategoryPopover from "./CategoryPopover";
 import Personal from "./Personal";
 import Search from "./search/Search";
 import { useGetCategoriesHierarchy } from "@/api/category/query";
 import { useEffect } from "react";
 import useDevices from "@/hook/useDevices";
-import { SUPPLIER_PATH_URL } from "@/constant/pathUrl";
-
+import { HOME_PATH_URL, SUPPLIER_PATH_URL } from "@/constant/pathUrl";
+import { usePathname } from "next/navigation";
+import Cookies from "js-cookie";
 const Header = () => {
   const theme = useTheme();
   const { isMobile, isTablet } = useDevices();
   const router = useRouter();
+  const pathname = usePathname();
   const translate = useTranslations();
+  const locale = Cookies.get("NEXT_LOCALE");
   const { data: categoriesHierarchy, getCategoriesHierarchy } =
     useGetCategoriesHierarchy();
 
@@ -38,6 +41,7 @@ const Header = () => {
         bgcolor: "transparent",
         alignItems: "center",
         boxShadow: `0px 6px 4px ${theme.blue[300]}`,
+        zIndex: 100,
       }}
       elevation={0}
     >
@@ -61,7 +65,7 @@ const Header = () => {
           <Box
             component={"button"}
             sx={{ cursor: "pointer" }}
-            onClick={() => router.push("/")}
+            onClick={() => router.push(HOME_PATH_URL)}
           >
             <Typography
               color={theme.palette.primary.main}

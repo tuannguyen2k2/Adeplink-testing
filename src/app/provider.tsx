@@ -15,6 +15,7 @@ import {
 import { theme } from "@/utils/theme";
 import { Provider as ReduxProvider } from "react-redux";
 import store from "@/store";
+import { ProgressProvider } from "./AppProvider";
 export default function ReactQueryProvider({
   children,
 }: {
@@ -23,18 +24,20 @@ export default function ReactQueryProvider({
   const [queryClient] = useState(() => new QueryClient(queryClientConfig));
   return (
     <QueryClientProvider client={queryClient}>
-      <ReduxProvider store={store}>
-        <MuiThemeProvider theme={theme}>
-          <ThemeProvider
-            attribute="class"
-            enableSystem={false}
-            defaultTheme="light"
-          >
-            <TooltipProvider>{children}</TooltipProvider>
-            <ReactQueryDevtools />
-          </ThemeProvider>
-        </MuiThemeProvider>
-      </ReduxProvider>
+      <ProgressProvider>
+        <ReduxProvider store={store}>
+          <MuiThemeProvider theme={theme}>
+            <ThemeProvider
+              attribute="class"
+              enableSystem={false}
+              defaultTheme="light"
+            >
+              <TooltipProvider>{children}</TooltipProvider>
+              <ReactQueryDevtools />
+            </ThemeProvider>
+          </MuiThemeProvider>
+        </ReduxProvider>
+      </ProgressProvider>
     </QueryClientProvider>
   );
 }

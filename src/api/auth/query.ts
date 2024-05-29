@@ -3,8 +3,8 @@ import { USER_KEY } from "@/constant/queryKey";
 import { LoginResponse, VerifyOtpResponse } from "@/interface/user";
 import { setUser } from "@/store/slice/accountSlice";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import Cookies from 'js-cookie';
-import { useRouter } from "next/navigation";
+import Cookies from "js-cookie";
+import { useRouter } from "next-nprogress-bar";
 import { useDispatch } from "react-redux";
 import {
   login,
@@ -16,6 +16,7 @@ import {
   verifyOtp,
   verifyOtpReset,
 } from "./api";
+import { HOME_PATH_URL } from "@/constant/pathUrl";
 
 export const useLogin = () => {
   // const setUser = useAuthStore()((state) => state.setUser);
@@ -31,7 +32,7 @@ export const useLogin = () => {
       Cookies.set(ADEPTLINK_USER, JSON.stringify(data.user));
       Cookies.set(ADEPTLINK_ACCESS_TOKEN, JSON.stringify(data.access_token));
       queryClient.setQueryData(USER_KEY, data);
-      router.replace("/");
+      router.replace(HOME_PATH_URL);
     },
     onError: (err) => {
       setTimeout(() => {
@@ -46,11 +47,9 @@ export const useLogout = () => {
   // const setUser = useAuthStore()((state) => state.setUser);
   // Must initialize queryClient from useQueryClient not use getQueryClient from server
 
-
   const { error, isPending, mutate, reset } = useMutation({
     mutationFn: logout,
-    onSuccess: (data: LoginResponse) => {
-    },
+    onSuccess: (data: LoginResponse) => {},
     onError: (err) => {
       setTimeout(() => {
         reset();
@@ -59,9 +58,6 @@ export const useLogout = () => {
   });
   return { logout: mutate, isPending, error };
 };
-
-
-
 
 export const useSignup = () => {
   const { error, isPending, mutate, reset, isSuccess } = useMutation({
@@ -111,7 +107,10 @@ export const useVerifyOTP = () => {
     onSuccess: (data: VerifyOtpResponse) => {
       dispatch(setUser(data.data.user));
       Cookies.set(ADEPTLINK_USER, JSON.stringify(data.data.user));
-      Cookies.set(ADEPTLINK_ACCESS_TOKEN, JSON.stringify(data.data.access_token));
+      Cookies.set(
+        ADEPTLINK_ACCESS_TOKEN,
+        JSON.stringify(data.data.access_token)
+      );
       queryClient.setQueryData(USER_KEY, data.data);
     },
     onError: () => {

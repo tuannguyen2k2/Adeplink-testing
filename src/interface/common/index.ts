@@ -29,23 +29,29 @@ export interface CategoriesHierarchyDto {
   image?: string;
 }
 
-export type PriceType = {
+export type PriceProductDetailType = {
   min_amount: string;
   max_amount: string;
   price: string;
 };
 
+export type PriceProductListType = {
+  total_range_price: number;
+  min_price: number;
+  max_price: number;
+};
+
 export type VariantAttriButesType = {
   color?: string[];
   size?: string[];
+  package?: string[];
 };
 
 export type ProductDto = {
+  category?: string;
+  id: string;
   name: string;
   description: string;
-  first_category_id: string;
-  second_category_id: string;
-  third_category_id: string;
   industry: string;
   title: string;
   group: string;
@@ -55,16 +61,42 @@ export type ProductDto = {
   unit: string;
   min_order: number;
   min_order_unit: string;
-  package: string;
   port: string;
   lead_time: Date;
   is_showcase: boolean;
-  price: PriceType[];
+  price: PriceProductListType;
+  image: ImageType[];
   variant_attributes?: VariantAttriButesType;
 };
-type ImageType = {
+
+export type ProductDetailDto = {
   id: string;
-  url: string;
+  name: string;
+  description: string;
+  industry: string;
+  title: string;
+  group: string;
+  video: string;
+  min_price: number;
+  max_price: number;
+  unit: string;
+  min_order: number;
+  min_order_unit: string;
+  port: string;
+  lead_time: Date;
+  is_showcase: boolean;
+  price: PriceProductDetailType[];
+  image: ImageType[];
+  recommend_products: ProductDto[];
+  supplier: SupplierDto;
+  supplier_products: ProductDto[];
+  variant_attributes?: VariantAttriButesType;
+};
+export type ImageType = {
+  updated_at: Date;
+  created_at: Date;
+  id: string;
+  image_url: string;
 };
 
 export type ProductSearchDto = {
@@ -73,11 +105,7 @@ export type ProductSearchDto = {
   description: string;
   image: ImageType[];
   category: string;
-  price: {
-    total_range_price: number;
-    min_price: number;
-    max_price: number;
-  };
+  price: PriceProductListType;
   min_order: number;
   slug: string;
 };
@@ -145,12 +173,7 @@ export type SupplierDto = {
   main_category: string;
   country: string;
   image: string;
-};
-
-export type PaginationDto = {
-  page: number;
-  limit: number;
-  totalPage?: number;
+  slug: string;
 };
 
 export interface IResponse<T> {
@@ -172,4 +195,72 @@ export type Metadata = {
   total_page: number;
   limit: number;
   total_data: number;
+};
+
+export type SupplierDetailDto = {
+  company: {
+    type: string;
+    country: string;
+    city: string;
+    year_established: number;
+    is_feature: boolean;
+    updated_at: string;
+    slug: string;
+    introduction: string;
+    category_id: string;
+    company_name: string;
+    website: string;
+    state: string;
+    address: string;
+    number_of_employees: number;
+    id: string;
+    created_at: string;
+    user_id: string;
+  };
+  category: [
+    {
+      id: string;
+      name: string;
+    }
+  ];
+};
+
+export type PaginationDto = {
+  page: number;
+  limit: number;
+  totalPage?: number;
+};
+
+
+export type RatingFilter = {
+  star: number | null;
+  with_media: boolean | null;
+};
+
+export type ProductRatingDto = {
+  product_vote: {
+    vote_count: number;
+    created_at: string;
+    product_id: string;
+    vote_one_star_count: number;
+    vote_three_star_count: number;
+    vote_five_star_count: number;
+    id: string;
+    updated_at: string;
+    vote_average_score: number;
+    vote_two_star_count: number;
+    vote_four_star_count: number;
+  };
+  product_user_vote_list: [
+    {
+      images: [string];
+      id: string;
+      user_id: string;
+      comment: null;
+      vote_score: number;
+      created_at: string;
+      user_name: string;
+      replies: string[];
+    }
+  ];
 };

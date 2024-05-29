@@ -21,21 +21,15 @@ import { MdArrowBackIos, MdArrowForwardIos } from "react-icons/md";
 import { Modal } from "antd";
 import SliderContent from "@/component/common/SliderContent";
 import { IoMdClose } from "react-icons/io";
-const images = [
-  { src: DetailProduct1, alt: "Image 1" },
-  { src: DetailProduct2, alt: "Image 2" },
-  { src: DetailProduct3, alt: "Image 3" },
-  { src: DetailProduct4, alt: "Image 4" },
-  { src: DetailProduct5, alt: "Image 5" },
-  { src: DetailProduct5, alt: "Image 5" },
-];
+import { ImageType } from "@/interface/common";
+import { convertImage } from "@/utils";
 interface ArrowProps {
   className?: string;
   style?: React.CSSProperties;
   onClick?: MouseEventHandler<HTMLDivElement>;
   size?: number;
 }
-const SliderProduct = () => {
+const SliderProduct = ({ images }: { images?: ImageType[] }) => {
   const PrevArrow: FC<ArrowProps> = ({ className, style, onClick, size }) => {
     return (
       <Box className={className} style={style} onClick={onClick}>
@@ -110,7 +104,9 @@ const SliderProduct = () => {
           onClick={() => handleClickImage(imageSelected)}
         >
           <Image
-            src={images[imageSelected].src}
+            src={
+              (images && convertImage(images[imageSelected]?.image_url)) || ""
+            }
             alt={""}
             width={623}
             height={623}
@@ -163,32 +159,33 @@ const SliderProduct = () => {
           })}
         </Box> */}
         <SliderContent settings={settingMultipleSlider}>
-          {images.map((image, index) => {
-            return (
-              <Box
-                component={"button"}
-                width={"100%"}
-                height={88}
-                key={image.alt}
-                onClick={() => handleClickImage(index)}
-                onMouseEnter={() => setImageSelected(index)}
-                sx={{
-                  display: "flex!important",
-                  justifyContent: "center",
-                  outline: "none",
-                  opacity: index === imageSelected ? 1 : 0.5,
-                }}
-              >
-                <Image
-                  src={image.src}
-                  alt={image.alt}
-                  width={88}
+          {images &&
+            images?.map((image, index) => {
+              return (
+                <Box
+                  component={"button"}
+                  width={"100%"}
                   height={88}
-                  style={{ height: "100%" }}
-                />
-              </Box>
-            );
-          })}
+                  key={image.id}
+                  onClick={() => handleClickImage(index)}
+                  onMouseEnter={() => setImageSelected(index)}
+                  sx={{
+                    display: "flex!important",
+                    justifyContent: "center",
+                    outline: "none",
+                    opacity: index === imageSelected ? 1 : 0.5,
+                  }}
+                >
+                  <Image
+                    src={convertImage(image?.image_url) || ""}
+                    alt={image?.id}
+                    width={88}
+                    height={88}
+                    style={{ height: "100%" }}
+                  />
+                </Box>
+              );
+            })}
         </SliderContent>
       </Box>
       <Modal
@@ -222,7 +219,7 @@ const SliderProduct = () => {
             className="w-[80%] h-full"
             ref={singleSliderRef as LegacyRef<Slider>}
           >
-            {images.map((image, index) => {
+            {images?.map((image, index) => {
               return (
                 <Box
                   width={623}
@@ -236,8 +233,8 @@ const SliderProduct = () => {
                   }}
                 >
                   <Image
-                    src={image.src}
-                    alt={image.alt}
+                    src={convertImage(image?.image_url) || ""}
+                    alt={image?.id}
                     width={623}
                     height={623}
                     style={{ height: "100%" }}
@@ -247,14 +244,14 @@ const SliderProduct = () => {
             })}
           </Slider>
           <Box width={"100%"} display={"flex"} justifyContent={"center"}>
-            {images.map((image, index) => {
+            {images?.map((image, index) => {
               return (
                 <Box
                   component={"button"}
                   mx={"10px"}
                   width={88}
                   height={88}
-                  key={image.alt}
+                  key={image.id}
                   onClick={() => handleClickImage(index)}
                   sx={{
                     outline: "none",
@@ -262,8 +259,8 @@ const SliderProduct = () => {
                   }}
                 >
                   <Image
-                    src={image.src}
-                    alt={image.alt}
+                    src={convertImage(image.image_url) || ""}
+                    alt={image.id}
                     width={88}
                     height={88}
                     style={{ height: "100%" }}

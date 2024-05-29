@@ -3,6 +3,7 @@ import { useTheme, Tab, Tabs, Typography, Box } from "@mui/material";
 import TabDescription from "./product-description/TabDescription";
 import TabSpecification from "./product-description/TabSpecification";
 import TabRatingReview from "./product-description/TabRatingReview";
+import { ProductDetailDto } from "@/interface/common";
 
 interface TabPanelProps {
   children?: React.ReactNode;
@@ -14,7 +15,12 @@ const CustomTabPanel = (props: TabPanelProps) => {
   const { children, value, index, ...other } = props;
 
   return (
-    <div role="tabpanel" hidden={value !== index} id={`simple-tabpanel-${index}`} {...other}>
+    <div
+      role="tabpanel"
+      hidden={value !== index}
+      id={`simple-tabpanel-${index}`}
+      {...other}
+    >
       {value === index && (
         <Box sx={{ mt: 3 }}>
           <Typography>{children}</Typography>
@@ -24,7 +30,7 @@ const CustomTabPanel = (props: TabPanelProps) => {
   );
 };
 
-const DescriptionInfo = () => {
+const DescriptionInfo = ({ data }: { data?: ProductDetailDto }) => {
   const theme = useTheme();
   const [value, setValue] = React.useState(0);
 
@@ -33,11 +39,21 @@ const DescriptionInfo = () => {
       <Box sx={{ borderBottom: 2, borderColor: theme.blue[1000] }}>
         <Tabs
           value={value}
-          onChange={(event: React.SyntheticEvent, newValue: number) => setValue(newValue)}
+          onChange={(event: React.SyntheticEvent, newValue: number) =>
+            setValue(newValue)
+          }
           TabIndicatorProps={{
-            style: { display: "none", fontWeight: theme.fontWeight.semiBold, color: theme.blue[500] },
+            style: {
+              display: "none",
+              fontWeight: theme.fontWeight.semiBold,
+              color: theme.blue[500],
+            },
           }}
-          sx={{ ".Mui-selected": {fontWeight: theme.fontWeight.semiBold}, display: 'flex', justifyContent: 'start' }}     
+          sx={{
+            ".Mui-selected": { fontWeight: theme.fontWeight.semiBold },
+            display: "flex",
+            justifyContent: "start",
+          }}
         >
           <Tab
             label="Description"
@@ -47,7 +63,11 @@ const DescriptionInfo = () => {
               fontSize: 16,
               color: theme.blue[500],
               fontWeight: theme.fontWeight.regular,
-              "&:hover": { backgroundColor: theme.blue[100], color: theme.palette.primary.main, fontWeight: theme.fontWeight.semiBold },
+              "&:hover": {
+                backgroundColor: theme.blue[100],
+                color: theme.palette.primary.main,
+                fontWeight: theme.fontWeight.semiBold,
+              },
             }}
           />
           <Tab
@@ -58,7 +78,11 @@ const DescriptionInfo = () => {
               fontSize: 16,
               color: theme.blue[500],
               fontWeight: theme.fontWeight.regular,
-              "&:hover": { backgroundColor: theme.blue[100], color: theme.palette.primary.main, fontWeight: theme.fontWeight.semiBold },
+              "&:hover": {
+                backgroundColor: theme.blue[100],
+                color: theme.palette.primary.main,
+                fontWeight: theme.fontWeight.semiBold,
+              },
             }}
           />
           <Tab
@@ -69,19 +93,23 @@ const DescriptionInfo = () => {
               fontSize: 16,
               color: theme.blue[500],
               fontWeight: theme.fontWeight.regular,
-              "&:hover": { backgroundColor: theme.blue[100], color: theme.palette.primary.main, fontWeight: theme.fontWeight.semiBold },
+              "&:hover": {
+                backgroundColor: theme.blue[100],
+                color: theme.palette.primary.main,
+                fontWeight: theme.fontWeight.semiBold,
+              },
             }}
           />
         </Tabs>
       </Box>
       <CustomTabPanel value={value} index={0}>
-        <TabDescription/>
+        <TabDescription description={data?.description}/>
       </CustomTabPanel>
       <CustomTabPanel value={value} index={1}>
-        <TabSpecification/>
+        <TabSpecification />
       </CustomTabPanel>
       <CustomTabPanel value={value} index={2}>
-        <TabRatingReview/>
+        <TabRatingReview productId={data?.id as string}  />
       </CustomTabPanel>
     </Box>
   );

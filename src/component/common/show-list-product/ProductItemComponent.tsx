@@ -1,17 +1,44 @@
 import { ProductDto } from "@/interface/common";
-import { Box, Divider, Grid, Typography, useTheme } from "@mui/material";
+import { Box, Divider, Typography, useTheme } from "@mui/material";
 import Image from "next/image";
 import React from "react";
+import { Price } from "./Price";
 
 const ProductItemComponent = ({ product }: { product: ProductDto }) => {
   const theme = useTheme();
   return (
-    <Box sx={{ p: "16px", backgroundColor: 'white', borderRadius: '16px' }}>
+    <Box
+      sx={{
+        width: 242,
+        p: "16px",
+        backgroundColor: "white",
+        borderRadius: "16px",
+        border: `1px solid ${theme.blue[100]}`,
+      }}
+    >
       <Box width={210} height={210} position={"relative"}>
-        <Image src={"https://th.bing.com/th/id/OIP.Zfeg2aQarGBA5op6udDRXAHaEc?w=1000&h=600&rs=1&pid=ImgDetMain"} alt={""} fill objectFit="fill" className="rounded-lg" />
+        <Image
+          src={
+            product.image[0]?.image_url ||
+            "https://th.bing.com/th/id/OIP.Zfeg2aQarGBA5op6udDRXAHaEc?w=1000&h=600&rs=1&pid=ImgDetMain"
+          }
+          alt={"image"}
+          fill
+          objectFit="fill"
+          className="rounded-lg"
+        />
       </Box>
       <Box height={70} sx={{ mb: 2 }}>
-        <Typography sx={{ fontFamily: theme.fontFamily.secondary, fontSize: 14, color: theme.palette.primary.main, mt: 2 }}>Category</Typography>
+        <Typography
+          sx={{
+            fontFamily: theme.fontFamily.secondary,
+            fontSize: 14,
+            color: theme.palette.primary.main,
+            mt: 2,
+          }}
+        >
+          {product.category}
+        </Typography>
         <Typography
           sx={{
             fontFamily: theme.fontFamily.secondary,
@@ -28,15 +55,30 @@ const ProductItemComponent = ({ product }: { product: ProductDto }) => {
         </Typography>
       </Box>
       <Divider sx={{ borderColor: theme.blue[600] }} />
-      <Box sx={{display: 'flex'}}>
-      <Typography sx={{ fontFamily: theme.fontFamily.secondary, fontWeight: theme.fontWeight.regular, color: theme.blue[500] }}>From&nbsp;</Typography>
-      <Typography sx={{ fontFamily: theme.fontFamily.secondary, fontWeight: theme.fontWeight.medium, color: theme.blue[500] }}>$45.00&nbsp;</Typography>
-      <Typography sx={{ fontFamily: theme.fontFamily.secondary, fontWeight: theme.fontWeight.regular, color: theme.blue[500] }}>to&nbsp;</Typography>
-      <Typography sx={{ fontFamily: theme.fontFamily.secondary, fontWeight: theme.fontWeight.medium, color: theme.blue[500] }}>$100.00</Typography>
-      </Box>
-      <Box sx={{ fontFamily: theme.fontFamily.secondary, color: theme.palette.grey[400], display: "flex" }}>
-        <Typography sx={{ fontFamily: theme.fontFamily.secondary, fontWeight: theme.fontWeight.regular }}>MOQ:&nbsp;</Typography>
-        <Typography sx={{ fontFamily: theme.fontFamily.secondary, fontWeight: theme.fontWeight.medium }}>1000</Typography>
+      <Price price={product.price} />
+      <Box
+        sx={{
+          fontFamily: theme.fontFamily.secondary,
+          color: theme.palette.grey[400],
+          display: "flex",
+        }}
+      >
+        <Typography
+          sx={{
+            fontFamily: theme.fontFamily.secondary,
+            fontWeight: theme.fontWeight.regular,
+          }}
+        >
+          MOQ:&nbsp;
+        </Typography>
+        <Typography
+          sx={{
+            fontFamily: theme.fontFamily.secondary,
+            fontWeight: theme.fontWeight.medium,
+          }}
+        >
+          {product.min_order}
+        </Typography>
       </Box>
     </Box>
   );

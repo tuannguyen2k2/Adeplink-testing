@@ -5,7 +5,8 @@ import { ProductSearchDto } from "@/interface/common";
 import { convertImage } from "@/utils";
 import { Box, Grid, Pagination, Typography, useTheme } from "@mui/material";
 import Image from "next/image";
-import { useRouter } from "next/navigation";
+import { useRouter } from "next-nprogress-bar";
+import { Price } from "../common/show-list-product/Price";
 
 type ProductListType = {
   data?: ProductSearchDto[];
@@ -117,86 +118,7 @@ const ProductList = ({ data }: ProductListType) => {
   );
 };
 
-type PriceType = {
-  price: {
-    total_range_price: number;
-    min_price: number;
-    max_price: number;
-  };
-};
 
-const Price = ({ price }: PriceType) => {
-  const theme = useTheme();
-  if (price.total_range_price == 0) {
-    return (
-      <Typography
-        fontSize={14}
-        color={theme.blue[500]}
-        fontWeight={theme.fontWeight.regular}
-        fontFamily={theme.fontFamily.secondary}
-      >
-        Contact for best prices
-      </Typography>
-    );
-  } else if (price.total_range_price == 1) {
-    return (
-      <Box display={"flex"} gap={0.5}>
-        <Typography
-          fontSize={14}
-          color={theme.blue[500]}
-          fontWeight={theme.fontWeight.regular}
-          fontFamily={theme.fontFamily.secondary}
-        >
-          Starting at
-        </Typography>
-        <Typography
-          fontSize={14}
-          color={theme.blue[500]}
-          fontWeight={theme.fontWeight.medium}
-          fontFamily={theme.fontFamily.secondary}
-        >
-          ${price.min_price}.00
-        </Typography>
-      </Box>
-    );
-  } else if (price.total_range_price >= 2) {
-    return (
-      <Box display={"flex"} gap={0.5}>
-        <Typography
-          fontSize={14}
-          color={theme.blue[500]}
-          fontWeight={theme.fontWeight.regular}
-          fontFamily={theme.fontFamily.secondary}
-        >
-          From
-        </Typography>
-        <Typography
-          fontSize={14}
-          color={theme.blue[500]}
-          fontWeight={theme.fontWeight.medium}
-          fontFamily={theme.fontFamily.secondary}
-        >
-          ${price.min_price}.00
-        </Typography>
-        <Typography
-          fontSize={14}
-          color={theme.blue[500]}
-          fontWeight={theme.fontWeight.regular}
-          fontFamily={theme.fontFamily.secondary}
-        >
-          to
-        </Typography>
-        <Typography
-          fontSize={14}
-          color={theme.blue[500]}
-          fontWeight={theme.fontWeight.medium}
-          fontFamily={theme.fontFamily.secondary}
-        >
-          ${price.max_price}.00
-        </Typography>
-      </Box>
-    );
-  }
-};
+
 
 export default ProductList;

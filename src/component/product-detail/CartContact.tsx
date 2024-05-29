@@ -19,7 +19,6 @@ import {
   tableCellClasses,
   useTheme,
 } from "@mui/material";
-import { useState } from "react";
 import { MdOutlineShoppingCart } from "react-icons/md";
 
 type CartContactType = {
@@ -28,9 +27,8 @@ type CartContactType = {
   handleCloseCart: () => void;
 };
 
-const CartContact = ({openCart, handleOpenCart, handleCloseCart}: CartContactType) => {
+const CartContact = ({ openCart, handleOpenCart, handleCloseCart }: CartContactType) => {
   const theme = useTheme();
-
 
   const data = [
     { id: 1, item: "Black, Paper, XL", price: 999, quantity: 1234 },
@@ -52,36 +50,6 @@ const CartContact = ({openCart, handleOpenCart, handleCloseCart}: CartContactTyp
 
   return (
     <>
-      <Paper
-        elevation={3}
-        sx={{
-          width: "fit-content",
-          position: "fixed",
-          right: 0,
-          borderRadius: "8px",
-          borderTopRightRadius: 0,
-          borderBottomRightRadius: 0,
-        }}
-      >
-        <Button
-          sx={{ borderRadius: 0, p: "12px 16px 12px 16px" }}
-          onClick={handleOpenCart}
-        >
-          <Badge
-            badgeContent={100}
-            sx={{
-              "& .MuiBadge-badge": {
-                bgcolor: theme.red[100],
-                color: "white",
-                fontSize: "10px",
-                p: 0,
-              },
-            }}
-          >
-            <MdOutlineShoppingCart size={24} color={"#0C71BA"} />
-          </Badge>
-        </Button>
-      </Paper>
       <Drawer open={openCart} anchor="right" onClose={handleCloseCart} sx={{}}>
         <Box sx={{ width: 542, borderTopLeftRadius: 16, px: 2, py: 3 }}>
           <Box
@@ -223,10 +191,7 @@ const CartContact = ({openCart, handleOpenCart, handleCloseCart}: CartContactTyp
                           fontSize: 14,
                         }}
                       >
-                        <Icon
-                          component={Clear}
-                          sx={{ color: theme.blue[600] }}
-                        />
+                        <Icon component={Clear} sx={{ color: theme.blue[600] }} />
                       </TableCell>
                     </TableRow>
                   ))}
@@ -250,8 +215,7 @@ const CartContact = ({openCart, handleOpenCart, handleCloseCart}: CartContactTyp
                 color: theme.palette.grey[400],
               }}
             >
-              *A request for quotation will be send to this supplier and they
-              will get in touch with your order soon!
+              *A request for quotation will be send to this supplier and they will get in touch with your order soon!
             </Typography>
 
             <Box sx={{ my: 2 }}>

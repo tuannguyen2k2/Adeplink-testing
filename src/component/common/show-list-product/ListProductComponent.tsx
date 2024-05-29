@@ -5,47 +5,62 @@ import { Box, Divider, Grid, Icon, Typography, useTheme } from "@mui/material";
 import ProductItemComponent from "./ProductItemComponent";
 import { ProductDto } from "@/interface/common";
 import { MdArrowForwardIos } from "react-icons/md";
-import { useRouter } from "next/navigation";
+import { useRouter } from "next-nprogress-bar";
 
 type ListProductComponentProps = {
-  title: string;
+  title?: string;
   url: string;
-  data: ProductDto[];
+  data?: ProductDto[];
 };
 
-const ListProductComponent = ({ title, url, data }: ListProductComponentProps) => {
+const ListProductComponent = ({
+  title,
+  url,
+  data,
+}: ListProductComponentProps) => {
   const theme = useTheme();
   const router = useRouter();
   return (
     <React.Fragment>
-      <Box sx={{ display: "flex", justifyContent: "space-between" }}>
-        <Typography sx={{ fontWeight: theme.fontWeight.bold, fontSize: 20, fontFamily: theme.fontFamily.secondary, mb: 2 }}>{title}</Typography>
-        <Box
-          component={"button"}
-          onClick={() => router.push(url)}
-          display={"flex"}
-          alignItems={"center"}
-          gap={1}
-          sx={{
-            "&:hover": {
-              color: theme.palette.primary.main,
-              svg: {
-                fill: theme.palette.primary.main,
+      {title && (
+        <Box sx={{ display: "flex", justifyContent: "space-between" }}>
+          <Typography
+            sx={{
+              fontWeight: theme.fontWeight.bold,
+              fontSize: 20,
+              fontFamily: theme.fontFamily.secondary,
+              mb: 2,
+            }}
+          >
+            {title}
+          </Typography>
+          <Box
+            component={"button"}
+            onClick={() => router.push(url)}
+            display={"flex"}
+            alignItems={"center"}
+            gap={1}
+            sx={{
+              "&:hover": {
+                color: theme.palette.primary.main,
+                svg: {
+                  fill: theme.palette.primary.main,
+                },
               },
-            },
-          }}
-          color={theme.black[200]}
-          fontSize={14}
-          fontFamily={theme.fontFamily.secondary}
-          fontWeight={theme.fontWeight.medium}
-        >
-          Explore more
-          <MdArrowForwardIos size={14} color="#0C0C0C" />
+            }}
+            color={theme.black[200]}
+            fontSize={14}
+            fontFamily={theme.fontFamily.secondary}
+            fontWeight={theme.fontWeight.medium}
+          >
+            Explore more
+            <MdArrowForwardIos size={14} color="#0C0C0C" />
+          </Box>
         </Box>
-      </Box>
+      )}
       <Grid container width={"100%"} spacing={2}>
-        {data.map((item, id) => (
-          <Grid item xs={12} sm={6} md={4} lg={12 / 5} xl={12 / 5} key={id}>
+        {data?.map((item) => (
+          <Grid item xs={12} sm={6} md={4} lg={12 / 5} xl={12 / 5} key={item.id} sx={{ display: "flex", justifyContent: "center" }}>
             <ProductItemComponent product={item} />
           </Grid>
         ))}

@@ -63,12 +63,12 @@ const Product = () => {
   const [countryCheckedList, setCountryCheckedList] = useState<string[]>([]);
 
   useEffect(() => {
-    if (keyword) {
-      setData(productSearch);
-      setIsSuccess(isSuccessProductSearch);
-    } else if (cate_name) {
+    if (cate_name) {
       setData(productByCategory);
       setIsSuccess(isSuccessProductByCategory);
+    } else {
+      setData(productSearch);
+      setIsSuccess(isSuccessProductSearch);
     }
   }, [isSuccessProductByCategory, isSuccessProductSearch]);
   useEffect(() => {
@@ -81,27 +81,27 @@ const Product = () => {
   }, [data]);
 
   const handleGetProduct = () => {
-    if (keyword) {
-      getProductSearch({
-        keyword: keyword,
-        limit: PRODUCT_LIST_LIMIT,
-        page: page,
-      });
-    } else if (cate_name) {
+    if (cate_name) {
       getProductByCategory({
         page: page,
         limit: PRODUCT_LIST_LIMIT,
         keyword: keyword_by_category,
         product_category_id: cate_level3_id ?? cate_level2_id ?? cate_level1_id,
       });
+    } else {
+      getProductSearch({
+        keyword: keyword,
+        limit: PRODUCT_LIST_LIMIT,
+        page: page,
+      });
     }
   };
 
   const handleFilterProduct = (category_ids: string[], countries: string[]) => {
-    if (keyword) {
-      getProductSearch({
-        page: page,
-        keyword: keyword,
+    if (cate_name) {
+      getProductByCategory({
+        keyword: keyword_by_category,
+        product_category_id: cate_level3_id ?? cate_level2_id ?? cate_level1_id,
         category_ids: category_ids,
         countries: countries,
         from_price: priceFilter.from_price,
@@ -109,10 +109,10 @@ const Product = () => {
         moq: moq,
         limit: PRODUCT_LIST_LIMIT,
       });
-    } else if (cate_name) {
-      getProductByCategory({
-        keyword: keyword_by_category,
-        product_category_id: cate_level3_id ?? cate_level2_id ?? cate_level1_id,
+    } else {
+      getProductSearch({
+        page: page,
+        keyword: keyword,
         category_ids: category_ids,
         countries: countries,
         from_price: priceFilter.from_price,
@@ -213,6 +213,7 @@ const Product = () => {
       `${PRODUCT_PATH_URL.PRODUCT_LIST}?${updatedSearchParams.toString()}`
     );
   };
+  console.log(data);
   return (
     <Container
       sx={{
@@ -223,13 +224,13 @@ const Product = () => {
       }}
     >
       {cate_name && <RelevantCategoryFilter />}
-      {keyword && data?.metadata?.total_data && (
+      {keyword &&
+      data?.metadata?.total_data !== null &&
+      data?.metadata?.total_data !== undefined ? (
         <Typography fontFamily={theme.fontFamily.secondary} mb={"20px"}>
-          {`Showing ${
-            data?.metadata?.total_data || 0
-          }+ products for "${keyword}"`}
+          {`Showing ${data?.metadata?.total_data}+ products for "${keyword}"`}
         </Typography>
-      )}
+      ) : null}
       {!keyword && !keyword_by_category && !cate_name && (
         <Typography fontFamily={theme.fontFamily.secondary} mb={"20px"}>
           {`Showing ${
@@ -267,7 +268,6 @@ const Product = () => {
           borderRadius={"16px"}
           height={"fit-content"}
           mr={"10px"}
-          // position={"fixed"}
         >
           <Typography
             fontFamily={theme.fontFamily.secondary}

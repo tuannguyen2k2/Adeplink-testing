@@ -13,7 +13,7 @@ const useStyles = makeStyles({
       "-moz-appearance": "textfield",
     },
     "& .MuiInputBase-input": {
-      fontFamily: '"Arial", sans-serif',
+      padding: 0,
     },
   },
 });
@@ -39,6 +39,7 @@ const QuantityComponent = ({
       alignItems={"center"}
       border={`1px solid ${theme.palette.grey[100]}`}
       borderRadius={"8px"}
+      height={"100%"}
     >
       <Button
         sx={{

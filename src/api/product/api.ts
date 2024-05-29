@@ -2,9 +2,9 @@ import axiosConfig from "@/config/axiosConfig";
 import { FilterProductDto } from "@/interface/common";
 import { FilterSearchType } from "antd/es/table/interface";
 
-export const getAllProduct = async () => {
+export const getAllProductRecommended = async () => {
   return await axiosConfig
-    .get("product")
+    .get("product/recommended")
     .then((response) => response.data.data)
     .catch((error) => {
       throw error;
@@ -12,7 +12,6 @@ export const getAllProduct = async () => {
 };
 
 export const getProductSearch = async (data: FilterProductDto) => {
-  console.log(data);
   if (data.keyword == "") {
     return;
   }
@@ -52,8 +51,7 @@ export const getProductDetailBySlug = async (slug: string) => {
 
 export const getProductByCategory = async (data: FilterProductDto) => {
   const params = new URLSearchParams();
-  data.product_category_id &&
-    params.append("product_category_id", data.product_category_id);
+  data.product_category_id && params.append("product_category_id", data.product_category_id);
   if (data.category_ids) {
     data.category_ids.forEach((categoryId) => {
       params.append("category_ids", categoryId);
@@ -75,5 +73,14 @@ export const getProductByCategory = async (data: FilterProductDto) => {
     .then((response) => response.data.data)
     .catch((error) => {
       throw error;
+    });
+};
+
+export const getRatingByProductId = async (productId: string) => {
+  return await axiosConfig
+    .get(`/vote?product_id=${productId}`)
+    .then((response) => response.data.data)
+    .catch((error) => {
+      throw Error(error);
     });
 };

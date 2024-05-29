@@ -1,6 +1,7 @@
 import React, { SetStateAction } from "react";
 import { Button, Icon, Menu, MenuItem, useTheme } from "@mui/material";
 import { KeyboardArrowDown } from "@mui/icons-material";
+import { SortOption } from "@/constant/enum";
 
 type SortComponentProps = {
   sortOrder: string;
@@ -9,7 +10,6 @@ type SortComponentProps = {
 
 const SortComponent = ({ sortOrder, setSortOrder }: SortComponentProps) => {
   const theme = useTheme();
-  const sortOrderOption = ["Relevant", "Newest", "A to Z"];
 
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
   const open = Boolean(anchorEl);
@@ -36,7 +36,7 @@ const SortComponent = ({ sortOrder, setSortOrder }: SortComponentProps) => {
           px: 2,
         }}
       >
-        {sortOrder === "" ? "New" : sortOrder} <Icon component={KeyboardArrowDown} />
+        {sortOrder} <Icon component={KeyboardArrowDown} />
       </Button>
       <Menu
         id="basic-menu"
@@ -47,7 +47,7 @@ const SortComponent = ({ sortOrder, setSortOrder }: SortComponentProps) => {
           "aria-labelledby": "basic-button",
         }}
       >
-        {sortOrderOption.map((item, id: number) => (
+        {Object.values(SortOption).map((item: string, id: number) => (
           <MenuItem
             key={id}
             sx={{ width: 122, "&:hover": { backgroundColor: theme.blue[100], color: theme.palette.primary.main, fontWeight: theme.fontWeight.semiBold } }}

@@ -21,13 +21,13 @@ import { Autocomplete, Icon, TextField } from "@mui/material";
 import { Modal, Select, Tooltip } from "antd";
 import Cookies from "js-cookie";
 import Image from "next/image";
-import { useRouter } from "next/navigation";
+import { useRouter } from "next-nprogress-bar";
 import React, { useEffect, useState } from "react";
 import { SubmitHandler, useForm } from "react-hook-form";
 import { MdOutlineKeyboardArrowDown } from "react-icons/md";
 import { Country, State, City } from "country-state-city";
 import { ICountry, IState, ICity } from "country-state-city";
-import { AUTH_PATH_URL } from "@/constant/pathUrl";
+import { AUTH_PATH_URL, HOME_PATH_URL } from "@/constant/pathUrl";
 const SignupFormPage = () => {
   const locale = Cookies.get("NEXT_LOCALE");
   const { Option } = Select;
@@ -125,7 +125,7 @@ const SignupFormPage = () => {
       <div className="bg-white h-full w-4/5 mx-auto">
         <div
           className="flex justify-center mt-[100px] mr-7 cursor-pointer"
-          onClick={() => router.push("/")}
+          onClick={() => router.push(HOME_PATH_URL)}
         >
           <Image src={AppLogo} alt={""} />
           <span className="text-[#0B7ECA] text-[48px] font-bold">

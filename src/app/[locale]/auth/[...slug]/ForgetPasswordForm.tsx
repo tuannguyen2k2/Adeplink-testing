@@ -14,9 +14,9 @@ import {
 import { useCountdown } from "@/hook/useCountdown";
 import { selectedTabType } from "./page";
 import { IoMdArrowBack } from "react-icons/io";
-import { useRouter } from "next/navigation";
+import { useRouter } from "next-nprogress-bar";
 import Cookies from "js-cookie";
-import { AUTH_PATH_URL } from "@/constant/pathUrl";
+import { AUTH_PATH_URL, HOME_PATH_URL } from "@/constant/pathUrl";
 
 const ForgetPasswordForm = () => {
   const locale = Cookies.get("NEXT_LOCALE");
@@ -69,7 +69,7 @@ const ForgetPasswordForm = () => {
         <div className="w-[80%] mx-auto flex flex-col items-center">
           <div
             className="flex justify-center mt-10 lg:mt-[100px] mr-7 cursor-pointer"
-            onClick={() => router.push("/")}
+            onClick={() => router.push(HOME_PATH_URL)}
           >
             <Image src={AppLogo} alt={""} />
             <span className="text-[#0B7ECA] text-[48px] font-bold">

@@ -1,18 +1,17 @@
-"use client";
-import { Box, Divider, Grid, Typography, useTheme } from "@mui/material";
-import Image from "next/image";
-import { MdArrowForwardIos } from "react-icons/md";
-import Product2 from "@/assets/images/product2.jpg";
-import { MAX_WIDTH_APP } from "@/constant/css";
-
-import useDevices from "@/hook/useDevices";
-import Cookies from "js-cookie";
-import { useRouter } from "next-nprogress-bar";
-import { PRODUCT_PATH_URL } from "@/constant/pathUrl";
+import {
+  Box,
+  Menu,
+  MenuItem,
+  Pagination,
+  Tooltip,
+  Typography,
+  useTheme,
+} from "@mui/material";
+import React, { useEffect, useRef, useState } from "react";
+import { IoIosArrowDown } from "react-icons/io";
 import ListProductComponent from "../common/show-list-product/ListProductComponent";
+import { PRODUCT_PATH_URL } from "@/constant/pathUrl";
 import { ProductDto } from "@/interface/common";
-import { useGetAllProductRecommended } from "@/api/product/query";
-import { useEffect } from "react";
 
 const supplierProduct = [
   {
@@ -407,35 +406,263 @@ const supplierProduct = [
     image: [],
   },
 ];
+const fakeCategory = [
+  { name: "Product by cate lv1 A", id: "1" },
+  { name: "Product by cate lv1 A", id: "2" },
+  { name: "Product by cate lv1 A ", id: "3" },
+  { name: "Product by cate lv1 A", id: "4" },
+  { name: "Product by cate lv1 A", id: "5" },
+  { name: "Product by cate lv1 A", id: "6" },
+  { name: "Product by cate lv1 A", id: "7" },
+  { name: "Product by cate lv1 A", id: "8" },
+  { name: "Product by cate lv1 A", id: "9" },
+  { name: "Product by cate lv1 A", id: "10" },
+];
 
-const RecommendedProduct = () => {
+const ProductOfSupplierList = () => {
   const theme = useTheme();
-  const { getAllProductRecommended, data } = useGetAllProductRecommended();
-  useEffect(() => {
-    getAllProductRecommended();
-  }, []);
+  const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
+  const open = Boolean(anchorEl);
+  const handleOpenMenu = (event: React.MouseEvent<HTMLElement>) => {
+    setAnchorEl(event.currentTarget);
+  };
+  const handleCloseMenu = () => {
+    setAnchorEl(null);
+  };
+
+  const [categorySelected, setCategorySelected] = useState<string>("all");
   return (
-    <Box
-      bgcolor={theme.blue[100]}
-      display={"flex"}
-      justifyContent={"center"}
-      mt={"100px"}
-    >
+    <Box width={"100%"} mt={"32px"}>
       <Box
-        px={"88px"}
-        py={"24px"}
-        p={{ xs: "0 20px 20px", sm: "24px 88px" }}
-        maxWidth={MAX_WIDTH_APP}
-        width={"100%"}
+        display={"flex"}
+        justifyContent={"space-between"}
+        paddingBottom={"6px"}
+        borderBottom={`2px solid ${theme.blue[1000]}`}
+        mb={"24px"}
+        py={"16px"}
       >
+        <Box
+          component={"button"}
+          color={theme.blue[500]}
+          onClick={() => setCategorySelected("all")}
+          width={150}
+        >
+          <Typography
+            sx={{
+              fontFamily: theme.fontFamily.secondary,
+              fontWeight:
+                categorySelected == "all"
+                  ? theme.fontWeight.semiBold
+                  : theme.fontWeight.regular,
+              whiteSpace: "nowrap",
+            }}
+          >
+            All Products
+          </Typography>
+        </Box>
+        {fakeCategory
+          .slice(0, fakeCategory.length <= 5 ? 5 : 4)
+          .map((item, index) => {
+            return (
+              <CategoryTooltip
+                key={item.id}
+                item={item}
+                categorySelected={categorySelected}
+                setCategorySelected={setCategorySelected}
+              />
+            );
+          })}
+        {fakeCategory.length > 5 && (
+          <Box
+            component={"button"}
+            color={theme.blue[500]}
+            display={"flex"}
+            alignItems={"center"}
+            gap={"8px"}
+            onClick={handleOpenMenu}
+            ml={"12px"}
+          >
+            <Typography
+              sx={{
+                fontFamily: theme.fontFamily.secondary,
+                display: "-webkit-box",
+                WebkitBoxOrient: "vertical",
+                WebkitLineClamp: 1,
+                overflow: "hidden",
+              }}
+            >
+              More
+            </Typography>
+            <IoIosArrowDown color="#0C71B9" />
+          </Box>
+        )}
+        <Menu
+          disableScrollLock
+          id="account-menu"
+          aria-labelledby="account-button"
+          anchorEl={anchorEl}
+          open={open}
+          onClose={handleCloseMenu}
+          anchorOrigin={{
+            vertical: "bottom",
+            horizontal: "right",
+          }}
+          transformOrigin={{
+            vertical: "top",
+            horizontal: "right",
+          }}
+          sx={{
+            p: "10px 16px",
+            display: "flex",
+            flexDirection: "column",
+
+            alignItems: "center",
+            top: "6px",
+          }}
+          PaperProps={{
+            sx: {
+              borderRadius: "8px!important",
+            },
+          }}
+          MenuListProps={{
+            sx: {
+              display: "flex",
+              flexDirection: "column",
+              gap: "5px",
+            },
+          }}
+        >
+          {fakeCategory.slice(4).map((item, index) => {
+            return (
+              <MenuItem
+                key={item.id}
+                onClick={() => {
+                  setCategorySelected(item.id);
+                  handleCloseMenu();
+                }}
+                selected={categorySelected == item.id}
+              >
+                <Typography
+                  sx={{
+                    fontWeight:
+                      categorySelected == item.id
+                        ? theme.fontWeight.semiBold
+                        : theme.fontWeight.regular,
+                    color: theme.blue[500],
+                    fontFamily: theme.fontFamily.secondary,
+                    display: "-webkit-box",
+                    WebkitBoxOrient: "vertical",
+                    WebkitLineClamp: 1,
+                    overflow: "hidden",
+                  }}
+                >
+                  {item.name}
+                </Typography>
+              </MenuItem>
+            );
+          })}
+        </Menu>
+      </Box>
+      <Box width={"100%"} display={"flex"} flexDirection={"column"} alignItems={"center"}>
         <ListProductComponent
-          title={"Recommended Products"}
           url={PRODUCT_PATH_URL.PRODUCT_LIST}
-          data={data}
+          data={supplierProduct as unknown as ProductDto[]}
+        />
+        <Pagination
+          count={10}
+          color="primary"
+          shape="rounded"
+          sx={{ justifyContent: "center", mt: "20px" }}
+          page={1}
+          // onChange={(e: ChangeEvent<unknown>, page: number) =>
+          //   handleChangePage(e, page)
+          // }
         />
       </Box>
     </Box>
   );
 };
 
-export default RecommendedProduct;
+type CategoryTooltipType = {
+  item: {
+    name: string;
+    id: string;
+  };
+  categorySelected: string;
+  setCategorySelected: (value: React.SetStateAction<string>) => void;
+};
+const CategoryTooltip = ({
+  item,
+  categorySelected,
+  setCategorySelected,
+}: CategoryTooltipType) => {
+  const theme = useTheme();
+  const nameRef = useRef<HTMLInputElement>(null);
+  const [showTooltip, setShowTooltip] = useState(false);
+  const [isHover, setIsHover] = useState(false);
+  useEffect(() => {
+    if (nameRef.current) {
+      const { offsetWidth, scrollWidth, scrollHeight, offsetHeight } =
+        nameRef.current;
+      if (scrollWidth > offsetWidth || scrollHeight > offsetHeight) {
+        setShowTooltip(true);
+      } else {
+        setShowTooltip(false);
+      }
+    }
+  }, [isHover]);
+  return (
+    <Box
+      onClick={() => setCategorySelected(item.id)}
+      onMouseEnter={() => setIsHover(true)}
+      onMouseLeave={() => setIsHover(false)}
+      component={"button"}
+      color={theme.blue[500]}
+      key={item.id}
+      mx={"12px"}
+      width={210}
+    >
+      <Tooltip
+        open={isHover && showTooltip}
+        title={item.name}
+        arrow={true}
+        slotProps={{
+          tooltip: {
+            sx: {
+              color: theme.blue[500],
+              backgroundColor: theme.blue[100],
+              p: "8px 12px",
+              fontSize: 12,
+              fontWeight: theme.fontWeight.regular,
+            },
+          },
+          arrow: {
+            sx: {
+              color: theme.blue[100],
+            },
+          },
+        }}
+      >
+        <Typography
+          ref={nameRef}
+          sx={{
+            fontFamily: theme.fontFamily.secondary,
+            fontWeight:
+              categorySelected == item.id
+                ? theme.fontWeight.semiBold
+                : theme.fontWeight.regular,
+            display: "-webkit-box",
+            WebkitBoxOrient: "vertical",
+            WebkitLineClamp: 1,
+            overflow: "hidden",
+            textAlign: "center",
+          }}
+        >
+          {item.name}
+        </Typography>
+      </Tooltip>
+    </Box>
+  );
+};
+
+export default ProductOfSupplierList;

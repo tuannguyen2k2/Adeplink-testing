@@ -2,6 +2,7 @@
   box-sizing: border-box;
   --background-color: #fff;
   --checkbox-height: 18px;
+  max-height: 18px;
 }
 
 @-moz-keyframes dothabottomcheck-19 {

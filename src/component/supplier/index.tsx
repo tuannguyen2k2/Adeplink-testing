@@ -1,9 +1,9 @@
 "use client";
 import useDevices from "@/hook/useDevices";
 import { MAX_WIDTH_APP } from "@/constant/css";
-import { Box, Button, Container, Grid, Icon, Pagination, TextField, Typography, useTheme } from "@mui/material";
+import { Box, Button, Icon, Pagination, Typography, useTheme } from "@mui/material";
 import { useSearchParams } from "next/navigation";
-import { ChangeEvent, SetStateAction, useState } from "react";
+import { useEffect, useState } from "react";
 import { FilterSupplierDto, PaginationDto, SupplierDto } from "@/interface/common";
 import FilterComponent from "./Filter";
 import SortComponent from "./SortComponent";
@@ -13,6 +13,8 @@ import ChatIcon from "@/assets/icons/chat.svg";
 import { useQuery } from "@tanstack/react-query";
 import { getAllSupplier } from "@/api/supplier";
 import { SUPPLIER_KEY } from "@/constant/queryKey";
+import NoImage from "@/assets/images/no-image.png";
+import { SortOption } from "@/constant/enum";
 
 const Supplier = ({ params }: { params: { slug: string } }) => {
   const { isMobile } = useDevices();
@@ -25,24 +27,20 @@ const Supplier = ({ params }: { params: { slug: string } }) => {
     category_ids: [],
     countries: [],
   });
-  const [sortOrder, setSortOrder] = useState<string>("");
+  const [sortOrder, setSortOrder] = useState<string>(SortOption.Newest as string);
   const [pagination, setPagination] = useState<PaginationDto>({ page: 1, limit: 5 });
 
   const { data: supplierData, isLoading } = useQuery({
-    queryKey: [SUPPLIER_KEY, pagination],
+    queryKey: [SUPPLIER_KEY, pagination, filter, sortOrder],
     queryFn: async () =>
-      await getAllSupplier({ page: pagination.page, limit: pagination.limit }).then((response) => {
+      await getAllSupplier(filter, sortOrder, { page: pagination.page, limit: pagination.limit }).then((response) => {
         setPagination({ ...pagination, totalPage: response.data.metadata.total_page });
         return response.data;
       }),
   });
-  console.log("TTTTTTTTTTTTTTTTTTTTTTT", supplierData);
-  console.log(params, "RRRRRRRRRRRRRRRRRRRRRRRRRRR", filter);
-  console.log(params, "SSSSSSSSSSSSSSSSSSSSSSSSSSS", sortOrder);
 
   return (
-    <Grid
-      container
+    <Box
       sx={{
         mx: "auto",
         mt: "184px",
@@ -51,89 +49,74 @@ const Supplier = ({ params }: { params: { slug: string } }) => {
         fontFamily: theme.fontFamily.secondary,
       }}
     >
-      <Grid component={Box} container xs={12} display={"flex"} justifyContent={"space-between"}>
+      <Box display={"flex"} justifyContent={"space-between"}>
         <Typography>aadad</Typography>
         <SortComponent sortOrder={sortOrder} setSortOrder={setSortOrder} />
-      </Grid>
-      <Grid component={Box} item xs={3}>
-        <FilterComponent filter={filter} setFilter={setFilter} categoryData={supplierData?.categories} countryData={supplierData?.countries} />
-      </Grid>
-      <Grid component={Box} item xs={9} sx={{ paddingLeft: 3 }}>
-        <Box display={"flex"} flexDirection={"column"} justifyContent={"start"} alignItems={"center"} width={"100%"}>
-          <Grid container spacing={10} width={"100%"} marginLeft={0} mt={0}>
+      </Box>
+      <Box sx={{ display: "flex" }}>
+        <Box sx={{ width: "300px" }}>
+          <FilterComponent filter={filter} setFilter={setFilter} categoryData={supplierData?.categories as Object} countryData={supplierData?.countries as string[]} />
+        </Box>
+        <Box sx={{ paddingLeft: 3, width: "100%" }}>
+          <Box width={"100%"} marginLeft={0} mt={0}>
             {supplierData?.companies?.map((supplier: SupplierDto) => (
-              <Grid
-                component={Box}
+              <Box
                 key={supplier?.id}
                 width={"100%"}
                 height={"100%"}
                 display={"flex"}
                 bgcolor={"common.white"}
+                justifyContent={"space-between"}
                 p={"16px"}
                 mb={3}
                 borderRadius={"10px"}
                 border={`1px solid ${theme.blue[100]}`}
               >
-                <Grid item xs={1.5} display={"flex"} justifyContent={"left"} alignItems={"center"}>
-                  <Box width={88} height={88} position={"absolute"}>
-                    <Image
-                      src={"https://vietnamnomad.com/wp-content/uploads/2020/04/Best-places-to-visit-in-Vietnam-in-2021-Ha-Long-Bay-1024x640.jpg"}
-                      alt="product"
-                      fill
-                      objectFit="fill"
-                      className="rounded-lg"
-                    />
-                    {/* <Image src={supplier.image} alt="product" fill objectFit="fill" className="rounded-lg" /> */}
+                <Box sx={{ display: "flex" }}>
+                  <Box width={88} height={88} position={"relative"}>
+                    <Image src={supplier.image ?? NoImage} alt="product" fill objectFit="fill" className="rounded-lg" />
                   </Box>
-                </Grid>
 
-                <Grid item xs={7}>
-                  <Typography
-                    color={theme.black[200]}
-                    fontWeight={theme.fontWeight.medium}
-                    fontFamily={theme.fontFamily.secondary}
-                    fontSize={16}
-                    sx={{
-                      display: "-webkit-box",
-                      WebkitBoxOrient: "vertical",
-                      WebkitLineClamp: 2,
-                      overflow: "hidden",
-                      mb: 1,
-                    }}
-                  >
-                    {supplier.company_name}
-                  </Typography>
-                  <Box>
-                    <Typography
-                      color={theme.black[400]}
-                      fontStyle={"italic"}
-                      fontSize={14}
-                      // mt={2}
-                      // mb={1}
-                      fontWeight={theme.fontWeight.regular}
-                      fontFamily={theme.fontFamily.secondary}
-                    >
-                      {supplier.main_category}
-                    </Typography>
+                  <Box sx={{ ml: 2 }}>
                     <Typography
                       color={theme.black[200]}
-                      fontWeight={theme.fontWeight.regular}
+                      fontWeight={theme.fontWeight.medium}
                       fontFamily={theme.fontFamily.secondary}
-                      fontSize={14}
+                      fontSize={16}
                       sx={{
-                        display: "flex",
+                        display: "-webkit-box",
                         WebkitBoxOrient: "vertical",
                         WebkitLineClamp: 2,
                         overflow: "hidden",
                         mb: 1,
                       }}
                     >
-                      <Icon component={LocationOnOutlined} sx={{ color: theme.palette.primary.main }} width={24} height={24} />
-                      {supplier.country}
+                      {supplier.company_name}
                     </Typography>
+                    <Box>
+                      <Typography color={theme.black[400]} fontStyle={"italic"} fontSize={14} fontWeight={theme.fontWeight.regular} fontFamily={theme.fontFamily.secondary}>
+                        {supplier.main_category}
+                      </Typography>
+                      <Typography
+                        color={theme.black[200]}
+                        fontWeight={theme.fontWeight.regular}
+                        fontFamily={theme.fontFamily.secondary}
+                        fontSize={14}
+                        sx={{
+                          display: "flex",
+                          WebkitBoxOrient: "vertical",
+                          WebkitLineClamp: 2,
+                          overflow: "hidden",
+                          mb: 1,
+                        }}
+                      >
+                        <Icon component={LocationOnOutlined} sx={{ color: theme.palette.primary.main }} width={24} height={24} />
+                        {supplier.country}
+                      </Typography>
+                    </Box>
                   </Box>
-                </Grid>
-                <Grid item xs={3.5} display={"flex"} justifyContent={"flex-end"} height={"fit-content"}>
+                </Box>
+                <Box display={"flex"} justifyContent={"flex-end"} height={"fit-content"}>
                   <Button sx={{ border: `1px solid ${theme.palette.primary.main}`, borderRadius: 2, marginRight: 1, width: 93, height: 42 }}>
                     <Image src={ChatIcon} alt="" width={20} height={20} /> Chat
                   </Button>
@@ -150,25 +133,33 @@ const Supplier = ({ params }: { params: { slug: string } }) => {
                   >
                     View details
                   </Button>
-                </Grid>
-              </Grid>
+                </Box>
+              </Box>
             ))}
-          </Grid>
-          <Pagination
-            count={supplierData?.metadata.total_page}
-            color="primary"
-            shape="rounded"
-            sx={{
-              justifyContent: "center",
-              mt: "20px",
-              "& .Mui-selected": {
-                borderRadius: "8px",
-              },
-            }}
-            onChange={(event, page) => { setPagination({ ...pagination, page: page }) }}
-          />
+          </Box>
+
+          {Number(pagination.totalPage) > 1 && (
+            <Box sx={{ display: "flex", justifyContent: "center" }}>
+              <Pagination
+                count={supplierData?.metadata.total_page}
+                color="primary"
+                shape="rounded"
+                sx={{
+                  justifyContent: "center",
+                  mt: "20px",
+                  "& .Mui-selected": {
+                    borderRadius: "8px",
+                  },
+                }}
+                onChange={(event, page) => {
+                  setPagination({ ...pagination, page: page });
+                }}
+              />
+            </Box>
+          )}
         </Box>
-      </Grid>
+      </Box>
+
       {/* <RelevantCategoryFilter />
       {keyword && (
         <Typography fontFamily={theme.fontFamily.secondary} mb={"20px"}>
@@ -355,7 +346,7 @@ const Supplier = ({ params }: { params: { slug: string } }) => {
         </Box>
         {data?.products && data?.products?.length > 0 ? <ProductList data={data?.products} /> : <NotFound caseValue={1} />}
       </Box> */}
-    </Grid>
+    </Box>
   );
 };
 

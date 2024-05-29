@@ -1,115 +1,18 @@
 import QuantityComponent from "@/component/common/QuantityComponent";
-import { PriceType, ProductDto } from "@/interface/common";
+import { ProductDetailDto } from "@/interface/common";
 import {
   Box,
   Button,
   Divider,
   Grid,
   Rating,
-  TextField,
   Typography,
-  useTheme,
+  useTheme
 } from "@mui/material";
 import { makeStyles } from "@mui/styles";
 import { ChangeEvent, useEffect, useState } from "react";
 import CartContact from "../CartContact";
 
-const fakePrice = [
-  {
-    quantity: "1000 - 2000",
-    price: "999",
-  },
-  {
-    quantity: "2000 - 2500",
-    price: "990",
-  },
-  {
-    quantity: ">=2501",
-    price: "990",
-  },
-  {
-    quantity: "1000 - 2000",
-    price: "999",
-  },
-  {
-    quantity: "2000 - 2500",
-    price: "990",
-  },
-  {
-    quantity: ">=2501",
-    price: "990",
-  },
-];
-
-const fakeColor = [
-  {
-    name: "Black",
-    code: "#000",
-  },
-  {
-    name: "Blue",
-    code: "rgba(12, 113, 186, 1)",
-  },
-  {
-    name: "Yellow",
-    code: "yellow",
-  },
-  {
-    name: "white",
-    code: "#fff",
-  },
-];
-
-const fakePackage = [
-  {
-    name: "Value 1",
-  },
-  {
-    name: "Value 2",
-  },
-  {
-    name: "Value 3",
-  },
-  {
-    name: "Value 4",
-  },
-  {
-    name: "Value 5",
-  },
-  {
-    name: "Value 6",
-  },
-  {
-    name: "Value 7",
-  },
-  {
-    name: "Value 8",
-  },
-  {
-    name: "Value 9",
-  },
-  {
-    name: "Value 10",
-  },
-  {
-    name: "Paper",
-  },
-];
-
-const fakeSize = [
-  {
-    name: "S",
-  },
-  {
-    name: "L",
-  },
-  {
-    name: "XS",
-  },
-  {
-    name: "XL",
-  },
-];
 
 const useStyles = makeStyles({
   root: {
@@ -126,12 +29,12 @@ const useStyles = makeStyles({
   },
 });
 
-const ProductCharacteristics = ({ data }: { data?: ProductDto }) => {
+const ProductCharacteristics = ({ data }: { data?: ProductDetailDto }) => {
   const theme = useTheme();
 
   const [priceSelected, setPriceSelected] = useState<number | undefined>(1);
   const [colorSelected, setColorSelected] = useState(0);
-  const [packageSelected, setPackageSelected] = useState({ name: "Value 1" });
+  const [packageSelected, setPackageSelected] = useState(0);
   const [sizeSelected, setSizeSelected] = useState(0);
   const [orderQuantity, setOrderQuantity] = useState<number | undefined>();
   const [openCartContact, setOpenCartContact] = useState(false);
@@ -177,7 +80,7 @@ const ProductCharacteristics = ({ data }: { data?: ProductDto }) => {
   const handleOnChangeQuantityInput = (e: ChangeEvent<HTMLInputElement>) => {
     setOrderQuantity(parseInt(e.target.value));
   };
-  console.log(orderQuantity);
+
   return (
     <Box width={"50%"}>
       <Box width={"100%"}>
@@ -258,8 +161,6 @@ const ProductCharacteristics = ({ data }: { data?: ProductDto }) => {
                         flexDirection={"column"}
                         alignItems={"center"}
                         gap={"16px"}
-                        component={"button"}
-                        onClick={() => setPriceSelected(index)}
                       >
                         <Typography
                           fontFamily={theme.fontFamily.secondary}
@@ -302,175 +203,186 @@ const ProductCharacteristics = ({ data }: { data?: ProductDto }) => {
             </Typography>
           )}
         </Box>
-        <Divider sx={{ borderColor: theme.blue[600], my: "20px" }} />
-        <Box width={"100%"}>
-          <Box display={"flex"} gap={"6px"} mb={"16px"}>
-            <Typography
-              fontFamily={theme.fontFamily.secondary}
-              fontSize={14}
-              color={theme.palette.grey[400]}
-            >
-              Color:&nbsp;
-            </Typography>
-            <Typography
-              fontFamily={theme.fontFamily.secondary}
-              fontWeight={theme.fontWeight.medium}
-              fontSize={14}
-              textTransform={"capitalize"}
-            >
-              {data?.variant_attributes?.color &&
-                JSON.parse(
-                  data?.variant_attributes?.color[colorSelected]
-                    .split("'")
-                    .join('"')
-                ).name}
-            </Typography>
-          </Box>
-          <Box display={"flex"} gap={"16px"} flexWrap={"wrap"}>
-            {data?.variant_attributes?.color?.map((item, index) => {
-              const color = JSON.parse(item.split("'").join('"')) as {
-                name: string;
-                code: string;
-              };
+        {data?.variant_attributes?.color && (
+          <>
+            <Divider sx={{ borderColor: theme.blue[600], my: "20px" }} />
+            <Box width={"100%"}>
+              <Box display={"flex"} gap={"6px"} mb={"16px"}>
+                <Typography
+                  fontFamily={theme.fontFamily.secondary}
+                  fontSize={14}
+                  color={theme.palette.grey[400]}
+                >
+                  Color:&nbsp;
+                </Typography>
+                <Typography
+                  fontFamily={theme.fontFamily.secondary}
+                  fontWeight={theme.fontWeight.medium}
+                  fontSize={14}
+                  textTransform={"capitalize"}
+                >
+                  {data?.variant_attributes?.color &&
+                    JSON.parse(
+                      data?.variant_attributes?.color[colorSelected]
+                        .split("'")
+                        .join('"')
+                    ).name}
+                </Typography>
+              </Box>
+              <Box display={"flex"} gap={"16px"} flexWrap={"wrap"}>
+                {data?.variant_attributes?.color?.map((item, index) => {
+                  const color = JSON.parse(item.split("'").join('"')) as {
+                    name: string;
+                    code: string;
+                  };
 
-              return (
-                <Box
-                  component={"button"}
-                  key={index}
-                  width={42}
-                  height={42}
-                  bgcolor={"white"}
-                  p={"4px"}
-                  border={`1px solid ${
-                    index === colorSelected
-                      ? theme.palette.primary.main
-                      : theme.blue[100]
-                  }`}
-                  borderRadius={"4px"}
-                  onClick={() => setColorSelected(index)}
+                  return (
+                    <Box
+                      component={"button"}
+                      key={index}
+                      width={42}
+                      height={42}
+                      bgcolor={"white"}
+                      p={"4px"}
+                      border={`1px solid ${
+                        index === colorSelected
+                          ? theme.palette.primary.main
+                          : theme.blue[100]
+                      }`}
+                      borderRadius={"4px"}
+                      onClick={() => setColorSelected(index)}
+                    >
+                      <Box
+                        bgcolor={color.code}
+                        width={1}
+                        height={1}
+                        borderRadius={"2px"}
+                      />
+                    </Box>
+                  );
+                })}
+              </Box>
+            </Box>
+          </>
+        )}
+        {data?.variant_attributes?.package && (
+          <>
+            <Divider sx={{ borderColor: theme.blue[600], my: "20px" }} />
+            <Box width={"100%"}>
+              <Box display={"flex"} gap={"6px"} mb={"16px"}>
+                <Typography
+                  fontFamily={theme.fontFamily.secondary}
+                  fontSize={14}
+                  color={theme.palette.grey[400]}
                 >
-                  <Box
-                    bgcolor={color.code}
-                    width={1}
-                    height={1}
-                    borderRadius={"2px"}
-                  />
-                </Box>
-              );
-            })}
-          </Box>
-        </Box>
-        <Divider sx={{ borderColor: theme.blue[600], my: "20px" }} />
-        <Box width={"100%"}>
-          <Box display={"flex"} gap={"6px"} mb={"16px"}>
-            <Typography
-              fontFamily={theme.fontFamily.secondary}
-              fontSize={14}
-              color={theme.palette.grey[400]}
-            >
-              Package:&nbsp;
-            </Typography>
-            <Typography
-              fontFamily={theme.fontFamily.secondary}
-              fontWeight={theme.fontWeight.medium}
-              fontSize={14}
-              textTransform={"capitalize"}
-            >
-              {packageSelected.name}
-            </Typography>
-          </Box>
-          <Box
-            component={"div"}
-            display={"flex"}
-            gap={"16px"}
-            flexWrap={"wrap"}
-            maxHeight={"160px"}
-            overflow={"auto"}
-          >
-            {fakePackage.map((item, index) => {
-              return (
-                <Box
-                  component={"button"}
-                  key={index}
-                  width={"fit-content"}
-                  height={"fit-content"}
-                  bgcolor={"white"}
-                  p={"8px 12px"}
-                  border={`1px solid ${
-                    packageSelected.name === item.name
-                      ? theme.palette.primary.main
-                      : theme.blue[100]
-                  }`}
-                  borderRadius={"4px"}
-                  onClick={() => setPackageSelected(item)}
+                  Package:&nbsp;
+                </Typography>
+                <Typography
+                  fontFamily={theme.fontFamily.secondary}
+                  fontWeight={theme.fontWeight.medium}
+                  fontSize={14}
+                  textTransform={"capitalize"}
                 >
-                  <Typography
-                    fontFamily={theme.fontFamily.secondary}
-                    fontSize={14}
-                  >
-                    {item.name}
-                  </Typography>
-                </Box>
-              );
-            })}
-          </Box>
-        </Box>
-        <Divider sx={{ borderColor: theme.blue[600], my: "20px" }} />
-        <Box width={"100%"}>
-          <Box display={"flex"} gap={"6px"} mb={"16px"}>
-            <Typography
-              fontFamily={theme.fontFamily.secondary}
-              fontSize={14}
-              color={theme.palette.grey[400]}
-            >
-              Size:&nbsp;
-            </Typography>
-            <Typography
-              fontFamily={theme.fontFamily.secondary}
-              fontWeight={theme.fontWeight.medium}
-              fontSize={14}
-              textTransform={"capitalize"}
-            >
-              {data?.variant_attributes?.size &&
-                data?.variant_attributes?.size[sizeSelected]}
-            </Typography>
-          </Box>
-          <Box
-            component={"div"}
-            display={"flex"}
-            gap={"16px"}
-            flexWrap={"wrap"}
-            maxHeight={"160px"}
-            overflow={"auto"}
-          >
-            {data?.variant_attributes?.size?.map((item, index) => {
-              return (
-                <Box
-                  component={"button"}
-                  key={index}
-                  width={"fit-content"}
-                  height={"fit-content"}
-                  bgcolor={"white"}
-                  p={"8px 12px"}
-                  border={`1px solid ${
-                    sizeSelected === index
-                      ? theme.palette.primary.main
-                      : theme.blue[100]
-                  }`}
-                  borderRadius={"4px"}
-                  onClick={() => setSizeSelected(index)}
+                  {data?.variant_attributes?.package[sizeSelected]}
+                </Typography>
+              </Box>
+              <Box
+                component={"div"}
+                display={"flex"}
+                gap={"16px"}
+                flexWrap={"wrap"}
+                maxHeight={"160px"}
+                overflow={"auto"}
+              >
+                {data?.variant_attributes?.package.map((item, index) => {
+                  return (
+                    <Box
+                      component={"button"}
+                      key={index}
+                      width={"fit-content"}
+                      height={"fit-content"}
+                      bgcolor={"white"}
+                      p={"8px 12px"}
+                      border={`1px solid ${
+                        packageSelected === index
+                          ? theme.palette.primary.main
+                          : theme.blue[100]
+                      }`}
+                      borderRadius={"4px"}
+                      onClick={() => setPackageSelected(index)}
+                    >
+                      <Typography
+                        fontFamily={theme.fontFamily.secondary}
+                        fontSize={14}
+                      >
+                        {item}
+                      </Typography>
+                    </Box>
+                  );
+                })}
+              </Box>
+            </Box>
+          </>
+        )}
+        {data?.variant_attributes?.size && (
+          <>
+            <Divider sx={{ borderColor: theme.blue[600], my: "20px" }} />
+            <Box width={"100%"}>
+              <Box display={"flex"} gap={"6px"} mb={"16px"}>
+                <Typography
+                  fontFamily={theme.fontFamily.secondary}
+                  fontSize={14}
+                  color={theme.palette.grey[400]}
                 >
-                  <Typography
-                    fontFamily={theme.fontFamily.secondary}
-                    fontSize={14}
-                  >
-                    {item}
-                  </Typography>
-                </Box>
-              );
-            })}
-          </Box>
-        </Box>
+                  Size:&nbsp;
+                </Typography>
+                <Typography
+                  fontFamily={theme.fontFamily.secondary}
+                  fontWeight={theme.fontWeight.medium}
+                  fontSize={14}
+                  textTransform={"capitalize"}
+                >
+                  {data?.variant_attributes?.size[sizeSelected]}
+                </Typography>
+              </Box>
+              <Box
+                component={"div"}
+                display={"flex"}
+                gap={"16px"}
+                flexWrap={"wrap"}
+                maxHeight={"160px"}
+                overflow={"auto"}
+              >
+                {data?.variant_attributes?.size?.map((item, index) => {
+                  return (
+                    <Box
+                      component={"button"}
+                      key={index}
+                      width={"fit-content"}
+                      height={"fit-content"}
+                      bgcolor={"white"}
+                      p={"8px 12px"}
+                      border={`1px solid ${
+                        sizeSelected === index
+                          ? theme.palette.primary.main
+                          : theme.blue[100]
+                      }`}
+                      borderRadius={"4px"}
+                      onClick={() => setSizeSelected(index)}
+                    >
+                      <Typography
+                        fontFamily={theme.fontFamily.secondary}
+                        fontSize={14}
+                      >
+                        {item}
+                      </Typography>
+                    </Box>
+                  );
+                })}
+              </Box>
+            </Box>
+          </>
+        )}
         <Divider sx={{ borderColor: theme.blue[600], my: "20px" }} />
         <Box width={"100%"}>
           <Typography
@@ -514,7 +426,7 @@ const ProductCharacteristics = ({ data }: { data?: ProductDto }) => {
                 },
               }}
             >
-              {priceSelected ? "Add to cart" : "Contact"}
+              {priceSelected == undefined ? "Contact" : "Add to cart"}
             </Button>
           </Box>
           {data?.min_order &&

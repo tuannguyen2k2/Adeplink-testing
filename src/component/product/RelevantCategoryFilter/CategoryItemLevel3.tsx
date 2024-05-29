@@ -3,10 +3,11 @@ import Image from "next/image";
 import Product2 from "@/assets/images/product2.jpg";
 import { CategoriesHierarchyDto } from "@/interface/common";
 import { useEffect, useState } from "react";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useSearchParams } from "next/navigation";
 import Cookies from "js-cookie";
 import { PRODUCT_PATH_URL } from "@/constant/pathUrl";
 import { convertImage } from "@/utils";
+import { useRouter } from "next-nprogress-bar";
 const CategoryItemLevel3 = ({
   categoryLevel3,
 }: {
