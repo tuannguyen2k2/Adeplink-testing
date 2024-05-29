@@ -77,7 +77,6 @@ export const getProductByCategory = async (data: FilterProductDto) => {
 };
 
 export const getRatingByProductId = async (productId: string) => {
-  console.log('APIIIIIIIIIIIIIiiii')
   return await axiosConfig
     .get(`/vote?product_id=${productId}`)
     .then((response) => response.data.data)

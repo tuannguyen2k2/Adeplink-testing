@@ -167,7 +167,7 @@ const Cart = () => {
             </TableContainer>
           </Box>
 
-          <Box sx={{ backgroundColor: "#F8FBFF", padding: "16px", borderRadius: "8px" }}>
+          <Box sx={{ backgroundColor: theme.blue[1100], padding: "16px", borderRadius: "8px" }}>
             <Box sx={{ display: "flex", justifyContent: "space-between", mb: 2 }}>
               <Typography sx={{ fontFamily: theme.fontFamily.secondary, fontSize: 14, fontWeight: theme.fontWeight.regular, color: "black" }}>Item subtotal</Typography>
               <Typography sx={{ fontFamily: theme.fontFamily.secondary, fontSize: 14, fontWeight: theme.fontWeight.regular, color: "black" }}>$999</Typography>

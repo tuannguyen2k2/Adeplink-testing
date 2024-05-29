@@ -2,6 +2,9 @@
 import { createTheme } from "@mui/material/styles";
 import { ThemeOptions as ThemeOptionsOld } from "@mui/material/styles/createTheme";
 const themeColors = {
+  boxShadow: {
+    100: "0 2px 2px rgba(0, 0, 0, 0.1)",
+  },
   blue: {
     100: "#F0F6FF",
     200: "#C9DEFF",
@@ -13,6 +16,7 @@ const themeColors = {
     800: "#0C71B9",
     900: "#9FC9ED",
     1000: "#1795E0",
+    1100: "#F8FBFF",
   },
   black: {
     main: "#000",

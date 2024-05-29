@@ -143,7 +143,9 @@ const CategoryPopover = ({ data }: CategoryPopoverType) => {
                     }
                     onClick={() =>
                       router.push(
-                        `${PRODUCT_PATH_URL.PRODUCT_LIST}?cate_level1_id=${categoryLevel1.id}&cate_name=${categoryLevel1.name}`
+                        `${PRODUCT_PATH_URL.PRODUCT_LIST}?cate_level1_id=${
+                          categoryLevel1.id
+                        }&cate_name=${encodeURIComponent(categoryLevel1?.name)}`
                       )
                     }
                   >
@@ -200,7 +202,7 @@ const CategoryPopover = ({ data }: CategoryPopoverType) => {
                         whiteSpace={"nowrap"}
                         onClick={() =>
                           router.push(
-                            `${PRODUCT_PATH_URL.PRODUCT_LIST}?cate_level1_id=${categoryLevel2.parent_category_id}&cate_level2_id=${categoryLevel2.id}&cate_name=${categoryLevel2.name}`
+                            `${PRODUCT_PATH_URL.PRODUCT_LIST}?cate_level1_id=${categoryLevel2.parent_category_id}&cate_level2_id=${categoryLevel2.id}&cate_name=${encodeURIComponent(categoryLevel2?.name)}`
                           )
                         }
                       >
@@ -217,7 +219,7 @@ const CategoryPopover = ({ data }: CategoryPopoverType) => {
                               sx={{ pl: 0, py: "4px", maxWidth: "150px" }}
                               onClick={() =>
                                 router.push(
-                                  `${PRODUCT_PATH_URL.PRODUCT_LIST}?cate_level1_id=${categoryLevel2.parent_category_id}&cate_level2_id=${categoryLevel2.id}&cate_level3_id=${categoryLevel3.id}&cate_name=${categoryLevel3.name}`
+                                  `${PRODUCT_PATH_URL.PRODUCT_LIST}?cate_level1_id=${categoryLevel2.parent_category_id}&cate_level2_id=${categoryLevel2.id}&cate_level3_id=${categoryLevel3.id}&cate_name=${encodeURIComponent(categoryLevel3?.name)}`
                                 )
                               }
                             >

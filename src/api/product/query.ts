@@ -74,6 +74,5 @@ export const useGetRatingByProductId = () => {
       }, 2000);
     },
   });
-  console.log('QQQQQQQQQQQQQQQQQQQQ', data)
-  return { getRatingByProduct: mutate, isPending, error, data, isSuccess };
+  return { getRatingByProductId: mutate, isPending, error, data, isSuccess };
 };

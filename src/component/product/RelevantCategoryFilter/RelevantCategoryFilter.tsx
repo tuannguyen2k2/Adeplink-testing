@@ -270,7 +270,7 @@ const RelevantCategoryFilter = () => {
             onMouseEnter={() => setCategoryLevel2Hovered("all")}
             onClick={() => {
               router.push(
-                `${PRODUCT_PATH_URL.PRODUCT_LIST}?cate_level1_id=${cate_level1_id}&cate_name=${data?.name}`
+                `${PRODUCT_PATH_URL.PRODUCT_LIST}?cate_level1_id=${cate_level1_id}&cate_name=${data?.name && encodeURIComponent(data?.name)}`
               );
             }}
           >
@@ -318,7 +318,7 @@ const RelevantCategoryFilter = () => {
                 }}
                 onClick={() =>
                   router.push(
-                    `${PRODUCT_PATH_URL.PRODUCT_LIST}?cate_level1_id=${categoryLevel2.parent_category_id}&cate_level2_id=${categoryLevel2.id}&cate_name=${categoryLevel2.name}`
+                    `${PRODUCT_PATH_URL.PRODUCT_LIST}?cate_level1_id=${categoryLevel2.parent_category_id}&cate_level2_id=${categoryLevel2.id}&cate_name=${encodeURIComponent(categoryLevel2?.name)}`
                   )
                 }
               >

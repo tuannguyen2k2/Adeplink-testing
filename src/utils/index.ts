@@ -21,10 +21,16 @@ export const getCateUrl = () => {
   const cate_level2_id = searchParams.get("cate_level2_id");
   const cate_level3_id = searchParams.get("cate_level3_id");
   if (cate_level3_id) {
-    return `cate_level1_id=${cate_level1_id}&cate_level2_id=${cate_level2_id}&cate_level3_id=${cate_level3_id}&cate_name=${cate_name}`;
+    return `cate_level1_id=${cate_level1_id}&cate_level2_id=${cate_level2_id}&cate_level3_id=${cate_level3_id}&cate_name=${
+      cate_name && encodeURIComponent(cate_name)
+    }`;
   } else if (cate_level2_id) {
-    return `cate_level1_id=${cate_level1_id}&cate_level2_id=${cate_level2_id}&cate_name=${cate_name}`;
+    return `cate_level1_id=${cate_level1_id}&cate_level2_id=${cate_level2_id}&cate_name=${
+      cate_name && encodeURIComponent(cate_name)
+    }`;
   } else if (cate_level1_id) {
-    return `cate_level1_id=${cate_level1_id}&cate_name=${cate_name}`;
+    return `cate_level1_id=${cate_level1_id}&cate_name=${
+      cate_name && encodeURIComponent(cate_name)
+    }`;
   }
 };

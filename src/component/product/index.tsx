@@ -296,7 +296,7 @@ const Product = () => {
               {listCategoryFilter &&
                 Object.entries(listCategoryFilter).map(([id, name]) => {
                   return (
-                    <Box display={"flex"} gap={1} key={id}>
+                    <Box display={"flex"} gap={1} mb={2} key={id}>
                       <CheckboxComponent
                         id={id}
                         handleOnCheck={handleOnCheckCategory}

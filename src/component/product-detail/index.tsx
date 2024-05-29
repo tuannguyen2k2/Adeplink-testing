@@ -27,7 +27,6 @@ const ProductDetail = ({ slug }: { slug: string }) => {
       }}
     >
       <Cart />
-      {/* <CartContact/> */}
       <ProductInfo data={data} />
       <SupplierInfo data={data?.supplier} />
       <DescriptionInfo data={data} />

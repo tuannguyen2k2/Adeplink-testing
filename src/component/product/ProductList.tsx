@@ -51,7 +51,7 @@ const ProductList = ({ data }: ProductListType) => {
               border={`1px solid ${theme.blue[100]}`}
             >
               <Image
-                src={convertImage(product?.image[0]?.url) || ""}
+                src={convertImage(product?.image[0]?.image_url) || ""}
                 alt="product"
                 width={268}
                 height={268}

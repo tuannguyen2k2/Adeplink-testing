@@ -202,7 +202,7 @@ const CartContact = ({ openCart, handleOpenCart, handleCloseCart }: CartContactT
 
           <Box
             sx={{
-              backgroundColor: "#F8FBFF",
+              backgroundColor: theme.blue[1100],
               padding: "16px",
               borderRadius: "8px",
             }}

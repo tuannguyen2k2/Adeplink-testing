@@ -1,5 +1,14 @@
 "use client";
-import { Accordion, AccordionDetails, AccordionSummary, Box, Button, Icon, Typography, useTheme } from "@mui/material";
+import {
+  Accordion,
+  AccordionDetails,
+  AccordionSummary,
+  Box,
+  Button,
+  Icon,
+  Typography,
+  useTheme,
+} from "@mui/material";
 import Image from "next/image";
 import SupplierAvatar from "@/assets/images/login-background.png";
 import { LocationOnOutlined } from "@mui/icons-material";
@@ -9,25 +18,53 @@ import { SupplierDetailDto } from "@/interface/common";
 import moment from "moment";
 const SupplierInfo = ({ data }: { data: SupplierDetailDto }) => {
   const theme = useTheme();
-  console.log('DDDDDDDDDDDDDDDDDDDDDDDDDDDDDDd', data)
-  if(!data) return <div>Loading....</div>
+  console.log("DDDDDDDDDDDDDDDDDDDDDDDDDDDDDDd", data);
+  if (!data) return <div>Loading....</div>;
   return (
-    <Box width={"100%"} p={"16px"} border={`1px solid ${theme.blue[100]}`} boxShadow={"0 2px 2px rgba(0, 0, 0, 0.1)"} borderRadius={"16px"}>
+    <Box
+      width={"100%"}
+      p={"16px"}
+      border={`1px solid ${theme.blue[100]}`}
+      boxShadow={theme.boxShadow[100]}
+      borderRadius={"16px"}
+    >
       <Box width={"100%"} display={"flex"} height={114}>
         <Box width={"100%"} display={"flex"}>
           <Box width={114} height={114}>
-            <Image src={SupplierAvatar} alt="supplier avatar" className="h-full rounded-lg" />
+            <Image
+              src={SupplierAvatar}
+              alt="supplier avatar"
+              className="h-full rounded-lg"
+            />
           </Box>
-          <Box display={"flex"} flexDirection={"column"} justifyContent={"space-between"} ml={"16px"}>
-            <Typography fontFamily={theme.fontFamily.secondary} fontSize={24} fontWeight={theme.fontWeight.medium}>
+          <Box
+            display={"flex"}
+            flexDirection={"column"}
+            justifyContent={"space-between"}
+            ml={"16px"}
+          >
+            <Typography
+              fontFamily={theme.fontFamily.secondary}
+              fontSize={24}
+              fontWeight={theme.fontWeight.medium}
+            >
               {data.company.company_name}
             </Typography>
             <Box>
-              <Typography fontFamily={theme.fontFamily.secondary} fontStyle={"italic"} color={theme.black[400]}>
+              <Typography
+                fontFamily={theme.fontFamily.secondary}
+                fontStyle={"italic"}
+                color={theme.black[400]}
+              >
                 {data.category[0].name}
               </Typography>
               <Box display={"flex"} alignItems={"center"}>
-                <Icon component={LocationOnOutlined} sx={{ color: theme.palette.primary.main }} width={24} height={24} />
+                <Icon
+                  component={LocationOnOutlined}
+                  sx={{ color: theme.palette.primary.main }}
+                  width={24}
+                  height={24}
+                />
                 <Typography
                   color={theme.black[200]}
                   fontWeight={theme.fontWeight.regular}
@@ -71,15 +108,23 @@ const SupplierInfo = ({ data }: { data: SupplierDetailDto }) => {
       <AccordionComponent title="Company Information">
         <Box sx={{ display: "flex", flexDirection: "column", gap: "8px" }}>
           <Box display={"flex"} gap={"4px"}>
-            <Typography fontFamily={theme.fontFamily.secondary} fontWeight={theme.fontWeight.semiBold} fontSize={14}>
+            <Typography
+              fontFamily={theme.fontFamily.secondary}
+              fontWeight={theme.fontWeight.semiBold}
+              fontSize={14}
+            >
               Established on:
             </Typography>
             <Typography fontFamily={theme.fontFamily.secondary} fontSize={14}>
-              {moment(data.company.year_established).format('DD/MM/YYYY')}
+              {moment(data.company.year_established).format("DD/MM/YYYY")}
             </Typography>
           </Box>
           <Box display={"flex"} gap={"4px"}>
-            <Typography fontFamily={theme.fontFamily.secondary} fontWeight={theme.fontWeight.semiBold} fontSize={14}>
+            <Typography
+              fontFamily={theme.fontFamily.secondary}
+              fontWeight={theme.fontWeight.semiBold}
+              fontSize={14}
+            >
               Location:
             </Typography>
             <Typography fontFamily={theme.fontFamily.secondary} fontSize={14}>
@@ -87,7 +132,11 @@ const SupplierInfo = ({ data }: { data: SupplierDetailDto }) => {
             </Typography>
           </Box>
           <Box display={"flex"} gap={"4px"}>
-            <Typography fontFamily={theme.fontFamily.secondary} fontWeight={theme.fontWeight.semiBold} fontSize={14}>
+            <Typography
+              fontFamily={theme.fontFamily.secondary}
+              fontWeight={theme.fontWeight.semiBold}
+              fontSize={14}
+            >
               Main products:
             </Typography>
             <Typography fontFamily={theme.fontFamily.secondary} fontSize={14}>
@@ -95,7 +144,11 @@ const SupplierInfo = ({ data }: { data: SupplierDetailDto }) => {
             </Typography>
           </Box>
           <Box display={"flex"} gap={"4px"}>
-            <Typography fontFamily={theme.fontFamily.secondary} fontWeight={theme.fontWeight.semiBold} fontSize={14}>
+            <Typography
+              fontFamily={theme.fontFamily.secondary}
+              fontWeight={theme.fontWeight.semiBold}
+              fontSize={14}
+            >
               Website:
             </Typography>
             <Typography fontFamily={theme.fontFamily.secondary} fontSize={14}>
@@ -103,7 +156,11 @@ const SupplierInfo = ({ data }: { data: SupplierDetailDto }) => {
             </Typography>
           </Box>
           <Box display={"flex"} gap={"4px"}>
-            <Typography fontFamily={theme.fontFamily.secondary} fontWeight={theme.fontWeight.semiBold} fontSize={14}>
+            <Typography
+              fontFamily={theme.fontFamily.secondary}
+              fontWeight={theme.fontWeight.semiBold}
+              fontSize={14}
+            >
               Joined AdeptLink since:
             </Typography>
             <Typography fontFamily={theme.fontFamily.secondary} fontSize={14}>
@@ -116,7 +173,11 @@ const SupplierInfo = ({ data }: { data: SupplierDetailDto }) => {
       <AccordionComponent title="Contact">
         <Box sx={{ display: "flex", flexDirection: "column", gap: "8px" }}>
           <Box display={"flex"} gap={"4px"}>
-            <Typography fontFamily={theme.fontFamily.secondary} fontWeight={theme.fontWeight.semiBold} fontSize={14}>
+            <Typography
+              fontFamily={theme.fontFamily.secondary}
+              fontWeight={theme.fontWeight.semiBold}
+              fontSize={14}
+            >
               Phone number:
             </Typography>
             <Typography fontFamily={theme.fontFamily.secondary} fontSize={14}>
@@ -124,7 +185,11 @@ const SupplierInfo = ({ data }: { data: SupplierDetailDto }) => {
             </Typography>
           </Box>
           <Box display={"flex"} gap={"4px"}>
-            <Typography fontFamily={theme.fontFamily.secondary} fontWeight={theme.fontWeight.semiBold} fontSize={14}>
+            <Typography
+              fontFamily={theme.fontFamily.secondary}
+              fontWeight={theme.fontWeight.semiBold}
+              fontSize={14}
+            >
               Email address:
             </Typography>
             <Typography fontFamily={theme.fontFamily.secondary} fontSize={14}>

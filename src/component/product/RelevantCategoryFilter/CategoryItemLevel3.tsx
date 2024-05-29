@@ -44,7 +44,7 @@ const CategoryItemLevel3 = ({
         sx={{ cursor: "pointer" }}
         onClick={() =>
           router.push(
-            `${PRODUCT_PATH_URL.PRODUCT_LIST}?cate_level1_id=${cate_level1_id}&cate_level2_id=${categoryLevel3.parent_category_id}&cate_level3_id=${categoryLevel3.id}&cate_name=${categoryLevel3.name}`
+            `${PRODUCT_PATH_URL.PRODUCT_LIST}?cate_level1_id=${cate_level1_id}&cate_level2_id=${categoryLevel3.parent_category_id}&cate_level3_id=${categoryLevel3.id}&cate_name=${encodeURIComponent(categoryLevel3?.name)}`
           )
         }
       >
