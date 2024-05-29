@@ -195,7 +195,7 @@ console.log('DDDDDDDDDDDDDDDDDDDDDDDD', data)
             </Box>
           )}
         </Box>
-      )) : <div>null</div>}
+      ))}
       {Number(filter?.totalPage) > 1 && (
         <Box sx={{ display: "flex", justifyContent: "center" }}>
           <Pagination

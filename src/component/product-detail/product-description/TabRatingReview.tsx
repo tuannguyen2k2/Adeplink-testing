@@ -4,145 +4,55 @@ import RatingComponent from "@/component/common/RatingComponent";
 import { RatingOption, RatingType } from "@/constant/enum";
 import { PaginationDto, RatingFilter } from "@/interface/common";
 import { useGetRatingByProductId } from "@/api/product/query";
-import { Box, Rating, Typography, useTheme } from "@mui/material";
+import { Box, Pagination, Rating, Typography, useTheme } from "@mui/material";
 import { useDraggable } from "react-use-draggable-scroll";
 import moment from "moment";
 import Image from "next/image";
 import { convertImage } from "@/utils";
 import NoImage from "@/assets/images/no-image.png";
 
-const reviewData = [
-  {
-    id: 1,
-    user: "User 1",
-    ratingValue: 4,
-    ratingContent: "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor",
-    date: "19/05/2024",
-    image: [
-      {
-        url: "https://th.bing.com/th/id/OIP.4nipAL-jO0_Emngf7okS3AHaF7?rs=1&pid=ImgDetMain",
-      },
-      {
-        url: "https://th.bing.com/th/id/OIP.4nipAL-jO0_Emngf7okS3AHaF7?rs=1&pid=ImgDetMain",
-      },
-      {
-        url: "https://th.bing.com/th/id/OIP.4nipAL-jO0_Emngf7okS3AHaF7?rs=1&pid=ImgDetMain",
-      },
-      {
-        url: "https://th.bing.com/th/id/OIP.4nipAL-jO0_Emngf7okS3AHaF7?rs=1&pid=ImgDetMain",
-      },
-      {
-        url: "https://th.bing.com/th/id/OIP.4nipAL-jO0_Emngf7okS3AHaF7?rs=1&pid=ImgDetMain",
-      },
-    ],
-  },
-  {
-    id: 1,
-    user: "User 2",
-    ratingValue: 5,
-    ratingContent: "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor",
-    date: "19/05/2024",
-    image: [
-      {
-        url: "https://th.bing.com/th/id/OIP.4nipAL-jO0_Emngf7okS3AHaF7?rs=1&pid=ImgDetMain",
-      },
-      {
-        url: "https://th.bing.com/th/id/OIP.4nipAL-jO0_Emngf7okS3AHaF7?rs=1&pid=ImgDetMain",
-      },
-      {
-        url: "https://th.bing.com/th/id/OIP.4nipAL-jO0_Emngf7okS3AHaF7?rs=1&pid=ImgDetMain",
-      },
-      {
-        url: "https://th.bing.com/th/id/OIP.4nipAL-jO0_Emngf7okS3AHaF7?rs=1&pid=ImgDetMain",
-      },
-    ],
-  },
-  {
-    id: 1,
-    user: "User 3",
-    ratingValue: 4,
-    ratingContent: "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor",
-    date: "19/05/2024",
-    image: [
-      {
-        url: "https://th.bing.com/th/id/OIP.4nipAL-jO0_Emngf7okS3AHaF7?rs=1&pid=ImgDetMain",
-      },
-      {
-        url: "https://th.bing.com/th/id/OIP.4nipAL-jO0_Emngf7okS3AHaF7?rs=1&pid=ImgDetMain",
-      },
-      {
-        url: "https://th.bing.com/th/id/OIP.4nipAL-jO0_Emngf7okS3AHaF7?rs=1&pid=ImgDetMain",
-      },
-    ],
-  },
-  {
-    id: 1,
-    user: "User 4",
-    ratingValue: 3,
-    ratingContent: "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor",
-    date: "19/05/2024",
-    image: [
-      {
-        url: "https://th.bing.com/th/id/OIP.4nipAL-jO0_Emngf7okS3AHaF7?rs=1&pid=ImgDetMain",
-      },
-      {
-        url: "https://th.bing.com/th/id/OIP.4nipAL-jO0_Emngf7okS3AHaF7?rs=1&pid=ImgDetMain",
-      },
-      {
-        url: "https://th.bing.com/th/id/OIP.4nipAL-jO0_Emngf7okS3AHaF7?rs=1&pid=ImgDetMain",
-      },
-      {
-        url: "https://th.bing.com/th/id/OIP.4nipAL-jO0_Emngf7okS3AHaF7?rs=1&pid=ImgDetMain",
-      },
-      {
-        url: "https://th.bing.com/th/id/OIP.4nipAL-jO0_Emngf7okS3AHaF7?rs=1&pid=ImgDetMain",
-      },
-    ],
-  },
-];
-
 const TabRatingReview = ({ productId }: { productId: string }) => {
   const ref = useRef<HTMLDivElement>() as React.MutableRefObject<HTMLInputElement>;
   const { events } = useDraggable(ref);
   const theme = useTheme();
-  const { getRatingByProductId, data: reviewData } = useGetRatingByProductId();
+  const { getRatingByProduct, data: reviewData } = useGetRatingByProductId();
   const [reviewFilter, setReviewFilter] = useState<PaginationDto & RatingFilter>({ star: null, with_media: null, page: 1, limit: 10, totalPage: 0 });
   const [filterReview, setFilterReview] = useState<string>(RatingOption.All);
-  useEffect(() => {
-    getRatingByProductId("29b89cab-06bf-496a-95ce-9ca0a2d008bc");
-    // getRatingByProductId(productId);
-  }, [productId]);
+
+  // useEffect(() => {
+    getRatingByProduct("22d3ed7f-c156-4156-9d1b-8c527b6e2903");
+  // }, []);
 
   const handleChangeFilter = (option: string) => {
     setFilterReview(option);
-    setFilter({ ...filter, with_media: null, star: null });
+    setReviewFilter({ ...reviewFilter, with_media: null, star: null });
     switch (option) {
       case RatingOption.All: {
-        setFilter({ ...filter, with_media: false, star: null });
+        setReviewFilter({ ...reviewFilter, with_media: false, star: null });
         break;
       }
       case RatingOption.With_photo_video: {
-        setFilter({ ...filter, with_media: true });
+        setReviewFilter({ ...reviewFilter, with_media: true });
         break;
       }
       case RatingOption.start_5: {
-        setFilter({ ...filter, star: 5 });
+        setReviewFilter({ ...reviewFilter, star: 5 });
         break;
       }
       case RatingOption.start_4: {
-        setFilter({ ...filter, star: 4 });
+        setReviewFilter({ ...reviewFilter, star: 4 });
         break;
       }
       case RatingOption.start_3: {
-        setFilter({ ...filter, star: 3 });
+        setReviewFilter({ ...reviewFilter, star: 3 });
         break;
       }
       case RatingOption.start_2: {
-        setFilter({ ...filter, star: 2 });
+        setReviewFilter({ ...reviewFilter, star: 2 });
         break;
       }
       case RatingOption.start_1: {
-        setFilter({ ...filter, star: 1 });
+        setReviewFilter({ ...reviewFilter, star: 1 });
         break;
       }
     }
@@ -167,10 +77,10 @@ const TabRatingReview = ({ productId }: { productId: string }) => {
               alignItems: "baseline",
             }}
           >
-            <Typography sx={{ fontWeight: theme.fontWeight.bold, fontSize: 24 }}>{reviewData?.average}</Typography>
+            <Typography sx={{ fontWeight: theme.fontWeight.bold, fontSize: 24 }}>4.1</Typography>
             <Typography>&nbsp;out of 5</Typography>
           </Box>
-          <Rating precision={0.1} sx={{ color: theme.yellow[100] }} value={reviewData?.average} readOnly />
+          <Rating precision={0.1} sx={{ color: theme.yellow[100] }} value={4.1} readOnly />
         </Box>
         <Box sx={{ display: "flex", overflowX: "hidden", ml: 3 }} {...events} ref={ref}>
           {/* <Box sx={{ display: "flex", overflowX: "scrool", ml: 3 }}>  dòng này để backup nếu muốn scrool  */}
@@ -220,8 +130,8 @@ const TabRatingReview = ({ productId }: { productId: string }) => {
           ))}
         </Box>
       </Box>
-      {reviewData ? (
-        reviewData.review.products.map((item: any, id: number) => (
+      {/* {reviewData ? (
+        reviewData?.review.products.map((item: any, id: number) => (
           <Box
             key={id}
             sx={{
@@ -280,14 +190,14 @@ const TabRatingReview = ({ productId }: { productId: string }) => {
         ))
       ) : (
         <div>null</div>
-      )}
-      {Number(filter?.totalPage) > 1 && (
+      )} */}
+      {Number(reviewFilter?.totalPage) > 1 && (
         <Box sx={{ display: "flex", justifyContent: "center" }}>
           <Pagination
-            count={filter.totalPage}
+            count={reviewFilter.totalPage}
             shape="rounded"
             onChange={(event, page) => {
-              setFilter({ ...filter, page: page });
+              setReviewFilter({ ...reviewFilter, page: page });
             }}
             sx={{
               "& .Mui-selected": {
