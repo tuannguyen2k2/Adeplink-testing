@@ -58,7 +58,6 @@ const ProductItemComponent = ({ product }: { product: ProductDto }) => {
               WebkitBoxOrient: "vertical",
               WebkitLineClamp: 2,
               overflow: "hidden",
-              bgcolor: 'red'
             }}
           >
             {product.name}
