@@ -1,7 +1,20 @@
 import { useMutation } from "@tanstack/react-query";
 
-import { ProductDetailDto, ProductDto, ProductRatingDto, ProductSearchResultDto } from "@/interface/common";
-import { getAllProductRecommended, getProductByCategory, getProductDetailBySlug, getProductSearch, getRatingByProductId } from "./api";
+import {
+  ProductDetailDto,
+  ProductDto,
+  ProductRatingDto,
+  ProductSearchResultDto,
+  VariantType,
+} from "@/interface/common";
+import {
+  getAllProductRecommended,
+  getProductByCategory,
+  getProductDetailBySlug,
+  getProductSearch,
+  getRatingByProductId,
+  getVariantChoose,
+} from "./api";
 
 export const useGetAllProductRecommended = () => {
   // const setUser = useAuthStore()((state) => state.setUser);
@@ -67,13 +80,25 @@ export const useGetProductByCategory = () => {
 export const useGetRatingByProductId = () => {
   const { error, isPending, mutate, reset, data, isSuccess } = useMutation({
     mutationFn: getRatingByProductId,
-    onSuccess: (data: ProductRatingDto) => {},
+    onSuccess: (data: ProductRatingDto) => data,
     onError: (err) => {
       setTimeout(() => {
         reset();
       }, 2000);
     },
   });
-  console.log('QQQQQQQQQQQQQQQQQQQQ', data)
   return { getRatingByProduct: mutate, isPending, error, data, isSuccess };
+};
+
+export const useGetVariantChoose = () => {
+  const { error, isPending, mutate, reset, data, isSuccess } = useMutation({
+    mutationFn: getVariantChoose,
+    onSuccess: (data: VariantType) => data,
+    onError: (err) => {
+      setTimeout(() => {
+        reset();
+      }, 2000);
+    },
+  });
+  return { getVariantChoose: mutate, isPending, error, data, isSuccess };
 };

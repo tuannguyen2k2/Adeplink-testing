@@ -40,6 +40,7 @@ const QuantityComponent = ({
       border={`1px solid ${theme.palette.grey[100]}`}
       borderRadius={"8px"}
       height={"100%"}
+      width={"100%"}
     >
       <Button
         sx={{

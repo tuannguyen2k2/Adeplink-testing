@@ -5,7 +5,7 @@ import { SupplierDetailDto } from "@/interface/common";
 export const useGetSupplierDetailBySlug = () => {
   const { error, isPending, mutate, reset, data, isSuccess } = useMutation({
     mutationFn: getSupplierDetailBySlug,
-    onSuccess: (data: SupplierDetailDto) => {},
+    onSuccess: (data: SupplierDetailDto) => data,
     onError: (err) => {
       setTimeout(() => {
         reset();

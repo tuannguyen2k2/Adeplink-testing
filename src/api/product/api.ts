@@ -51,7 +51,8 @@ export const getProductDetailBySlug = async (slug: string) => {
 
 export const getProductByCategory = async (data: FilterProductDto) => {
   const params = new URLSearchParams();
-  data.product_category_id && params.append("product_category_id", data.product_category_id);
+  data.product_category_id &&
+    params.append("product_category_id", data.product_category_id);
   if (data.category_ids) {
     data.category_ids.forEach((categoryId) => {
       params.append("category_ids", categoryId);
@@ -76,10 +77,27 @@ export const getProductByCategory = async (data: FilterProductDto) => {
     });
 };
 
-export const getRatingByProductId = async (productId: string) => {
-  console.log('APIIIIIIIIIIIIIiiii')
+export const getRatingByProductId = async (
+  productId: string,
+  vote_score?: number
+) => {
+  const params = new URLSearchParams();
+  vote_score && params.append("vote_score", String(vote_score));
   return await axiosConfig
-    .get(`/vote?product_id=${productId}`)
+    .get(`/vote?product_id=${productId}`, { params: params })
+    .then((response) => response.data.data)
+    .catch((error) => {
+      throw Error(error);
+    });
+};
+
+export const getVariantChoose = async (data: {
+  product_id: string;
+  choices: string[];
+  moq: number;
+}) => {
+  return await axiosConfig
+    .post(`/product/variant/choose`, data)
     .then((response) => response.data.data)
     .catch((error) => {
       throw Error(error);

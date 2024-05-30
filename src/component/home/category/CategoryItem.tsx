@@ -6,7 +6,9 @@ import Light from "@/assets/icons/light.svg";
 import { useState } from "react";
 import { CategoryDto } from "@/interface/common";
 import { convertImage } from "@/utils";
-
+import NoImage from "@/assets/images/no-image.png";
+import { useRouter } from "next-nprogress-bar";
+import { PRODUCT_PATH_URL } from "@/constant/pathUrl";
 type CategoryItemType = {
   data?: CategoryDto;
 };
@@ -14,7 +16,7 @@ type CategoryItemType = {
 const CategoryItem = ({ data }: CategoryItemType) => {
   const theme = useTheme();
   const [openArrowButton, setOpenArrowButton] = useState(false);
-  
+  const router = useRouter();
   return (
     <Box
       component={"button"}
@@ -26,10 +28,17 @@ const CategoryItem = ({ data }: CategoryItemType) => {
       }}
       onMouseEnter={() => setOpenArrowButton(true)}
       onMouseLeave={() => setOpenArrowButton(false)}
+      onClick={() =>
+        router.push(
+          `${PRODUCT_PATH_URL.PRODUCT_LIST}?cate_level1_id=${
+            data && data.id
+          }&cate_name=${data && encodeURIComponent(data?.name)}`
+        )
+      }
     >
       <Box
         width={"280px"}
-        m={"10px"}
+        mx={"10px"}
         height={"100%"}
         bgcolor={theme.blue[300]}
         borderRadius={"50px"}
@@ -38,7 +47,7 @@ const CategoryItem = ({ data }: CategoryItemType) => {
         // alignItems={"center"}
       >
         <Image
-          src={convertImage(data?.image) || Light}
+          src={convertImage(data?.image) || NoImage}
           alt="light"
           width={120}
           height={120}

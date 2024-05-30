@@ -47,6 +47,14 @@ export type VariantAttriButesType = {
   package?: string[];
 };
 
+export type TemporaryCartType = {
+  color?: string;
+  package?: string;
+  size?: string;
+  orderQuantity: number;
+  unitPrice: string | null;
+};
+
 export type ProductDto = {
   category?: string;
   id: string;
@@ -67,6 +75,7 @@ export type ProductDto = {
   price: PriceProductListType;
   image: ImageType[];
   variant_attributes?: VariantAttriButesType;
+  slug: string;
 };
 
 export type ProductDetailDto = {
@@ -231,10 +240,14 @@ export type PaginationDto = {
   totalPage?: number;
 };
 
-
 export type RatingFilter = {
   star: number | null;
   with_media: boolean | null;
+};
+
+export type VariantType = {
+  id: string;
+  images: ImageType[];
 };
 
 export type ProductRatingDto = {

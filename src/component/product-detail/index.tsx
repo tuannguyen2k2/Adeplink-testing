@@ -1,17 +1,18 @@
 "use client";
+import { useGetProductDetailBySlug } from "@/api/product/query";
 import { MAX_WIDTH_APP } from "@/constant/css";
+import { ProductDto, TemporaryCartType } from "@/interface/common";
 import { Box, Container, Divider, useTheme } from "@mui/material";
-import Cart from "./Cart";
+import { useEffect, useState } from "react";
+import ListProductComponent from "../common/show-list-product/ListProductComponent";
+import DescriptionInfo from "./DescriptionInfo";
 import ProductInfo from "./ProductInfo";
 import SupplierInfo from "./SupplierInfo";
-import DescriptionInfo from "./DescriptionInfo";
-import ListProductComponent from "../common/show-list-product/ListProductComponent";
-import { ProductDto } from "@/interface/common";
-import { useEffect } from "react";
-import { useGetProductDetailBySlug } from "@/api/product/query";
+import TemporaryCart from "./TemporaryCart";
 
 const ProductDetail = ({ slug }: { slug: string }) => {
   const { getProductDetailBySlug, data } = useGetProductDetailBySlug();
+  const [temporaryCart, setTemporaryCart] = useState<TemporaryCartType[]>([]);
   useEffect(() => {
     getProductDetailBySlug(slug);
   }, [slug]);
@@ -26,8 +27,16 @@ const ProductDetail = ({ slug }: { slug: string }) => {
         fontFamily: theme.fontFamily.secondary,
       }}
     >
-      <Cart />
-      <ProductInfo data={data} />
+      <TemporaryCart
+        temporaryCart={temporaryCart}
+        setTemporaryCart={setTemporaryCart}
+        data={data}
+      />
+      <ProductInfo
+        data={data}
+        temporaryCart={temporaryCart}
+        setTemporaryCart={setTemporaryCart}
+      />
       <SupplierInfo data={data?.supplier} />
       <DescriptionInfo data={data} />
       <Box sx={{ mt: 2 }}>

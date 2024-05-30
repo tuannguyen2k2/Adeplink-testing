@@ -14,21 +14,6 @@ interface ArrowProps {
   style?: React.CSSProperties;
   onClick?: MouseEventHandler<HTMLDivElement>;
 }
-const PrevArrow: FC<ArrowProps> = ({ className, style, onClick }) => {
-  return (
-    <Box className={className} style={style} onClick={onClick}>
-      <MdArrowBackIos size={36} color="#0C71BA" />
-    </Box>
-  );
-};
-
-const NextArrow: FC<ArrowProps> = ({ className, style, onClick }) => {
-  return (
-    <Box className={className} style={style} onClick={onClick}>
-      <MdArrowForwardIos size={36} color="#0C71BA" />
-    </Box>
-  );
-};
 
 type FilterComponentPropsType = {
   filter: FilterSupplierDto;
@@ -72,7 +57,7 @@ const FilterComponent = ({ filter, setFilter, categoryData, countryData }: Filte
   // if (!categoryData || !countryData) return <div>Loading...</div>;
 
   return (
-    <Box width={"100%"} p={"24px"} mb={"20px"} border={`1px solid ${theme.blue[100]}`} borderRadius={"16px"} sx={{ backgroundColor: theme.blue[100] }}>
+    <Box width={"300px"} p={"24px"} mb={"20px"} border={`1px solid ${theme.blue[100]}`} borderRadius={"16px"} sx={{ backgroundColor: theme.blue[100] }}>
       <Typography fontFamily={theme.fontFamily.secondary} fontWeight={theme.fontWeight.bold} fontSize={24} mb={"16px"}>
         Filters
       </Typography>

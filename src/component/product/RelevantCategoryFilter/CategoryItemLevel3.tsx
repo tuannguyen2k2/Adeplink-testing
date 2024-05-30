@@ -8,6 +8,7 @@ import Cookies from "js-cookie";
 import { PRODUCT_PATH_URL } from "@/constant/pathUrl";
 import { convertImage } from "@/utils";
 import { useRouter } from "next-nprogress-bar";
+import NoImage from "@/assets/images/no-image.png";
 const CategoryItemLevel3 = ({
   categoryLevel3,
 }: {
@@ -56,7 +57,7 @@ const CategoryItemLevel3 = ({
       >
         <Box width={88} height={88} >
           <Image
-            src={convertImage(categoryLevel3.image) ?? ""}
+            src={convertImage(categoryLevel3.image) ?? NoImage}
             alt=""
             width={88}
             height={88}

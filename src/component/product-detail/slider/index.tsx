@@ -23,6 +23,7 @@ import SliderContent from "@/component/common/SliderContent";
 import { IoMdClose } from "react-icons/io";
 import { ImageType } from "@/interface/common";
 import { convertImage } from "@/utils";
+import NoImage from "@/assets/images/no-image.png";
 interface ArrowProps {
   className?: string;
   style?: React.CSSProperties;
@@ -106,7 +107,7 @@ const SliderProduct = ({ images }: { images?: ImageType[] }) => {
           <Image
             src={
               (images && convertImage(images[imageSelected]?.image_url)) ||
-              "https://th.bing.com/th/id/OIP.Zfeg2aQarGBA5op6udDRXAHaEc?w=1000&h=600&rs=1&pid=ImgDetMain"
+              NoImage
             }
             alt={""}
             width={623}
@@ -129,40 +130,41 @@ const SliderProduct = ({ images }: { images?: ImageType[] }) => {
           // },
         }}
       >
-        {/* <Box width={"100%"} display={"flex"} justifyContent={"center"}>
-          {images.map((image, index) => {
-            if (index === 5) {
-              return;
-            }
-            return (
-              <Box
-                component={"button"}
-                mx={"10px"}
-                width={88}
-                height={88}
-                key={image.alt}
-                onMouseEnter={() => setImageSelected(index)}
-                onClick={() => handleClickImage(index)}
-                sx={{
-                  outline: "none",
-                  opacity: index === imageSelected ? 1 : 0.5,
-                }}
-              >
-                <Image
-                  src={image.src}
-                  alt={image.alt}
+        {images && images.length > 0 && images.length < 6 && (
+          <Box width={"100%"} display={"flex"} justifyContent={"center"}>
+            {images.map((image, index) => {
+              if (index === 5) {
+                return;
+              }
+              return (
+                <Box
+                  component={"button"}
+                  mx={"10px"}
                   width={88}
                   height={88}
-                  style={{ height: "100%" }}
-                />
-              </Box>
-            );
-          })}
-        </Box> */}
-        <SliderContent settings={settingMultipleSlider}>
-          {images &&
-            images?.map((image, index) => {
-              console.log(convertImage(image?.image_url));
+                  key={index}
+                  onMouseEnter={() => setImageSelected(index)}
+                  onClick={() => handleClickImage(index)}
+                  sx={{
+                    outline: "none",
+                    opacity: index === imageSelected ? 1 : 0.5,
+                  }}
+                >
+                  <Image
+                    src={convertImage(image.image_url) || NoImage}
+                    alt={"product image"}
+                    width={88}
+                    height={88}
+                    style={{ height: "100%" }}
+                  />
+                </Box>
+              );
+            })}
+          </Box>
+        )}
+        {images && images?.length > 5 && (
+          <SliderContent settings={settingMultipleSlider}>
+            {images?.map((image, index) => {
               return (
                 <Box
                   component={"button"}
@@ -179,10 +181,7 @@ const SliderProduct = ({ images }: { images?: ImageType[] }) => {
                   }}
                 >
                   <Image
-                    src={
-                      convertImage(image?.image_url) ||
-                      "https://th.bing.com/th/id/OIP.Zfeg2aQarGBA5op6udDRXAHaEc?w=1000&h=600&rs=1&pid=ImgDetMain"
-                    }
+                    src={convertImage(image?.image_url) || NoImage}
                     alt={image?.id}
                     width={88}
                     height={88}
@@ -191,96 +190,93 @@ const SliderProduct = ({ images }: { images?: ImageType[] }) => {
                 </Box>
               );
             })}
-        </SliderContent>
+          </SliderContent>
+        )}
       </Box>
       <Modal
         footer={false}
-        open={openModal}
+        open={openModal && images && images.length > 0}
         onCancel={handleCancelModal}
         style={{ left: -250 }}
         closeIcon={<IoMdClose size={30} color="black" />}
       >
-        <Box
-          width={1000}
-          sx={{
-            "& .slick-arrow::before": {
-              content: "none",
-            },
-            "& .slick-slide > div:first-child": {
+        {images && (
+          <Box
+            width={1000}
+            sx={{
+              "& .slick-arrow::before": {
+                content: "none",
+              },
+              "& .slick-slide > div:first-child": {
+                display: "flex",
+                justifyContent: "center",
+              },
+              "& .slick-prev": {
+                left: "-31px",
+              },
               display: "flex",
-              justifyContent: "center",
-            },
-            "& .slick-prev": {
-              left: "-31px",
-            },
-            display: "flex",
-            flexDirection: "column",
-            alignItems: "center",
-            gap: "20px",
-          }}
-        >
-          <Slider
-            {...settingSingleSlider}
-            className="w-[80%] h-full"
-            ref={singleSliderRef as LegacyRef<Slider>}
+              flexDirection: "column",
+              alignItems: "center",
+              gap: "20px",
+            }}
           >
-            {images?.map((image, index) => {
-              return (
-                <Box
-                  width={623}
-                  height={623}
-                  key={index}
-                  sx={{
-                    display: "flex!important",
-                    justifyContent: "center",
-                    outline: "none",
-                    width: "90%!important",
-                  }}
-                >
-                  <Image
-                    src={
-                      convertImage(image?.image_url) ||
-                      "https://th.bing.com/th/id/OIP.Zfeg2aQarGBA5op6udDRXAHaEc?w=1000&h=600&rs=1&pid=ImgDetMain"
-                    }
-                    alt={image?.id}
+            <Slider
+              {...settingSingleSlider}
+              className="w-[80%] h-full"
+              ref={singleSliderRef as LegacyRef<Slider>}
+            >
+              {images?.map((image, index) => {
+                return (
+                  <Box
                     width={623}
                     height={623}
-                    style={{ height: "100%" }}
-                  />
-                </Box>
-              );
-            })}
-          </Slider>
-          <Box width={"100%"} display={"flex"} justifyContent={"center"}>
-            {images?.map((image, index) => {
-              return (
-                <Box
-                  component={"button"}
-                  mx={"10px"}
-                  width={88}
-                  height={88}
-                  key={image.id}
-                  onClick={() => handleClickImage(index)}
-                  sx={{
-                    outline: "none",
-                    opacity: index === imageModalSelected ? 1 : 0.5,
-                  }}
-                >
-                  <Image
-                    src={
-                      convertImage(image.image_url) ||
-                      "https://th.bing.com/th/id/OIP.Zfeg2aQarGBA5op6udDRXAHaEc?w=1000&h=600&rs=1&pid=ImgDetMain"
-                    }
-                    alt={image.id}
+                    key={index}
+                    sx={{
+                      display: "flex!important",
+                      justifyContent: "center",
+                      outline: "none",
+                      width: "90%!important",
+                    }}
+                  >
+                    <Image
+                      src={convertImage(image?.image_url) || NoImage}
+                      alt={image?.id}
+                      width={623}
+                      height={623}
+                      style={{ height: "100%" }}
+                    />
+                  </Box>
+                );
+              })}
+            </Slider>
+            <Box width={"100%"} display={"flex"} justifyContent={"center"}>
+              {images?.map((image, index) => {
+                return (
+                  <Box
+                    component={"button"}
+                    mx={"10px"}
                     width={88}
                     height={88}
-                    style={{ height: "100%" }}
-                  />
-                </Box>
-              );
-            })}
+                    key={image.id}
+                    onClick={() => handleClickImage(index)}
+                    sx={{
+                      outline: "none",
+                      opacity: index === imageModalSelected ? 1 : 0.5,
+                    }}
+                  >
+                    <Image
+                      src={convertImage(image.image_url) || NoImage}
+                      alt={image.id}
+                      width={88}
+                      height={88}
+                      style={{ height: "100%" }}
+                    />
+                  </Box>
+                );
+              })}
+            </Box>
           </Box>
-        </Box>
+        )}
       </Modal>
     </Box>
   );

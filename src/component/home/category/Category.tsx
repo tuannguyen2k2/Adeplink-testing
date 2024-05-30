@@ -1,6 +1,6 @@
 "use client";
 import { useGetAllCategoryRoot } from "@/api/category/query";
-import { Box, Typography, useTheme } from "@mui/material";
+import { Box, Skeleton, Typography, useTheme } from "@mui/material";
 import { FC, MouseEventHandler, ReactNode, useEffect } from "react";
 import { MdArrowBackIos, MdArrowForwardIos } from "react-icons/md";
 import "slick-carousel/slick/slick-theme.css";
@@ -116,6 +116,21 @@ const Category = () => {
               <CategoryItem key={index} data={category} />
             ))}
           </SliderContent>
+        )}
+        {!data && (
+          <Box width={"100%"} display={"flex"}>
+            {Array(4)
+              .fill(null)
+              .map((_, index) => (
+                <Skeleton
+                  key={index}
+                  variant="rectangular"
+                  width={280}
+                  height={280}
+                  sx={{ mx: "10px", borderRadius: "50px" }}
+                />
+              ))}
+          </Box>
         )}
       </Box>
     </Box>

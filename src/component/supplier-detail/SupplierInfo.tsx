@@ -18,8 +18,8 @@ import { SupplierDetailDto } from "@/interface/common";
 import moment from "moment";
 const SupplierInfo = ({ data }: { data: SupplierDetailDto }) => {
   const theme = useTheme();
-  console.log("DDDDDDDDDDDDDDDDDDDDDDDDDDDDDDd", data);
-  if (!data) return <div>Loading....</div>;
+
+  if(!data) return <div>Loading....</div>
   return (
     <Box
       width={"100%"}
@@ -56,7 +56,7 @@ const SupplierInfo = ({ data }: { data: SupplierDetailDto }) => {
                 fontStyle={"italic"}
                 color={theme.black[400]}
               >
-                {data.category[0].name}
+                {data?.category[0]?.name}
               </Typography>
               <Box display={"flex"} alignItems={"center"}>
                 <Icon

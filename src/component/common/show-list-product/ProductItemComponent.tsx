@@ -4,8 +4,11 @@ import Image from "next/image";
 import React from "react";
 import { Price } from "./Price";
 import { convertImage } from "@/utils";
-
+import NoImage from "@/assets/images/no-image.png";
+import { useRouter } from "next-nprogress-bar";
+import { PRODUCT_PATH_URL } from "@/constant/pathUrl";
 const ProductItemComponent = ({ product }: { product: ProductDto }) => {
+  const router = useRouter();
   const theme = useTheme();
   return (
     <Box
@@ -19,10 +22,7 @@ const ProductItemComponent = ({ product }: { product: ProductDto }) => {
     >
       <Box width={210} height={210} position={"relative"}>
         <Image
-          src={
-            convertImage(product.image[0]?.image_url) ||
-            "https://th.bing.com/th/id/OIP.Zfeg2aQarGBA5op6udDRXAHaEc?w=1000&h=600&rs=1&pid=ImgDetMain"
-          }
+          src={convertImage(product.image[0]?.image_url) || NoImage}
           alt={"image"}
           fill
           objectFit="fill"
@@ -40,20 +40,30 @@ const ProductItemComponent = ({ product }: { product: ProductDto }) => {
         >
           {product.category}
         </Typography>
-        <Typography
-          sx={{
-            fontFamily: theme.fontFamily.secondary,
-            fontSize: 16,
-            fontWeight: theme.fontWeight.semiBold,
-            mt: 1,
-            display: "-webkit-box",
-            WebkitBoxOrient: "vertical",
-            WebkitLineClamp: 2,
-            overflow: "hidden",
-          }}
+        <Box
+          component={"button"}
+          width={"100%"}
+          onClick={() =>
+            router.push(`${PRODUCT_PATH_URL.PRODUCT_DETAIL}/${product.slug}`)
+          }
         >
-          {product.name}
-        </Typography>
+          <Typography
+            sx={{
+              fontFamily: theme.fontFamily.secondary,
+              fontSize: 16,
+              fontWeight: theme.fontWeight.semiBold,
+              textAlign: "start",
+              mt: 1,
+              display: "-webkit-box",
+              WebkitBoxOrient: "vertical",
+              WebkitLineClamp: 2,
+              overflow: "hidden",
+              bgcolor: 'red'
+            }}
+          >
+            {product.name}
+          </Typography>
+        </Box>
       </Box>
       <Divider sx={{ borderColor: theme.blue[600] }} />
       <Price price={product.price} />

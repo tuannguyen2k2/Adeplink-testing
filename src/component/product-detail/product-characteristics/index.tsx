@@ -1,5 +1,9 @@
 import QuantityComponent from "@/component/common/QuantityComponent";
-import { ProductDetailDto } from "@/interface/common";
+import {
+  ImageType,
+  ProductDetailDto,
+  TemporaryCartType,
+} from "@/interface/common";
 import {
   Box,
   Button,
@@ -7,12 +11,23 @@ import {
   Grid,
   Rating,
   Typography,
-  useTheme
+  useTheme,
 } from "@mui/material";
 import { makeStyles } from "@mui/styles";
-import { ChangeEvent, useEffect, useState } from "react";
+import {
+  ChangeEvent,
+  Dispatch,
+  SetStateAction,
+  useEffect,
+  useState,
+  useTransition,
+} from "react";
 import CartContact from "../CartContact";
-
+import Cookies from "js-cookie";
+import { TEMPORARY_CART } from "@/constant/cookies";
+import { useRouter } from "next-nprogress-bar";
+import { usePathname } from "next/navigation";
+import { useGetVariantChoose } from "@/api/product/query";
 
 const useStyles = makeStyles({
   root: {
@@ -29,16 +44,48 @@ const useStyles = makeStyles({
   },
 });
 
-const ProductCharacteristics = ({ data }: { data?: ProductDetailDto }) => {
+const ProductCharacteristics = ({
+  data,
+  setTemporaryCart,
+  temporaryCart,
+  setImagesSlider,
+}: {
+  data?: ProductDetailDto;
+  temporaryCart: TemporaryCartType[];
+  setTemporaryCart: Dispatch<SetStateAction<TemporaryCartType[]>>;
+  setImagesSlider: Dispatch<SetStateAction<ImageType[] | undefined>>;
+}) => {
   const theme = useTheme();
-
+  const router = useRouter();
   const [priceSelected, setPriceSelected] = useState<number | undefined>(1);
   const [colorSelected, setColorSelected] = useState(0);
   const [packageSelected, setPackageSelected] = useState(0);
   const [sizeSelected, setSizeSelected] = useState(0);
-  const [orderQuantity, setOrderQuantity] = useState<number | undefined>();
+  const [orderQuantity, setOrderQuantity] = useState<string>("0");
   const [openCartContact, setOpenCartContact] = useState(false);
+  const { getVariantChoose, data: dataVariant } = useGetVariantChoose();
+  useEffect(() => {
+    if (
+      data &&
+      data.variant_attributes?.color &&
+      data.variant_attributes?.size
+    ) {
+      getVariantChoose({
+        product_id: data?.id,
+        choices: [
+          data.variant_attributes?.color[colorSelected],
+          data.variant_attributes?.size[sizeSelected],
+        ],
+        moq: 1,
+      });
+    }
+  }, [colorSelected, packageSelected, sizeSelected, orderQuantity]);
 
+  useEffect(() => {
+    if (dataVariant?.images && dataVariant?.images.length > 0) {
+      setImagesSlider(dataVariant.images);
+    }
+  }, [dataVariant]);
   const handleOpenCartContact = () => {
     setOpenCartContact(true);
   };
@@ -48,37 +95,108 @@ const ProductCharacteristics = ({ data }: { data?: ProductDetailDto }) => {
   };
   useEffect(() => {
     if (data?.min_order) {
-      setOrderQuantity(data.min_order);
+      setOrderQuantity(data.min_order.toString());
     }
   }, [data]);
+  const getMatchingPriceIndexByAmount = (amount: number) => {
+    const sortedPriceList = data?.price.sort(
+      (a, b) => parseInt(a.min_amount) - parseInt(b.min_amount)
+    );
+    const matchingPriceIndex =
+      sortedPriceList &&
+      sortedPriceList.findIndex((item) => {
+        return (
+          amount >= parseInt(item.min_amount) &&
+          amount <= parseInt(item.max_amount)
+        );
+      });
+    return matchingPriceIndex !== -1 ? matchingPriceIndex : -1;
+  };
 
   useEffect(() => {
-    let foundPrice = false;
-    data?.price?.some((item, index) => {
-      if (
-        parseInt(item.min_amount) <= (orderQuantity as number) &&
-        (orderQuantity as number) <= parseInt(item.max_amount)
-      ) {
-        setPriceSelected(index);
-        foundPrice = true;
-        return true;
-      }
-      return false;
-    });
-    if (!foundPrice) {
-      setPriceSelected(undefined);
+    if (data) {
+      let totalQuantityTemporaryCart = 0;
+      temporaryCart.map((item) => {
+        totalQuantityTemporaryCart += item.orderQuantity;
+      });
+
+      const matchingPriceIndex = getMatchingPriceIndexByAmount(
+        totalQuantityTemporaryCart + +orderQuantity
+      );
+      console.log(totalQuantityTemporaryCart + orderQuantity);
+      console.log(matchingPriceIndex);
+      matchingPriceIndex !== -1
+        ? setPriceSelected(matchingPriceIndex)
+        : setPriceSelected(undefined);
     }
-  }, [orderQuantity]);
+  }, [orderQuantity, temporaryCart]);
 
   const handleDecreaseQuantity = () => {
-    if (orderQuantity) setOrderQuantity(orderQuantity - 1);
+    if (orderQuantity) setOrderQuantity((+orderQuantity - 1).toString());
   };
   const handleIncreaseQuantity = () => {
-    if (orderQuantity) setOrderQuantity(orderQuantity + 1);
+    if (orderQuantity) setOrderQuantity((+orderQuantity + 1).toString());
   };
 
   const handleOnChangeQuantityInput = (e: ChangeEvent<HTMLInputElement>) => {
-    setOrderQuantity(parseInt(e.target.value));
+    const value = e.target.value;
+    if (parseInt(value) > 0) {
+      setOrderQuantity(value.replace(/^0+/, ""));
+    } else {
+      setOrderQuantity("0");
+    }
+  };
+
+  const handleAddToCart = () => {
+    if (!data) {
+      return;
+    }
+    const color =
+      data.variant_attributes?.color &&
+      (JSON.parse(
+        data.variant_attributes?.color[colorSelected].split("'").join('"')
+      ) as {
+        name: string;
+        code: string;
+      });
+    const dataCartItem = {
+      color: color?.name,
+      package:
+        data.variant_attributes?.package &&
+        data.variant_attributes?.package[packageSelected],
+      size:
+        data.variant_attributes?.size &&
+        data.variant_attributes?.size[sizeSelected],
+      orderQuantity: +orderQuantity,
+      unitPrice:
+        priceSelected !== undefined ? data.price[priceSelected].price : null,
+    };
+
+    if (temporaryCart) {
+      let isDuplicateVariant = false;
+      temporaryCart.map((item) => {
+        if (
+          item.color === dataCartItem.color &&
+          item.package === dataCartItem.package &&
+          item.size === dataCartItem.size
+        ) {
+          item.orderQuantity += +dataCartItem.orderQuantity;
+          (item.unitPrice =
+            priceSelected !== undefined
+              ? data.price[priceSelected].price
+              : null),
+            (isDuplicateVariant = true);
+          return;
+        }
+      });
+      if (isDuplicateVariant) {
+        setTemporaryCart([...temporaryCart]);
+      } else {
+        setTemporaryCart([dataCartItem, ...temporaryCart]);
+      }
+    } else {
+      setTemporaryCart([dataCartItem]);
+    }
   };
 
   return (
@@ -394,30 +512,26 @@ const ProductCharacteristics = ({ data }: { data?: ProductDetailDto }) => {
             Order Quantity
           </Typography>
           <Box display={"flex"} gap={"8px"} height={42} width={"100%"}>
-            <QuantityComponent
-              quantity={orderQuantity}
-              handleDecreaseQuantity={handleDecreaseQuantity}
-              handleIncreaseQuantity={handleIncreaseQuantity}
-              handleOnChangeQuantityInput={handleOnChangeQuantityInput}
-            />
+            <Box width={"152px"}>
+              <QuantityComponent
+                quantity={+orderQuantity}
+                handleDecreaseQuantity={handleDecreaseQuantity}
+                handleIncreaseQuantity={handleIncreaseQuantity}
+                handleOnChangeQuantityInput={handleOnChangeQuantityInput}
+              />
+            </Box>
             <Button
-              onClick={() => {
-                !priceSelected && handleOpenCartContact();
-              }}
+              onClick={handleAddToCart}
               sx={{
                 width: "100%",
                 bgcolor: `${
-                  data?.min_order &&
-                  ((orderQuantity as number) < data?.min_order ||
-                    isNaN(orderQuantity as number))
+                  data?.min_order && +orderQuantity < data?.min_order
                     ? theme.blue[700]
                     : theme.palette.primary.main
                 }!important`,
                 color: "white",
                 pointerEvents:
-                  data?.min_order &&
-                  ((orderQuantity as number) < data?.min_order ||
-                    isNaN(orderQuantity as number))
+                  data?.min_order && +orderQuantity < data?.min_order
                     ? "none"
                     : "auto",
                 borderRadius: "8px",
@@ -429,20 +543,18 @@ const ProductCharacteristics = ({ data }: { data?: ProductDetailDto }) => {
               {priceSelected == undefined ? "Contact" : "Add to cart"}
             </Button>
           </Box>
-          {data?.min_order &&
-            ((orderQuantity as number) < data?.min_order ||
-              isNaN(orderQuantity as number)) && (
-              <Typography
-                fontFamily={theme.fontFamily.secondary}
-                fontSize={14}
-                fontWeight={theme.fontWeight.medium}
-                color={theme.red[200]}
-                fontStyle={"italic"}
-                mb={"14px"}
-              >
-                Quantity must be higher than MOQ
-              </Typography>
-            )}
+          {data?.min_order && +orderQuantity < data?.min_order && (
+            <Typography
+              fontFamily={theme.fontFamily.secondary}
+              fontSize={14}
+              fontWeight={theme.fontWeight.medium}
+              color={theme.red[200]}
+              fontStyle={"italic"}
+              mb={"14px"}
+            >
+              Quantity must be higher than MOQ
+            </Typography>
+          )}
         </Box>
       </Box>
       <CartContact

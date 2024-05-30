@@ -1,6 +1,9 @@
 "use client";
-import { createContext, useContext, useState } from "react";
+import { createContext, useContext, useEffect, useState } from "react";
 import { AppProgressBar as ProgressBar } from "next-nprogress-bar";
+import { usePathname } from "next/navigation";
+import Cookies from "js-cookie";
+import { TEMPORARY_CART } from "@/constant/cookies";
 const AppContext = createContext({
   sessionToken: "",
   setSessionToken: (sessionToken: string) => {},
@@ -28,6 +31,7 @@ export default function AppProvider({
     </AppContext.Provider>
   );
 }
+
 
 export const ProgressProvider = ({
   children,

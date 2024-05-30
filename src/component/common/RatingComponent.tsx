@@ -58,8 +58,6 @@ const RatingComponent = ({ type, data, filter, setFilter }: RatingComponentProps
     }
   };
 
-console.log('DDDDDDDDDDDDDDDDDDDDDDDD', data)
-
   return (
     <React.Fragment>
       <Box

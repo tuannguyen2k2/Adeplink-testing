@@ -1,7 +1,7 @@
 import Supplier from "@/component/supplier";
 
-const SupplierPage = ({ params }: { params: { slug: string } }) => {
-  return <Supplier params={params} />;
+const SupplierPage = () => {
+  return <Supplier />;
 };
 
 export default SupplierPage;

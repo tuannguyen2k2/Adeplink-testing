@@ -7,7 +7,7 @@ import { Box, Grid, Pagination, Typography, useTheme } from "@mui/material";
 import Image from "next/image";
 import { useRouter } from "next-nprogress-bar";
 import { Price } from "../common/show-list-product/Price";
-
+import NoImage from "@/assets/images/no-image.png";
 type ProductListType = {
   data?: ProductSearchDto[];
 };
@@ -52,10 +52,7 @@ const ProductList = ({ data }: ProductListType) => {
             >
               <Box width={268} height={268}>
                 <Image
-                  src={
-                    convertImage(product?.image[0]?.image_url) ||
-                    "https://th.bing.com/th/id/OIP.Zfeg2aQarGBA5op6udDRXAHaEc?w=1000&h=600&rs=1&pid=ImgDetMain"
-                  }
+                  src={convertImage(product?.image[0]?.image_url) || NoImage}
                   alt="product"
                   width={268}
                   height={268}

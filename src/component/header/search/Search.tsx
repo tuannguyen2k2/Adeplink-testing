@@ -65,8 +65,9 @@ const Search = () => {
     limit: 5,
   };
   const [selectedSearchOption, setSelectedSearchOption] = useState<
-    "product" | "supplier"
+  "product" | "supplier"
   >("product");
+  
   const debouncedValue = useDebounce(valueInput, 500);
   const [recentlySearchResult, setRecentlySearchResult] = useState(
     Cookies.get(RECENTLY_SEARCH_PRODUCT_RESULT)
@@ -174,7 +175,7 @@ const Search = () => {
       setLoading(false);
     }
   }, [isSuccess, supplierSuccess]);
-  console.log(supplierSuccess);
+
   return (
     <Box
       ref={searchBoxRef}

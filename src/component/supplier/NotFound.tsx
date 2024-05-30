@@ -20,7 +20,7 @@ const NotFound = ({ caseValue }: NotFoundType) => {
       {caseValue == 1 && (
         <Box textAlign={"center"}>
           <Typography fontFamily={theme.fontFamily.secondary} mb={"10px"}>
-            Sorry, we can’t find any products that match your criteria
+            Sorry, we can’t find any suppliers that match your criteria
           </Typography>
           <Typography fontFamily={theme.fontFamily.secondary}>
             Maybe try again with different criteria?
@@ -30,7 +30,7 @@ const NotFound = ({ caseValue }: NotFoundType) => {
       {caseValue == 2 && (
         <Box textAlign={"center"}>
           <Typography fontFamily={theme.fontFamily.secondary}>
-            Sorry, we can’t find any products that match your keywords
+            Sorry, we can’t find any suppliers that match your keywords
           </Typography>
           <Typography fontFamily={theme.fontFamily.secondary} mb={"10px"}>
             prompted keywords
