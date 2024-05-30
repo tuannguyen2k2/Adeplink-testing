@@ -1,7 +1,7 @@
 import envConfig from "@/config/envConfig";
 import { LoginResType } from "@/interface/user";
 import { normalizePath } from "@/lib/utils";
-import { redirect } from "next-nprogress-bar";
+import { redirect } from "next/navigation";
 
 type CustomOptions = Omit<RequestInit, "method"> & {
   baseUrl?: string | undefined;
