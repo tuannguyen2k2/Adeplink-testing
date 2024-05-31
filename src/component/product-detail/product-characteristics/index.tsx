@@ -63,10 +63,25 @@ const ProductCharacteristics = ({
   const { addToCart, isSuccess: addToCartSuccess } = useAddToCart();
   const { getVariantChoose, data: dataVariant } = useGetVariantChoose();
   const { getCart, data: cartData, isSuccess: getCartSuccess } = useGetCart();
+  const [color, setColor] = useState<{ name: string; code: string }[]>();
   const dispatch = useDispatch();
   useEffect(() => {
     cartData && dispatch(setCart(cartData));
   }, [cartData, getCartSuccess]);
+
+  useEffect(() => {
+    if (data) {
+      const colorParseArray: { name: string; code: string }[] = [];
+      data?.variant_attributes?.color?.map((item, index) => {
+        const colorParse = eval(`(${item})`) as {
+          name: string;
+          code: string;
+        };
+        colorParseArray.push(colorParse);
+      });
+      setColor(colorParseArray);
+    }
+  }, [data]);
 
   useEffect(() => {
     if (addToCartSuccess) {
@@ -78,13 +93,15 @@ const ProductCharacteristics = ({
     if (
       data &&
       data.variant_attributes?.color &&
-      data.variant_attributes?.size
+      data.variant_attributes?.size &&
+      data.variant_attributes?.package
     ) {
       getVariantChoose({
         product_id: data?.id,
         choices: [
           data.variant_attributes?.color[colorSelected],
           data.variant_attributes?.size[sizeSelected],
+          data.variant_attributes?.package[packageSelected],
         ],
         moq: 1,
       });
@@ -170,16 +187,8 @@ const ProductCharacteristics = ({
         variant_id: dataVariant?.variant.id,
       });
     }
-    const color =
-      data.variant_attributes?.color &&
-      (JSON.parse(
-        data.variant_attributes?.color[colorSelected].split("'").join('"')
-      ) as {
-        name: string;
-        code: string;
-      });
     const dataCartItem = {
-      color: color?.name,
+      color: color && color[colorSelected]?.name,
       package:
         data.variant_attributes?.package &&
         data.variant_attributes?.package[packageSelected],
@@ -358,17 +367,12 @@ const ProductCharacteristics = ({
                   fontSize={14}
                   textTransform={"capitalize"}
                 >
-                  {data?.variant_attributes?.color &&
-                    JSON.parse(
-                      data?.variant_attributes?.color[colorSelected]
-                        .split("'")
-                        .join('"')
-                    ).name}
+                  {color && color[colorSelected].name}
                 </Typography>
               </Box>
               <Box display={"flex"} gap={"16px"} flexWrap={"wrap"}>
                 {data?.variant_attributes?.color?.map((item, index) => {
-                  const color = JSON.parse(item.split("'").join('"')) as {
+                  const color = eval(`(${item})`) as {
                     name: string;
                     code: string;
                   };

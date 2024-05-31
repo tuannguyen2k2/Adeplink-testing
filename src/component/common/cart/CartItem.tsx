@@ -1,14 +1,20 @@
-import { useDeleteCartItem } from "@/api/cart/query";
+import { useDeleteCartItem, useGetCart } from "@/api/cart/query";
 import NoImage from "@/assets/images/no-image.png";
-import { ImageType } from "@/interface/common";
+import {
+  ImageType,
+  ProductCartType,
+  SupplierCartType,
+} from "@/interface/common";
 import { convertImage } from "@/utils";
 import { Box, IconButton, Typography, useTheme } from "@mui/material";
 import Image from "next/image";
-import { ChangeEvent, useState } from "react";
+import { ChangeEvent, useEffect, useState } from "react";
 import { IoIosInformationCircleOutline } from "react-icons/io";
 import { IoCloseOutline } from "react-icons/io5";
 import CheckboxComponent from "../CheckboxComponent";
 import QuantityComponent from "../QuantityComponent";
+import { useDispatch } from "react-redux";
+import { setCart } from "@/store/slice/appSlice";
 type CartItemType = {
   isVariant?: boolean;
   data: {
@@ -20,11 +26,23 @@ type CartItemType = {
     subtotal?: number;
     quantity?: number;
   };
+  handleOnCheck: (e: ChangeEvent<HTMLInputElement>) => void;
+  productId: string;
 };
-const CartItem = ({ isVariant, data }: CartItemType) => {
+const CartItem = ({
+  isVariant,
+  data,
+  handleOnCheck,
+  productId,
+}: CartItemType) => {
   const theme = useTheme();
   const [quantity, setQuantity] = useState(data.quantity);
   const [checked, setChecked] = useState(false);
+  const { getCart, data: cartData, isSuccess: getCartSuccess } = useGetCart();
+  const dispatch = useDispatch();
+  useEffect(() => {
+    cartData && dispatch(setCart(cartData));
+  }, [cartData, getCartSuccess]);
   const handleIncreaseQuantity = () => {
     quantity && setQuantity(quantity + 1);
   };
@@ -37,11 +55,8 @@ const CartItem = ({ isVariant, data }: CartItemType) => {
   };
 
   const handleDeleteCartItem = () => {
-    if (isVariant) {
-      deleteCartItem(data.id);
-    } else {
-      // deleteCartItem({ product_id: data.id });
-    }
+    deleteCartItem({ product_id: productId, variant_id: data.id });
+    getCart();
   };
 
   const { deleteCartItem } = useDeleteCartItem();
@@ -56,7 +71,7 @@ const CartItem = ({ isVariant, data }: CartItemType) => {
       <Box display={"flex"} alignItems={"center"}>
         <CheckboxComponent
           id={data.id}
-          handleOnCheck={() => setChecked(!checked)}
+          handleOnCheck={(e: ChangeEvent<HTMLInputElement>) => handleOnCheck(e)}
         />
         {!isVariant && (
           <Box width={100} height={100} ml={"20px"} mr={"14px"}>

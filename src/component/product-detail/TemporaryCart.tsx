@@ -367,7 +367,12 @@ const TemporaryCart = ({
                     color: "black",
                   }}
                 >
-                  ${totalPrice || 0}
+                  {(totalPrice).toLocaleString("en-US", {
+                    style: "currency",
+                    currency: "USD",
+                    minimumFractionDigits: 2,
+                    maximumFractionDigits: 2,
+                  })}
                 </Typography>
               </Box>
               <Box
@@ -391,7 +396,7 @@ const TemporaryCart = ({
                     color: "black",
                   }}
                 >
-                  $999
+                  $100.00
                 </Typography>
               </Box>
               <Divider sx={{ mb: 2 }} />
@@ -414,7 +419,12 @@ const TemporaryCart = ({
                     fontWeight: theme.fontWeight.semiBold,
                   }}
                 >
-                  $999
+                        {(totalPrice + 100).toLocaleString("en-US", {
+                    style: "currency",
+                    currency: "USD",
+                    minimumFractionDigits: 2,
+                    maximumFractionDigits: 2,
+                  })}
                 </Typography>
               </Box>
               <Button

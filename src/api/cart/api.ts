@@ -23,13 +23,14 @@ export const getCart = async () => {
     });
 };
 
-export const deleteCartItem = async (data: string) => {
-  const dataDele = {
-    variant_id: data,
-  };
-
+export const deleteCartItem = async (data: {
+  product_id: string;
+  variant_id?: string;
+  quantity?: number;
+}) => {
+  data.quantity = 1;
   return await axiosConfig
-    .delete("cart", { data: dataDele })
+    .delete("cart", { data: data })
     .then((response) => response.data.data)
     .catch((error) => {
       throw error;

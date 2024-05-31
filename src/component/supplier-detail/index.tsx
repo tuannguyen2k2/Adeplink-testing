@@ -23,13 +23,14 @@ import ReviewComponentSkeleton from "../common/skeleton/ReviewComponentSkeleton"
 const SupplierDetail = ({ params }: { params: { slug: string } }) => {
   // const ref = useRef<HTMLDivElement>() as React.MutableRefObject<HTMLInputElement>;
   // const { events } = useDraggable(ref);
+
   const theme = useTheme();
   const [filterReview, setFilterReview] = useState<string>(RatingOption.All);
 
   const [reviewFilter, setReviewFilter] = useState<PaginationDto & RatingFilter>({ star: null, with_media: null, page: 1, limit: 10, totalPage: 0 });
 
   const { data: supplierData, isLoading: isLoadingData } = useQuery({
-    queryKey: [SUPPLIER_KEY],
+    queryKey: [SUPPLIER_KEY, params.slug],
     queryFn: async () => await getSupplierDetailBySlug(params.slug).then((response) => response.data),
   });
 

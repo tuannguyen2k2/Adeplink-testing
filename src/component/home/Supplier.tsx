@@ -1,6 +1,7 @@
 "use client";
 import { getAllSupplier } from "@/api/supplier";
 import SupplierIcon from "@/assets/icons/supplier.svg";
+import { SUPPLIER_PATH_URL } from "@/constant/pathUrl";
 import { SUPPLIER_HOME_KEY } from "@/constant/queryKey";
 import useDevices from "@/hook/useDevices";
 import {
@@ -12,12 +13,13 @@ import {
   useTheme,
 } from "@mui/material";
 import { useQuery } from "@tanstack/react-query";
+import { useRouter } from "next-nprogress-bar";
 import Image from "next/image";
 import { MdArrowForward } from "react-icons/md";
 
 const Supplier = () => {
   const theme = useTheme();
-
+const router = useRouter()
   const { data: supplierData, isLoading } = useQuery({
     queryKey: [SUPPLIER_HOME_KEY],
     queryFn: async () =>
@@ -101,6 +103,7 @@ const Supplier = () => {
                     sx={{ cursor: "pointer" }}
                     p={"16px"}
                     borderRadius={"8px"}
+                    onClick={() => router.push(`${SUPPLIER_PATH_URL.SUPPLIER_DETAIL}/${item.slug}`)}
                   >
                     <Image
                       src={item.image ?? SupplierIcon}
@@ -177,6 +180,7 @@ const Supplier = () => {
               bgcolor={theme.blue[500]}
               borderRadius={"8px"}
               p={"16px"}
+              onClick={() => router.push(SUPPLIER_PATH_URL.SUPPLIER_LIST)}
             >
               <Box
                 width={"100%"}

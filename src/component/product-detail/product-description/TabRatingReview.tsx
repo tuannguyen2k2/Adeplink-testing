@@ -33,7 +33,8 @@ const TabRatingReview = ({ productId }: { productId: string }) => {
   const { data: reviewData, isLoading } = useQuery({
     queryKey: [PRODUCT_REVIEW_KEY, reviewFilter],
     queryFn: async () =>
-      await getRatingByProductId("22d3ed7f-c156-4156-9d1b-8c527b6e2903", reviewFilter.star ? Number(reviewFilter.star) : undefined).then((response) => {
+      await getRatingByProductId(productId, reviewFilter.star ? Number(reviewFilter.star) : undefined).then((response) => {
+      // await getRatingByProductId("22d3ed7f-c156-4156-9d1b-8c527b6e2903", reviewFilter.star ? Number(reviewFilter.star) : undefined).then((response) => {
         return response;
       }),
   });
@@ -78,7 +79,7 @@ const TabRatingReview = ({ productId }: { productId: string }) => {
   if (isLoading || !reviewData) return Array.from(Array(1)).map((_, id) => <ReviewComponentSkeleton key={id} />);
 
   return (
-    <React.Fragment>
+    <>{reviewData?.product_vote !== null && reviewData.product_user_vote_list.length > 0 ? <React.Fragment>
       <Box
         sx={{
           display: "flex",
@@ -89,10 +90,10 @@ const TabRatingReview = ({ productId }: { productId: string }) => {
       >
         <Box>
           <Box sx={{ display: "flex", color: theme.blue[500], alignItems: "baseline" }}>
-            <Typography sx={{ fontWeight: theme.fontWeight.bold, fontSize: 24 }}>{reviewData?.product_vote.vote_average_score}</Typography>
+            <Typography sx={{ fontWeight: theme.fontWeight.bold, fontSize: 24 }}>{reviewData?.product_vote?.vote_average_score}</Typography>
             <Typography>&nbsp;out of 5</Typography>
           </Box>
-          <Rating precision={0.1} sx={{ color: theme.yellow[100] }} value={reviewData?.product_vote.vote_average_score} readOnly />
+          <Rating precision={0.1} sx={{ color: theme.yellow[100] }} value={reviewData?.product_vote?.vote_average_score} readOnly />
         </Box>
 
         {/* <Box sx={{ display: "flex", overflowX: "hidden", ml: 3 }} {...events} ref={ref}> */}
@@ -255,7 +256,7 @@ const TabRatingReview = ({ productId }: { productId: string }) => {
           />
         </Box>
       )}
-    </React.Fragment>
+    </React.Fragment>  : <div>null</div> }</>
   );
 };
 

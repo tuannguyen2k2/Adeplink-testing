@@ -21,7 +21,11 @@ import ListProductComponent from "../show-list-product/ListProductComponent";
 import { PRODUCT_PATH_URL } from "@/constant/pathUrl";
 import { useSelector } from "react-redux";
 import { cartSelector } from "@/store/selector";
-import { ProductCartType } from "@/interface/common";
+import {
+  ProductCartType,
+  SupplierCartType,
+  VariantCartType,
+} from "@/interface/common";
 import CartEmpty from "@/assets/images/cart_empty.png";
 import Image from "next/image";
 
@@ -32,7 +36,7 @@ const Cart = () => {
   }, []);
   const theme = useTheme();
   const cart = useSelector(cartSelector);
-  const getAllIds = (products: ProductCartType[]) => {
+  const getAllProductIdsAndVariantIds = (products: ProductCartType[]) => {
     return products.reduce((ids: string[], product) => {
       ids.push(product.id);
       product.variant.forEach((variant) => {
@@ -41,19 +45,73 @@ const Cart = () => {
       return ids;
     }, []);
   };
-  const handleChecked = (
+
+  const getAllVariantIds = (variants: VariantCartType[]) => {
+    let ids: string[] = [];
+    variants.forEach((variant) => {
+      ids.push(variant.id);
+    });
+    return ids;
+  };
+
+  const getAllProductIds = (product: ProductCartType[]) => {
+    let ids: string[] = [];
+    product.forEach((variant) => {
+      ids.push(variant.id);
+    });
+    return ids;
+  };
+
+  const handleCheckedSupplier = (
     e: ChangeEvent<HTMLInputElement>,
-    product: ProductCartType[]
+    ids: string[]
   ) => {
     e.stopPropagation();
-    console.log(e.currentTarget.checked);
     const checkboxElements = document.querySelectorAll(
       'input[type="checkbox"]'
     );
     const checkboxes = Array.from(checkboxElements);
-    const ids = getAllIds(product);
     checkboxes.forEach((checkbox) => {
       if (ids.includes(checkbox.id)) {
+        (checkbox as HTMLInputElement).checked = e.currentTarget.checked;
+      }
+    });
+  };
+
+  const handleCheckedProduct = (
+    e: ChangeEvent<HTMLInputElement>,
+    supplier: SupplierCartType,
+    product: ProductCartType
+  ) => {
+    e.stopPropagation();
+    const checkboxElements = document.querySelectorAll(
+      'input[type="checkbox"]'
+    );
+    const checkboxes = Array.from(checkboxElements);
+    let allChecked = true;
+    checkboxes.forEach((checkbox) => {
+      if (
+        getAllProductIds(supplier.product).includes(checkbox.id) &&
+        checkbox.id !== product.id
+      ) {
+        if (!(checkbox as HTMLInputElement).checked) {
+          allChecked = false;
+        }
+      }
+    });
+
+    checkboxes.forEach((checkbox) => {
+      console.log(checkbox.id === supplier.id);
+      if (
+        checkbox.id === supplier.id &&
+        allChecked &&
+        e.currentTarget.checked
+      ) {
+        (checkbox as HTMLInputElement).checked = true;
+      } else if (checkbox.id === supplier.id && !e.currentTarget.checked) {
+        (checkbox as HTMLInputElement).checked = false;
+      }
+      if (getAllVariantIds(product.variant).includes(checkbox.id)) {
         (checkbox as HTMLInputElement).checked = e.currentTarget.checked;
       }
     });
@@ -77,7 +135,7 @@ const Cart = () => {
       {cart && cart.total_items > 0 ? (
         <Box display={"flex"} width={"100%"} justifyContent={"space-between"}>
           <Box width={"66%"}>
-            {cart?.items.map((supplier, indexSupplier) => {
+            {cart?.items.map((supplier: SupplierCartType, indexSupplier) => {
               return (
                 <Accordion
                   key={supplier.id}
@@ -113,7 +171,10 @@ const Cart = () => {
                       <CheckboxComponent
                         id={supplier.id}
                         handleOnCheck={(e: ChangeEvent<HTMLInputElement>) =>
-                          handleChecked(e, supplier.product)
+                          handleCheckedSupplier(
+                            e,
+                            getAllProductIdsAndVariantIds(supplier.product)
+                          )
                         }
                       />
                       <Typography
@@ -154,19 +215,29 @@ const Cart = () => {
                         </Typography>
                       </Box>
                     </Box>
-                    {supplier.product.map((product, indexProduct) => {
+                    {supplier.product.map((product : ProductCartType, indexProduct) => {
                       return (
                         <Box key={product.id}>
-                          <CartItem data={product} />
+                          <CartItem
+                            data={product}
+                            handleOnCheck={(e: ChangeEvent<HTMLInputElement>) =>
+                              handleCheckedProduct(e, supplier, product)
+                            }
+                            productId={product.id}
+                          />
                           <Divider
                             sx={{ borderColor: theme.blue[100], mx: "40px" }}
                           />
                           {product.variant.map((variant, indexVariant) => {
                             return (
                               <CartItem
+                                handleOnCheck={(
+                                  e: ChangeEvent<HTMLInputElement>
+                                ) => console.log("first")}
                                 data={variant}
                                 isVariant
                                 key={variant.id}
+                                productId={product.id}
                               />
                             );
                           })}
