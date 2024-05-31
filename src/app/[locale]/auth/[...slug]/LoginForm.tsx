@@ -1,5 +1,5 @@
 "use client";
-import React, { useState } from "react";
+import React, { ChangeEvent, useState } from "react";
 import { useForm, SubmitHandler } from "react-hook-form";
 import { Icon } from "@mui/material";
 import { VisibilityOff, Visibility } from "@mui/icons-material";
@@ -22,9 +22,7 @@ const LoginFormPage = () => {
   const { login, isPending, error } = useLogin();
   const router = useRouter();
   const { register, handleSubmit, formState } = useForm<LoginForm>();
-  const dispatch = useDispatch();
-  const user = useSelector(userSelector);
-  const locale = Cookies.get("NEXT_LOCALE");
+  const [checkRememberMe, setCheckRememberMe] = useState(false);
   const onSubmit: SubmitHandler<LoginForm> = async (data) => {
     login(data);
   };
@@ -131,8 +129,21 @@ const LoginFormPage = () => {
           )}
         </div>
         <div className="hover:cursor-pointer w-fit flex items-center gap-2">
-          <input type="checkbox" className="w-[18px] h-[18px] cursor-pointer" />{" "}
-          <span>Remember me</span>
+          <input
+            type="checkbox"
+            className="w-[18px] h-[18px] cursor-pointer"
+            checked={checkRememberMe}
+            onChange={(e: ChangeEvent<HTMLInputElement>) =>
+              setCheckRememberMe(e.target.checked)
+            }
+          />{" "}
+          <span
+            onClick={() => {
+              setCheckRememberMe(!checkRememberMe);
+            }}
+          >
+            Remember me
+          </span>
         </div>
         <button
           className={`w-full text-white mt-5 px-3 py-2 rounded-lg ${

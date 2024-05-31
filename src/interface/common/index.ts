@@ -55,6 +55,38 @@ export type TemporaryCartType = {
   unitPrice: string | null;
 };
 
+export type VariantCartType = {
+  id: string;
+  name: string;
+  price: number;
+  min_order: number;
+  quantity: number;
+  subtotal: number;
+};
+
+export type ProductCartType = {
+  id: string;
+  name: string;
+  price: number;
+  min_order: number;
+  quantity: number;
+  subtotal: number;
+  image: ImageType;
+  range_price: PriceProductDetailType[];
+  variant: VariantCartType[];
+};
+export type SupplierCartType = {
+  id: string;
+  name: string;
+  product: ProductCartType[];
+};
+
+export type CartType = {
+  items: SupplierCartType[];
+  total_price: number;
+  total_items: number;
+};
+
 export type ProductDto = {
   category?: string;
   id: string;
@@ -246,7 +278,10 @@ export type RatingFilter = {
 };
 
 export type VariantType = {
-  id: string;
+  variant: {
+    id: string;
+  };
+
   images: ImageType[];
 };
 

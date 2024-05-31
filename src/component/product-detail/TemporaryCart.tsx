@@ -32,24 +32,22 @@ import { MdOutlineShoppingCart } from "react-icons/md";
 import QuantityComponent from "../common/QuantityComponent";
 
 const TemporaryCart = ({
+  openCart,
+  handleCloseCart,
+  handleOpenCart,
+  data,
   temporaryCart,
   setTemporaryCart,
-  data,
 }: {
-  data?: ProductDetailDto;
   temporaryCart: TemporaryCartType[];
   setTemporaryCart: Dispatch<SetStateAction<TemporaryCartType[]>>;
+  data?: ProductDetailDto;
+  openCart: boolean;
+  handleCloseCart: () => void;
+  handleOpenCart: () => void;
 }) => {
   const theme = useTheme();
-  const [openCart, setOpenCart] = useState(false);
   let [totalPrice, setTotalPrice] = useState<number | null>(null);
-  const handleOpenCart = () => {
-    setOpenCart(true);
-  };
-  console.log(temporaryCart);
-  const handleCloseCart = () => {
-    setOpenCart(false);
-  };
   const getMatchingPriceByAmount = (amount: number) => {
     const sortedPriceList = data?.price.sort(
       (a, b) => parseInt(a.min_amount) - parseInt(b.min_amount)
@@ -121,6 +119,7 @@ const TemporaryCart = ({
           width: "fit-content",
           position: "fixed",
           right: 0,
+          top: "150px",
           borderRadius: "8px",
           borderTopRightRadius: 0,
           borderBottomRightRadius: 0,

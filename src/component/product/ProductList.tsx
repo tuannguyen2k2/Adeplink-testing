@@ -3,11 +3,20 @@ import Product2 from "@/assets/images/product2.jpg";
 import { PRODUCT_PATH_URL } from "@/constant/pathUrl";
 import { ProductSearchDto } from "@/interface/common";
 import { convertImage } from "@/utils";
-import { Box, Grid, Pagination, Typography, useTheme } from "@mui/material";
+import {
+  Box,
+  Divider,
+  Grid,
+  Pagination,
+  Skeleton,
+  Typography,
+  useTheme,
+} from "@mui/material";
 import Image from "next/image";
 import { useRouter } from "next-nprogress-bar";
 import { Price } from "../common/show-list-product/Price";
 import NoImage from "@/assets/images/no-image.png";
+import { DataArray } from "@mui/icons-material";
 type ProductListType = {
   data?: ProductSearchDto[];
 };
@@ -15,6 +24,10 @@ type ProductListType = {
 const ProductList = ({ data }: ProductListType) => {
   const router = useRouter();
   const theme = useTheme();
+  if (data && data.length == 0) {
+    return;
+  }
+
   return (
     <Box
       display={"flex"}
@@ -28,16 +41,20 @@ const ProductList = ({ data }: ProductListType) => {
           <Grid
             item
             xs={12}
-            sm={6}
-            md={4}
-            lg={4}
+            sm={12}
+            md={12}
+            lg={6}
             xl={4}
-            key={product?.id}
+            key={index}
             sx={{
               display: "flex",
               justifyContent: "center",
               paddingLeft: "0!important",
-              paddingTop: index > 2 ? "20px!important" : "0!important",
+              paddingTop: {
+                xl: index > 2 ? "20px!important" : "0!important",
+                lg: index > 1 ? "20px!important" : "0!important",
+                md: index > 0 ? "20px!important" : "0!important",
+              },
             }}
           >
             <Box

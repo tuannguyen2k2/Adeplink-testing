@@ -14,6 +14,7 @@ const useStyles = makeStyles({
     },
     "& .MuiInputBase-input": {
       padding: 0,
+      textAlign: "center",
     },
   },
 });
@@ -59,6 +60,7 @@ const QuantityComponent = ({
         -
       </Button>
       <TextField
+        id="quantity-component"
         type="number"
         className={classes.root}
         value={quantity}
@@ -67,7 +69,6 @@ const QuantityComponent = ({
           width: "70px",
           "& .MuiInputBase-input": {
             fontFamily: `${theme.fontFamily.secondary}!important`,
-            textAlign: "center",
           },
         }}
       />

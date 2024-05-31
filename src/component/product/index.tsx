@@ -26,6 +26,7 @@ import { ProductSearchResultDto } from "@/interface/common";
 import { PRODUCT_LIST_LIMIT } from "@/constant";
 import { PRODUCT_PATH_URL } from "@/constant/pathUrl";
 import FilterSkeleton from "../common/skeleton/FilterSkeleton";
+import ProductListSkeleton from "./ProductListSkeleton";
 const Product = () => {
   const { isMobile } = useDevices();
   const theme = useTheme();
@@ -529,7 +530,8 @@ const Product = () => {
             </Box>
           </>
         </Box>
-        {data?.products && data?.products?.length > 0 ? (
+
+        {data && data.products.length > 0 ? (
           <Box
             display={"flex"}
             flexDirection={"column"}
@@ -537,22 +539,35 @@ const Product = () => {
             width={"100%"}
           >
             <ProductList data={data?.products} />
-            {data.metadata.total_page && data.metadata.total_page > 1 && (
-              <Pagination
-                count={data.metadata.total_page || 1}
-                color="primary"
-                shape="rounded"
-                sx={{ justifyContent: "center", mt: "20px" }}
-                page={page ? parseInt(page) : 1}
-                onChange={(e: ChangeEvent<unknown>, page: number) =>
-                  handleChangePage(e, page)
-                }
-              />
-            )}
+            {data &&
+              data.metadata.total_page &&
+              data.metadata.total_page > 1 && (
+                <Pagination
+                  count={data.metadata.total_page || 1}
+                  color="primary"
+                  shape="rounded"
+                  sx={{ justifyContent: "center", mt: "20px" }}
+                  page={page ? parseInt(page) : 1}
+                  onChange={(e: ChangeEvent<unknown>, page: number) =>
+                    handleChangePage(e, page)
+                  }
+                />
+              )}
           </Box>
-        ) : (
-          <NotFound caseValue={keyword ? 2 : 1} />
+        ) : null}
+        {!data && (
+          <Box
+            display={"flex"}
+            flexDirection={"column"}
+            alignItems={"center"}
+            width={"100%"}
+          >
+            <ProductListSkeleton />
+          </Box>
         )}
+        {data?.products && data?.products?.length === 0 ? (
+          <NotFound caseValue={keyword ? 2 : 1} />
+        ) : null}
       </Box>
     </Container>
   );

@@ -71,6 +71,9 @@ html *::-webkit-scrollbar-track {
 .ant-modal-content{
   width: fit-content;
 }
+input#quantity-component {
+  text-align: center;
+}
 
 input::-ms-reveal,
 input::-ms-clear {

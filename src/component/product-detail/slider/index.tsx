@@ -1,10 +1,11 @@
 "use client";
-import DetailProduct1 from "@/assets/images/detailproduct_1.png";
-import DetailProduct2 from "@/assets/images/detailproduct_2.jpg";
-import DetailProduct3 from "@/assets/images/detailproduct_3.jpg";
-import DetailProduct4 from "@/assets/images/detailproduct_4.jpg";
-import DetailProduct5 from "@/assets/images/detailproduct_5.jpg";
+import NoImage from "@/assets/images/no-image.png";
+import SliderContent from "@/component/common/SliderContent";
+import { ImageType } from "@/interface/common";
+import { convertImage } from "@/utils";
 import { Box } from "@mui/material";
+import { Modal } from "antd";
+import Image from "next/image";
 import {
   FC,
   LegacyRef,
@@ -13,17 +14,11 @@ import {
   useRef,
   useState,
 } from "react";
+import { IoMdClose } from "react-icons/io";
+import { MdArrowBackIos, MdArrowForwardIos } from "react-icons/md";
 import Slider from "react-slick";
 import "slick-carousel/slick/slick-theme.css";
 import "slick-carousel/slick/slick.css";
-import Image, { StaticImageData } from "next/image";
-import { MdArrowBackIos, MdArrowForwardIos } from "react-icons/md";
-import { Modal } from "antd";
-import SliderContent from "@/component/common/SliderContent";
-import { IoMdClose } from "react-icons/io";
-import { ImageType } from "@/interface/common";
-import { convertImage } from "@/utils";
-import NoImage from "@/assets/images/no-image.png";
 interface ArrowProps {
   className?: string;
   style?: React.CSSProperties;
@@ -39,7 +34,6 @@ const SliderProduct = ({ images }: { images?: ImageType[] }) => {
     );
   };
 
-  // Component tùy chỉnh cho mũi tên sau
   const NextArrow: FC<ArrowProps> = ({ className, style, onClick, size }) => {
     return (
       <Box className={className} style={style} onClick={onClick}>
@@ -90,6 +84,7 @@ const SliderProduct = ({ images }: { images?: ImageType[] }) => {
       singleSliderRef.current.slickGoTo(imageModalSelected);
     }
   }, [imageModalSelected]);
+
   return (
     <Box
       width={"50%"}
@@ -220,35 +215,56 @@ const SliderProduct = ({ images }: { images?: ImageType[] }) => {
               gap: "20px",
             }}
           >
-            <Slider
-              {...settingSingleSlider}
-              className="w-[80%] h-full"
-              ref={singleSliderRef as LegacyRef<Slider>}
-            >
-              {images?.map((image, index) => {
-                return (
-                  <Box
-                    width={623}
-                    height={623}
-                    key={index}
-                    sx={{
-                      display: "flex!important",
-                      justifyContent: "center",
-                      outline: "none",
-                      width: "90%!important",
-                    }}
-                  >
-                    <Image
-                      src={convertImage(image?.image_url) || NoImage}
-                      alt={image?.id}
+            {images && images.length > 1 ? (
+              <Slider
+                {...settingSingleSlider}
+                className="w-[80%] h-full"
+                ref={singleSliderRef as LegacyRef<Slider>}
+              >
+                {images?.map((image, index) => {
+                  return (
+                    <Box
                       width={623}
                       height={623}
-                      style={{ height: "100%" }}
-                    />
-                  </Box>
-                );
-              })}
-            </Slider>
+                      key={index}
+                      sx={{
+                        display: "flex!important",
+                        justifyContent: "center",
+                        outline: "none",
+                        width: "90%!important",
+                      }}
+                    >
+                      <Image
+                        src={convertImage(image?.image_url) || NoImage}
+                        alt={image?.id}
+                        width={623}
+                        height={623}
+                        style={{ height: "100%" }}
+                      />
+                    </Box>
+                  );
+                })}
+              </Slider>
+            ) : (
+              <Box
+                width={623}
+                height={623}
+                sx={{
+                  display: "flex!important",
+                  justifyContent: "center",
+                  outline: "none",
+                  width: "90%!important",
+                }}
+              >
+                <Image
+                  src={convertImage(images[0]?.image_url) || NoImage}
+                  alt={images[0]?.id}
+                  width={623}
+                  height={623}
+                  style={{ height: "100%" }}
+                />
+              </Box>
+            )}
             <Box width={"100%"} display={"flex"} justifyContent={"center"}>
               {images?.map((image, index) => {
                 return (

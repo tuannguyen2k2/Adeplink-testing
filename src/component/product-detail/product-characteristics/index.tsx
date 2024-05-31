@@ -1,3 +1,4 @@
+import { useGetVariantChoose } from "@/api/product/query";
 import QuantityComponent from "@/component/common/QuantityComponent";
 import {
   ImageType,
@@ -14,20 +15,17 @@ import {
   useTheme,
 } from "@mui/material";
 import { makeStyles } from "@mui/styles";
+import { useRouter } from "next-nprogress-bar";
 import {
   ChangeEvent,
   Dispatch,
   SetStateAction,
   useEffect,
   useState,
-  useTransition,
 } from "react";
 import CartContact from "../CartContact";
-import Cookies from "js-cookie";
-import { TEMPORARY_CART } from "@/constant/cookies";
-import { useRouter } from "next-nprogress-bar";
-import { usePathname } from "next/navigation";
-import { useGetVariantChoose } from "@/api/product/query";
+import TemporaryCart from "../TemporaryCart";
+import { useAddToCart } from "@/api/cart/query";
 
 const useStyles = makeStyles({
   root: {
@@ -46,13 +44,9 @@ const useStyles = makeStyles({
 
 const ProductCharacteristics = ({
   data,
-  setTemporaryCart,
-  temporaryCart,
   setImagesSlider,
 }: {
   data?: ProductDetailDto;
-  temporaryCart: TemporaryCartType[];
-  setTemporaryCart: Dispatch<SetStateAction<TemporaryCartType[]>>;
   setImagesSlider: Dispatch<SetStateAction<ImageType[] | undefined>>;
 }) => {
   const theme = useTheme();
@@ -62,7 +56,9 @@ const ProductCharacteristics = ({
   const [packageSelected, setPackageSelected] = useState(0);
   const [sizeSelected, setSizeSelected] = useState(0);
   const [orderQuantity, setOrderQuantity] = useState<string>("0");
-  const [openCartContact, setOpenCartContact] = useState(false);
+  const [openCart, setOpenCart] = useState(false);
+  const [temporaryCart, setTemporaryCart] = useState<TemporaryCartType[]>([]);
+  const { addToCart } = useAddToCart();
   const { getVariantChoose, data: dataVariant } = useGetVariantChoose();
   useEffect(() => {
     if (
@@ -86,12 +82,12 @@ const ProductCharacteristics = ({
       setImagesSlider(dataVariant.images);
     }
   }, [dataVariant]);
-  const handleOpenCartContact = () => {
-    setOpenCartContact(true);
+  const handleOpenCart = () => {
+    setOpenCart(true);
   };
 
-  const handleCloseCartContact = () => {
-    setOpenCartContact(false);
+  const handleCloseCart = () => {
+    setOpenCart(false);
   };
   useEffect(() => {
     if (data?.min_order) {
@@ -123,8 +119,6 @@ const ProductCharacteristics = ({
       const matchingPriceIndex = getMatchingPriceIndexByAmount(
         totalQuantityTemporaryCart + +orderQuantity
       );
-      console.log(totalQuantityTemporaryCart + orderQuantity);
-      console.log(matchingPriceIndex);
       matchingPriceIndex !== -1
         ? setPriceSelected(matchingPriceIndex)
         : setPriceSelected(undefined);
@@ -132,7 +126,7 @@ const ProductCharacteristics = ({
   }, [orderQuantity, temporaryCart]);
 
   const handleDecreaseQuantity = () => {
-    if (orderQuantity) setOrderQuantity((+orderQuantity - 1).toString());
+    if (+orderQuantity > 0) setOrderQuantity((+orderQuantity - 1).toString());
   };
   const handleIncreaseQuantity = () => {
     if (orderQuantity) setOrderQuantity((+orderQuantity + 1).toString());
@@ -148,8 +142,19 @@ const ProductCharacteristics = ({
   };
 
   const handleAddToCart = () => {
+    //Contact
+    if (priceSelected == undefined) {
+      handleOpenCart();
+    }
     if (!data) {
       return;
+    }
+    if (dataVariant) {
+      addToCart({
+        product_id: data.id,
+        quantity: +orderQuantity,
+        variant_id: dataVariant?.variant.id,
+      });
     }
     const color =
       data.variant_attributes?.color &&
@@ -557,10 +562,13 @@ const ProductCharacteristics = ({
           )}
         </Box>
       </Box>
-      <CartContact
-        openCart={openCartContact}
-        handleCloseCart={handleCloseCartContact}
-        handleOpenCart={handleOpenCartContact}
+      <TemporaryCart
+        temporaryCart={temporaryCart}
+        setTemporaryCart={setTemporaryCart}
+        openCart={openCart}
+        handleCloseCart={handleCloseCart}
+        handleOpenCart={handleOpenCart}
+        data={data}
       />
     </Box>
   );

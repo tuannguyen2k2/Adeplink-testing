@@ -17,13 +17,13 @@ import User from "@/assets/icons/user.svg";
 import { UserCircle } from "@phosphor-icons/react";
 import { useTranslations } from "next-intl";
 import SearchMobile from "./mobile/SearchMobile";
-import { userSelector } from "@/store/selector";
+import { cartSelector, userSelector } from "@/store/selector";
 import { useSelector } from "react-redux";
 import { useRouter } from "next-nprogress-bar";
 import { useLogout } from "@/api/auth/query";
 import Cookies from "js-cookie";
 import useDevices from "@/hook/useDevices";
-import { AUTH_PATH_URL } from "@/constant/pathUrl";
+import { AUTH_PATH_URL, CART_PATH_URL } from "@/constant/pathUrl";
 
 const Personal = () => {
   const theme = useTheme();
@@ -34,6 +34,7 @@ const Personal = () => {
   const router = useRouter();
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
   const open = Boolean(anchorEl);
+  const cart = useSelector(cartSelector);
   const handleOpenMenu = (event: React.MouseEvent<HTMLElement>) => {
     setAnchorEl(event.currentTarget);
   };
@@ -71,8 +72,20 @@ const Personal = () => {
           </IconButton>
         )}
         {!isMobile && (
-          <IconButton>
-            <MdOutlineShoppingCart size={24} color={"#0C71BA"} />
+          <IconButton onClick={() => router.push(CART_PATH_URL)}>
+            <Badge
+              badgeContent={cart?.total_items}
+              sx={{
+                "& .MuiBadge-badge": {
+                  bgcolor: theme.red[100],
+                  color: "white",
+                  fontSize: "10px",
+                  p: 0,
+                },
+              }}
+            >
+              <MdOutlineShoppingCart size={24} color={"#0C71BA"} />
+            </Badge>
           </IconButton>
         )}
         {user ? (

@@ -1,18 +1,18 @@
 "use client";
 import { useGetProductDetailBySlug } from "@/api/product/query";
 import { MAX_WIDTH_APP } from "@/constant/css";
-import { ProductDto, TemporaryCartType } from "@/interface/common";
+import { PRODUCT_PATH_URL } from "@/constant/pathUrl";
+import { ProductDto } from "@/interface/common";
 import { Box, Container, Divider, useTheme } from "@mui/material";
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import ListProductComponent from "../common/show-list-product/ListProductComponent";
 import DescriptionInfo from "./DescriptionInfo";
 import ProductInfo from "./ProductInfo";
 import SupplierInfo from "./SupplierInfo";
-import TemporaryCart from "./TemporaryCart";
 
 const ProductDetail = ({ slug }: { slug: string }) => {
   const { getProductDetailBySlug, data } = useGetProductDetailBySlug();
-  const [temporaryCart, setTemporaryCart] = useState<TemporaryCartType[]>([]);
+
   useEffect(() => {
     getProductDetailBySlug(slug);
   }, [slug]);
@@ -27,15 +27,9 @@ const ProductDetail = ({ slug }: { slug: string }) => {
         fontFamily: theme.fontFamily.secondary,
       }}
     >
-      <TemporaryCart
-        temporaryCart={temporaryCart}
-        setTemporaryCart={setTemporaryCart}
-        data={data}
-      />
+      
       <ProductInfo
         data={data}
-        temporaryCart={temporaryCart}
-        setTemporaryCart={setTemporaryCart}
       />
       <SupplierInfo data={data?.supplier} />
       <DescriptionInfo data={data} />
@@ -51,7 +45,7 @@ const ProductDetail = ({ slug }: { slug: string }) => {
         <Divider sx={{ borderColor: theme.blue[600], mb: 3 }} />
         <ListProductComponent
           title={"Recommended Products"}
-          url={"#"}
+          url={PRODUCT_PATH_URL.PRODUCT_LIST}
           data={data?.recommend_products as ProductDto[]}
         />
       </Box>

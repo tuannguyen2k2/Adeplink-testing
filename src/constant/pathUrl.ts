@@ -20,3 +20,5 @@ export const SUPPLIER_PATH_URL = {
   SUPPLIER_LIST: `/${locale}/supplier`,
   SUPPLIER_DETAIL: `/${locale}/supplier/supplier-detail`,
 };
+
+export const CART_PATH_URL = `/${locale}/cart`;

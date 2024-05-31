@@ -19,12 +19,103 @@ import { useGetAllProductRecommended } from "@/api/product/query";
 import { useEffect } from "react";
 import ListProductComponent from "../show-list-product/ListProductComponent";
 import { PRODUCT_PATH_URL } from "@/constant/pathUrl";
+import { useSelector } from "react-redux";
+import { cartSelector } from "@/store/selector";
+
+const fakeCart = [
+  {
+    id: "1",
+    name: "Nguyễn Tuấn",
+    product: [
+      {
+        id: "2",
+        name: "Red Chili",
+        variant: [
+          {
+            id: "3",
+            name: "Xanh, S",
+          },
+          {
+            id: "4",
+            name: "Đỏ, S",
+          },
+          {
+            id: "5",
+            name: "Cam, S",
+          },
+        ],
+      },
+      {
+        id: "6",
+        name: "Green Chili",
+        variant: [
+          {
+            id: "7",
+            name: "Xanh, S",
+          },
+          {
+            id: "8",
+            name: "Đỏ, S",
+          },
+          {
+            id: "9",
+            name: "Cam, S",
+          },
+        ],
+      },
+    ],
+  },
+  {
+    id: "10",
+    name: "Nguyễn Tuấn",
+    product: [
+      {
+        id: "11",
+        name: "Red Chili",
+        variant: [
+          {
+            id: "12",
+            name: "Xanh, S",
+          },
+          {
+            id: "13",
+            name: "Đỏ, S",
+          },
+          {
+            id: "14",
+            name: "Cam, S",
+          },
+        ],
+      },
+      {
+        id: "15",
+        name: "Green Chili",
+        variant: [
+          {
+            id: "16",
+            name: "Xanh, S",
+          },
+          {
+            id: "17",
+            name: "Đỏ, S",
+          },
+          {
+            id: "18",
+            name: "Cam, S",
+          },
+        ],
+      },
+    ],
+  },
+];
+
 const Cart = () => {
   const { getAllProductRecommended, data } = useGetAllProductRecommended();
   useEffect(() => {
     getAllProductRecommended();
   }, []);
   const theme = useTheme();
+  const cart = useSelector(cartSelector);
   return (
     <Container
       sx={{
@@ -43,100 +134,108 @@ const Cart = () => {
       </Typography>
       <Box display={"flex"} width={"100%"} justifyContent={"space-between"}>
         <Box width={"66%"}>
-          <Accordion
-            defaultExpanded
-            sx={{
-              fontFamily: theme.fontFamily.secondary,
-              boxShadow: "none",
-              border: `1px solid ${theme.blue[100]}`,
-              borderRadius: "8px!important",
-              "&.MuiAccordion-root::before": {
-                display: "none",
-              },
-            }}
-          >
-            <AccordionSummary
-              expandIcon={<IoIosArrowDown color="#0C71B9" />}
-              aria-controls="panel-content"
-              id="panel"
-              sx={{
-                color: theme.palette.primary.main,
-                fontWeight: theme.fontWeight.semiBold,
-                bgcolor: theme.blue[100],
-                height: "45px",
-                "&.Mui-expanded": {
-                  minHeight: "45px",
-                  height: "45px",
-                },
-                borderRadius: "8px",
-              }}
-            >
-              <Box display={"flex"} gap={"20px"} alignItems={"center"}>
-                <CheckboxComponent
-                  id=""
-                  handleOnCheck={() => console.log("hêlo")}
-                  checked
-                />
-                <Typography
-                  fontFamily={theme.fontFamily.secondary}
-                  fontWeight={theme.fontWeight.semiBold}
-                >
-                  Supplier name
-                </Typography>
-              </Box>
-            </AccordionSummary>
-            <AccordionDetails>
-              <Box
-                display={"flex"}
-                justifyContent={"space-between"}
-                px={"40px"}
+          {cart?.items.map((supplier, indexSupplier) => {
+            return (
+              <Accordion
+                key={supplier.id}
+                defaultExpanded
+                sx={{
+                  mt: indexSupplier > 0 ? "16px" : "0",
+                  fontFamily: theme.fontFamily.secondary,
+                  boxShadow: "none",
+                  border: `1px solid ${theme.blue[100]}`,
+                  borderRadius: "8px!important",
+                  "&.MuiAccordion-root::before": {
+                    display: "none",
+                  },
+                }}
               >
-                <Typography
-                  fontFamily={theme.fontFamily.secondary}
-                  fontWeight={theme.fontWeight.semiBold}
-                  fontSize={14}
+                <AccordionSummary
+                  expandIcon={<IoIosArrowDown color="#0C71B9" />}
+                  aria-controls="panel-content"
+                  id="panel"
+                  sx={{
+                    color: theme.palette.primary.main,
+                    fontWeight: theme.fontWeight.semiBold,
+                    bgcolor: theme.blue[100],
+                    height: "48px",
+                    "&.Mui-expanded": {
+                      minHeight: "48px",
+                      height: "48px!important",
+                    },
+                    borderRadius: "8px",
+                  }}
                 >
-                  Item
-                </Typography>
-                <Box display={"flex"} gap={"60px"}>
-                  <Typography
-                    fontFamily={theme.fontFamily.secondary}
-                    fontWeight={theme.fontWeight.semiBold}
-                    fontSize={14}
+                  <Box display={"flex"} gap={"20px"} alignItems={"center"}>
+                    <CheckboxComponent
+                      id={supplier.id}
+                      handleOnCheck={() => console.log("hêlo")}
+                      checked
+                    />
+                    <Typography
+                      fontFamily={theme.fontFamily.secondary}
+                      fontWeight={theme.fontWeight.semiBold}
+                    >
+                      {supplier.name}
+                    </Typography>
+                  </Box>
+                </AccordionSummary>
+                <AccordionDetails sx={{p: "8px 6px 16px 16px"}}>
+                  <Box
+                    display={"flex"}
+                    justifyContent={"space-between"}
+                    px={"40px"}
                   >
-                    Order Quantity
-                  </Typography>
-                  <Typography
-                    fontFamily={theme.fontFamily.secondary}
-                    fontSize={14}
-                    fontWeight={theme.fontWeight.semiBold}
-                  >
-                    Subtotal
-                  </Typography>
-                </Box>
-              </Box>
-              {Array(2)
-                .fill(null)
-                .map((_, index) => {
-                  return (
-                    <Box key={index}>
-                      <CartItem />
-                      <Divider
-                        sx={{ borderColor: theme.blue[100], mx: "40px" }}
-                      />
-                      {Array(3)
-                        .fill(null)
-                        .map((_, index1) => {
-                          return <CartItem isVariant key={index1} />;
-                        })}
-                      {index !== 1 && (
-                        <Divider sx={{ borderColor: theme.blue[100] }} />
-                      )}
+                    <Typography
+                      fontFamily={theme.fontFamily.secondary}
+                      fontWeight={theme.fontWeight.semiBold}
+                      fontSize={14}
+                    >
+                      Item
+                    </Typography>
+                    <Box display={"flex"} gap={"60px"}>
+                      <Typography
+                        fontFamily={theme.fontFamily.secondary}
+                        fontWeight={theme.fontWeight.semiBold}
+                        fontSize={14}
+                      >
+                        Order Quantity
+                      </Typography>
+                      <Typography
+                        fontFamily={theme.fontFamily.secondary}
+                        fontSize={14}
+                        fontWeight={theme.fontWeight.semiBold}
+                      >
+                        Subtotal
+                      </Typography>
                     </Box>
-                  );
-                })}
-            </AccordionDetails>
-          </Accordion>
+                  </Box>
+                  {supplier.product.map((product, indexProduct) => {
+                    return (
+                      <Box key={product.id}>
+                        <CartItem data={product} />
+                        <Divider
+                          sx={{ borderColor: theme.blue[100], mx: "40px" }}
+                        />
+                        {product.variant.map((variant, indexVariant) => {
+                          return (
+                            <CartItem
+                              data={variant}
+                              isVariant
+                              key={variant.id}
+                            />
+                          );
+                        })}
+                        {indexProduct !== 1 && (
+                          <Divider sx={{ borderColor: theme.blue[100] }} />
+                        )}
+                      </Box>
+                    );
+                  })}
+                </AccordionDetails>
+              </Accordion>
+            );
+          })}
         </Box>
         <Box
           width={"32%"}

@@ -4,7 +4,7 @@ import "./CheckboxComponent.css";
 interface CheckboxComponentProps {
   id: string;
   handleOnCheck: (e: ChangeEvent<HTMLInputElement>, id: string) => void;
-  checked: boolean;
+  checked?: boolean;
 }
 const CheckboxComponent = ({ id, handleOnCheck,checked }: CheckboxComponentProps) => {
   return (

@@ -19,6 +19,9 @@ import useDevices from "@/hook/useDevices";
 import { HOME_PATH_URL, SUPPLIER_PATH_URL } from "@/constant/pathUrl";
 import { usePathname } from "next/navigation";
 import Cookies from "js-cookie";
+import { useGetCart } from "@/api/cart/query";
+import { useDispatch } from "react-redux";
+import { setCart } from "@/store/slice/appSlice";
 const Header = () => {
   const theme = useTheme();
   const { isMobile, isTablet } = useDevices();
@@ -26,12 +29,19 @@ const Header = () => {
   const pathname = usePathname();
   const translate = useTranslations();
   const locale = Cookies.get("NEXT_LOCALE");
+  const dispatch = useDispatch();
   const { data: categoriesHierarchy, getCategoriesHierarchy } =
     useGetCategoriesHierarchy();
+  const { data: cart, getCart } = useGetCart();
 
   useEffect(() => {
     getCategoriesHierarchy();
+    getCart();
   }, []);
+
+  useEffect(() => {
+    cart && dispatch(setCart(cart));
+  }, [cart]);
   return (
     <AppBar
       sx={{
