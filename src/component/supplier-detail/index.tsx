@@ -46,16 +46,17 @@ const SupplierDetail = ({ params }: { params: { slug: string } }) => {
       }),
   });
 
+
   const handleChangeFilter = (option: string) => {
     setFilterReview(option);
-    setReviewFilter({ ...reviewFilter, with_media: null, star: null });
+    setReviewFilter({ ...reviewFilter, with_media: false, star: null });
     switch (option) {
       case RatingOption.All: {
         setReviewFilter({ ...reviewFilter, with_media: false, star: null });
         break;
       }
       case RatingOption.With_photo_video: {
-        setReviewFilter({ ...reviewFilter, with_media: true });
+        setReviewFilter({ ...reviewFilter, with_media: true, star: null });
         break;
       }
       case RatingOption.start_5: {

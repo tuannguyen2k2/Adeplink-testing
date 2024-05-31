@@ -26,8 +26,10 @@ import {
 import CartContact from "../CartContact";
 import TemporaryCart from "../TemporaryCart";
 import { useAddToCart, useGetCart } from "@/api/cart/query";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { setCart } from "@/store/slice/appSlice";
+import { userSelector } from "@/store/selector";
+import { AUTH_PATH_URL } from "@/constant/pathUrl";
 
 const useStyles = makeStyles({
   root: {
@@ -64,6 +66,7 @@ const ProductCharacteristics = ({
   const { getVariantChoose, data: dataVariant } = useGetVariantChoose();
   const { getCart, data: cartData, isSuccess: getCartSuccess } = useGetCart();
   const [color, setColor] = useState<{ name: string; code: string }[]>();
+  const user = useSelector(userSelector);
   const dispatch = useDispatch();
   useEffect(() => {
     cartData && dispatch(setCart(cartData));
@@ -177,9 +180,14 @@ const ProductCharacteristics = ({
   };
 
   const handleAddToCart = () => {
+    if (!user) {
+      router.push(AUTH_PATH_URL.LOGIN);
+      return;
+    }
     if (!data) {
       return;
     }
+
     if (dataVariant?.variant) {
       addToCart({
         product_id: data.id,
