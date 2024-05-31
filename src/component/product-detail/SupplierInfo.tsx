@@ -7,7 +7,7 @@ import { convertImage } from "@/utils";
 import NoImage from "@/assets/images/no-image.png";
 import SupplierItemSkeleton from "../common/skeleton/SupplierItemSkeleton";
 import { useRouter } from "next-nprogress-bar";
-import { PRODUCT_PATH_URL } from "@/constant/pathUrl";
+import { SUPPLIER_PATH_URL } from "@/constant/pathUrl";
 const SupplierInfo = ({ data }: { data?: SupplierDto }) => {
   const theme = useTheme();
   const router = useRouter()
@@ -125,7 +125,7 @@ const SupplierInfo = ({ data }: { data?: SupplierDto }) => {
                     width: 118,
                     height: 42,
                   }}
-                  onClick={() => router.push(`${PRODUCT_PATH_URL.PRODUCT_DETAIL}/${data.slug}`)}
+                  onClick={() => router.push(`${SUPPLIER_PATH_URL.SUPPLIER_DETAIL}/${data.slug}`)}
                 >
                   View details
                 </Button>

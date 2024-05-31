@@ -35,7 +35,7 @@ const SupplierDetail = ({ params }: { params: { slug: string } }) => {
   });
 
   const { data: reviewData, isLoading: isLoadingReview } = useQuery({
-    queryKey: [SUPPLIER_REVIEW_KEY, reviewFilter],
+    queryKey: [SUPPLIER_REVIEW_KEY, reviewFilter, params],
     queryFn: async () =>
       await getSupplierReview(supplierData.company.slug, reviewFilter).then((response) => {
         setReviewFilter({
@@ -330,6 +330,7 @@ const SupplierDetail = ({ params }: { params: { slug: string } }) => {
             {Number(reviewFilter?.totalPage) > 1 && (
               <Box sx={{ display: "flex", justifyContent: "center" }}>
                 <Pagination
+                page={reviewFilter.page}
                   count={reviewFilter.totalPage}
                   shape="rounded"
                   onChange={(event, page) => {

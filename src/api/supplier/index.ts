@@ -27,7 +27,7 @@ export const getAllSupplier = async (filter: FilterSupplierDto, sortOrder: strin
 export const getSupplierReview = async (slug: string, filter: PaginationDto & RatingFilter) => {
   const params = new URLSearchParams();
   filter.star && params.append("star", String(filter.star));
-  filter.with_media === true && params.append("with_media", "true");
+  filter.with_media === true ? params.append("with_media", "true") : params.append("with_media", "false");
   filter.page && params.append("page", String(filter.page));
   filter.limit && params.append("limit", String(filter.limit));
   return await axiosConfig

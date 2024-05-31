@@ -155,8 +155,32 @@ const SupplierInfo = ({ data }: { data: SupplierDetailDto }) => {
           ): null}
         </Box>
       </AccordionComponent>
+      <AccordionComponent title="Contact">
+        <Box sx={{ display: "flex", flexDirection: "column", gap: "8px" }}>
+         
+            <Box display={"flex"} gap={"4px"}>
+              <Typography fontFamily={theme.fontFamily.secondary} fontWeight={theme.fontWeight.semiBold} fontSize={14}>
+                Phone number:
+              </Typography>
+              <Typography fontFamily={theme.fontFamily.secondary} fontSize={14}>
+                0123456789
+              </Typography>
+            </Box>
+     
+     
+            <Box display={"flex"} gap={"4px"}>
+              <Typography fontFamily={theme.fontFamily.secondary} fontWeight={theme.fontWeight.semiBold} fontSize={14}>
+                Email address:
+              </Typography>
+              <Typography fontFamily={theme.fontFamily.secondary} fontSize={14}>
+                businessdomain.com
+              </Typography>
+            </Box>
+    
+        </Box>
+      </AccordionComponent>
 
-      {data?.company.phone || data?.company.email && (
+      {/* {data?.company.phone || data?.company.email && (
         <AccordionComponent title="Contact">
           <Box sx={{ display: "flex", flexDirection: "column", gap: "8px" }}>
             {data.company?.phone && (
@@ -181,7 +205,7 @@ const SupplierInfo = ({ data }: { data: SupplierDetailDto }) => {
             )}
           </Box>
         </AccordionComponent>
-      )}
+      )} */}
     </Box>
   );
 };
