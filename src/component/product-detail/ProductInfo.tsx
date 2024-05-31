@@ -8,12 +8,9 @@ import {
   TemporaryCartType,
 } from "@/interface/common";
 import { Dispatch, SetStateAction, useEffect, useState } from "react";
+import ProductCharacteristicsSkeleton from "./product-characteristics/ProductCharacteristicsSkeleton";
 
-const ProductInfo = ({
-  data,
-}: {
-  data?: ProductDetailDto;
-}) => {
+const ProductInfo = ({ data }: { data?: ProductDetailDto }) => {
   const [imagesSlider, setImagesSlider] = useState<ImageType[]>();
   useEffect(() => {
     setImagesSlider(data?.image);
@@ -21,10 +18,11 @@ const ProductInfo = ({
   return (
     <Box mb={"32px"} display={"flex"} gap={"20px"}>
       <SliderProduct images={imagesSlider} />
-      <ProductCharacteristics
-        data={data}
-        setImagesSlider={setImagesSlider}
-      />
+      {data ? (
+        <ProductCharacteristics data={data} setImagesSlider={setImagesSlider} />
+      ) : (
+        <ProductCharacteristicsSkeleton />
+      )}
     </Box>
   );
 };

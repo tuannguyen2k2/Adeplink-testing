@@ -1,5 +1,5 @@
 import { useMutation } from "@tanstack/react-query";
-import { addToCart, getCart } from "./api";
+import { addToCart, deleteCartItem, getCart } from "./api";
 import { CartType } from "@/interface/common";
 
 export const useAddToCart = () => {
@@ -16,7 +16,7 @@ export const useAddToCart = () => {
 };
 
 export const useGetCart = () => {
-  const { error, isPending, mutate, reset, data } = useMutation({
+  const { error, isPending, mutate, reset, data, isSuccess } = useMutation({
     mutationFn: getCart,
     onSuccess: (data: CartType) => {},
     onError: (err) => {
@@ -25,5 +25,18 @@ export const useGetCart = () => {
       }, 2000);
     },
   });
-  return { getCart: mutate, isPending, error, data };
+  return { getCart: mutate, isPending, error, data, isSuccess };
+};
+
+export const useDeleteCartItem = () => {
+  const { error, isPending, mutate, reset, data } = useMutation({
+    mutationFn: deleteCartItem,
+    onSuccess: () => {},
+    onError: (err) => {
+      setTimeout(() => {
+        reset();
+      }, 2000);
+    },
+  });
+  return { deleteCartItem: mutate, isPending, error, data };
 };

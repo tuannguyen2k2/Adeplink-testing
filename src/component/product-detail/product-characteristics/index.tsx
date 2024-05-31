@@ -79,7 +79,11 @@ const ProductCharacteristics = ({
 
   useEffect(() => {
     if (dataVariant?.images && dataVariant?.images.length > 0) {
-      setImagesSlider(dataVariant.images);
+      if (data && !data.image) {
+        setImagesSlider([...dataVariant.images]);
+      } else if(data && data.image) {
+        setImagesSlider([...dataVariant.images, ...data?.image]);
+      }
     }
   }, [dataVariant]);
   const handleOpenCart = () => {
@@ -142,10 +146,6 @@ const ProductCharacteristics = ({
   };
 
   const handleAddToCart = () => {
-    //Contact
-    if (priceSelected == undefined) {
-      handleOpenCart();
-    }
     if (!data) {
       return;
     }
@@ -545,7 +545,7 @@ const ProductCharacteristics = ({
                 },
               }}
             >
-              {priceSelected == undefined ? "Contact" : "Add to cart"}
+              {"Add to cart"}
             </Button>
           </Box>
           {data?.min_order && +orderQuantity < data?.min_order && (

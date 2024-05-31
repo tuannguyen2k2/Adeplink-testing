@@ -42,8 +42,8 @@ const ProductList = ({ data }: ProductListType) => {
             item
             xs={12}
             sm={12}
-            md={12}
-            lg={6}
+            md={6}
+            lg={4}
             xl={4}
             key={index}
             sx={{
@@ -52,8 +52,9 @@ const ProductList = ({ data }: ProductListType) => {
               paddingLeft: "0!important",
               paddingTop: {
                 xl: index > 2 ? "20px!important" : "0!important",
-                lg: index > 1 ? "20px!important" : "0!important",
-                md: index > 0 ? "20px!important" : "0!important",
+                lg: index > 2 ? "20px!important" : "0!important",
+                md: index > 1 ? "20px!important" : "0!important",
+                sm: index > 0 ? "20px!important" : "0!important",
               },
             }}
           >

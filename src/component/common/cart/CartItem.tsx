@@ -1,11 +1,14 @@
+import { useDeleteCartItem } from "@/api/cart/query";
+import NoImage from "@/assets/images/no-image.png";
+import { ImageType } from "@/interface/common";
+import { convertImage } from "@/utils";
 import { Box, IconButton, Typography, useTheme } from "@mui/material";
-import CheckboxComponent from "../CheckboxComponent";
 import Image from "next/image";
-import QuantityComponent from "../QuantityComponent";
+import { ChangeEvent, useState } from "react";
 import { IoIosInformationCircleOutline } from "react-icons/io";
 import { IoCloseOutline } from "react-icons/io5";
-import { ChangeEvent, useState } from "react";
-
+import CheckboxComponent from "../CheckboxComponent";
+import QuantityComponent from "../QuantityComponent";
 type CartItemType = {
   isVariant?: boolean;
   data: {
@@ -13,22 +16,37 @@ type CartItemType = {
     name: string;
     min_order: number;
     price: number;
+    image?: ImageType;
+    subtotal?: number;
+    quantity?: number;
   };
 };
 const CartItem = ({ isVariant, data }: CartItemType) => {
   const theme = useTheme();
-  const [quantity, setQuantity] = useState(1000);
+  const [quantity, setQuantity] = useState(data.quantity);
   const [checked, setChecked] = useState(false);
   const handleIncreaseQuantity = () => {
-    setQuantity(quantity + 1);
+    quantity && setQuantity(quantity + 1);
   };
   const handleDecreaseQuantity = () => {
-    setQuantity(quantity - 1);
+    quantity && setQuantity(quantity - 1);
   };
 
   const handleOnChangeQuantityInput = (e: ChangeEvent<HTMLInputElement>) => {
     setQuantity(parseInt(e.target.value));
   };
+
+  const handleDeleteCartItem = () => {
+    if (isVariant) {
+      deleteCartItem({
+        variant_id: data.id,
+      });
+    } else {
+      deleteCartItem({ product_id: data.id });
+    }
+  };
+
+  const { deleteCartItem } = useDeleteCartItem();
   return (
     <Box
       display={"flex"}
@@ -45,9 +63,7 @@ const CartItem = ({ isVariant, data }: CartItemType) => {
         {!isVariant && (
           <Box width={100} height={100} ml={"20px"} mr={"14px"}>
             <Image
-              src={
-                "https://vietnamnomad.com/wp-content/uploads/2020/04/Best-places-to-visit-in-Vietnam-in-2021-Ha-Long-Bay-1024x640.jpg"
-              }
+              src={convertImage(data.image?.image_url) || NoImage}
               alt="product"
               width={100}
               height={100}
@@ -121,14 +137,17 @@ const CartItem = ({ isVariant, data }: CartItemType) => {
         </Box>
       </Box>
       <Box display={"flex"} alignItems={"center"}>
-        <Box width={129} height={42} ml={"60px"}>
-          <QuantityComponent
-            quantity={quantity}
-            handleDecreaseQuantity={handleDecreaseQuantity}
-            handleIncreaseQuantity={handleIncreaseQuantity}
-            handleOnChangeQuantityInput={handleOnChangeQuantityInput}
-          />
-        </Box>
+        {isVariant && (
+          <Box width={129} height={42} ml={"60px"}>
+            <QuantityComponent
+              quantity={quantity}
+              handleDecreaseQuantity={handleDecreaseQuantity}
+              handleIncreaseQuantity={handleIncreaseQuantity}
+              handleOnChangeQuantityInput={handleOnChangeQuantityInput}
+            />
+          </Box>
+        )}
+
         <Typography
           fontFamily={theme.fontFamily.secondary}
           fontWeight={theme.fontWeight.medium}
@@ -137,9 +156,10 @@ const CartItem = ({ isVariant, data }: CartItemType) => {
           minWidth={"80px"}
           textAlign={"center"}
         >
-          $99900
+          {data.subtotal === 0 ? "Contact" : data.subtotal}
         </Typography>
-        <IconButton>
+
+        <IconButton onClick={handleDeleteCartItem}>
           <IoCloseOutline color="#0B7ECA" size={20} />
         </IconButton>
       </Box>

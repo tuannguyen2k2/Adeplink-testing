@@ -1,4 +1,5 @@
 import axiosConfig from "@/config/axiosConfig";
+import { AxiosRequestConfig } from "axios";
 
 export const addToCart = async (data: {
   quantity: number;
@@ -22,15 +23,20 @@ export const getCart = async () => {
     });
 };
 
-export const deleteCart = async (data: {
+export const deleteCartItem = async (data: {
   product_id?: string;
   variant_id?: string;
 }) => {
-  if(!data){
-    return;
-  }
+  const config: AxiosRequestConfig = {
+    data: {
+      product_id: data.product_id,
+      variant_id: data.variant_id,
+    },
+  };
+  
+
   return await axiosConfig
-    .delete("cart")
+    .delete("cart", config)
     .then((response) => response.data.data)
     .catch((error) => {
       throw error;

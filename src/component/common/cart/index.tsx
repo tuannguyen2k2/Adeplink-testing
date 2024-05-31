@@ -180,7 +180,7 @@ const Cart = () => {
                     </Typography>
                   </Box>
                 </AccordionSummary>
-                <AccordionDetails sx={{p: "8px 6px 16px 16px"}}>
+                <AccordionDetails sx={{ p: "8px 6px 16px 16px" }}>
                   <Box
                     display={"flex"}
                     justifyContent={"space-between"}
@@ -218,6 +218,7 @@ const Cart = () => {
                           sx={{ borderColor: theme.blue[100], mx: "40px" }}
                         />
                         {product.variant.map((variant, indexVariant) => {
+                          console.log(variant);
                           return (
                             <CartItem
                               data={variant}

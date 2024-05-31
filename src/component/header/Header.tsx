@@ -32,7 +32,7 @@ const Header = () => {
   const dispatch = useDispatch();
   const { data: categoriesHierarchy, getCategoriesHierarchy } =
     useGetCategoriesHierarchy();
-  const { data: cart, getCart } = useGetCart();
+  const { data: cart, getCart, isSuccess } = useGetCart();
 
   useEffect(() => {
     getCategoriesHierarchy();
@@ -41,7 +41,8 @@ const Header = () => {
 
   useEffect(() => {
     cart && dispatch(setCart(cart));
-  }, [cart]);
+    console.log(cart);
+  }, [cart, isSuccess]);
   return (
     <AppBar
       sx={{

@@ -231,21 +231,21 @@ const Product = () => {
       data?.metadata?.total_data !== null &&
       data?.metadata?.total_data !== undefined ? (
         <Typography fontFamily={theme.fontFamily.secondary} mb={"20px"}>
-          {`Showing ${data?.metadata?.total_data}+ products for "${keyword}"`}
+          {`Showing ${data?.metadata?.total_data} products for "${keyword}"`}
         </Typography>
       ) : null}
       {!keyword && !keyword_by_category && !cate_name && (
         <Typography fontFamily={theme.fontFamily.secondary} mb={"20px"}>
           {`Showing ${
             data?.metadata?.total_data || 0
-          }+ products recommendations`}
+          } products recommendations`}
         </Typography>
       )}
       {keyword_by_category && cate_name && (
         <Typography fontFamily={theme.fontFamily.secondary} mb={"20px"}>
           {`Showing ${
             data?.metadata?.total_data || 0
-          }+ products for "${keyword_by_category}" in ${cate_name}`}
+          } products for "${keyword_by_category}" in ${cate_name}`}
         </Typography>
       )}
       {cate_name && !keyword_by_category && (
