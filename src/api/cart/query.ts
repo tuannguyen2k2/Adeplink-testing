@@ -3,7 +3,7 @@ import { addToCart, deleteCartItem, getCart } from "./api";
 import { CartType } from "@/interface/common";
 
 export const useAddToCart = () => {
-  const { error, isPending, mutate, reset, data } = useMutation({
+  const { error, isPending, mutate, reset, data, isSuccess } = useMutation({
     mutationFn: addToCart,
     onSuccess: () => {},
     onError: (err) => {
@@ -12,7 +12,7 @@ export const useAddToCart = () => {
       }, 2000);
     },
   });
-  return { addToCart: mutate, isPending, error, data };
+  return { addToCart: mutate, isPending, error, data, isSuccess };
 };
 
 export const useGetCart = () => {

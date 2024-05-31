@@ -38,11 +38,9 @@ const CartItem = ({ isVariant, data }: CartItemType) => {
 
   const handleDeleteCartItem = () => {
     if (isVariant) {
-      deleteCartItem({
-        variant_id: data.id,
-      });
+      deleteCartItem(data.id);
     } else {
-      deleteCartItem({ product_id: data.id });
+      // deleteCartItem({ product_id: data.id });
     }
   };
 

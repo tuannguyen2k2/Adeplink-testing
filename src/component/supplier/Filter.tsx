@@ -140,4 +140,4 @@ const FilterComponent = ({ filter, setFilter, categoryData, countryData }: Filte
   );
 };
 
-export default FilterComponent;
+export default React.memo(FilterComponent);

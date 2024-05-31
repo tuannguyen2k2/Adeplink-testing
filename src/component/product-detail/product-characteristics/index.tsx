@@ -25,7 +25,9 @@ import {
 } from "react";
 import CartContact from "../CartContact";
 import TemporaryCart from "../TemporaryCart";
-import { useAddToCart } from "@/api/cart/query";
+import { useAddToCart, useGetCart } from "@/api/cart/query";
+import { useDispatch } from "react-redux";
+import { setCart } from "@/store/slice/appSlice";
 
 const useStyles = makeStyles({
   root: {
@@ -58,8 +60,20 @@ const ProductCharacteristics = ({
   const [orderQuantity, setOrderQuantity] = useState<string>("0");
   const [openCart, setOpenCart] = useState(false);
   const [temporaryCart, setTemporaryCart] = useState<TemporaryCartType[]>([]);
-  const { addToCart } = useAddToCart();
+  const { addToCart, isSuccess: addToCartSuccess } = useAddToCart();
   const { getVariantChoose, data: dataVariant } = useGetVariantChoose();
+  const { getCart, data: cartData, isSuccess: getCartSuccess } = useGetCart();
+  const dispatch = useDispatch();
+  useEffect(() => {
+    cartData && dispatch(setCart(cartData));
+  }, [cartData, getCartSuccess]);
+
+  useEffect(() => {
+    if (addToCartSuccess) {
+      getCart();
+    }
+  }, [addToCartSuccess]);
+
   useEffect(() => {
     if (
       data &&
@@ -81,7 +95,7 @@ const ProductCharacteristics = ({
     if (dataVariant?.images && dataVariant?.images.length > 0) {
       if (data && !data.image) {
         setImagesSlider([...dataVariant.images]);
-      } else if(data && data.image) {
+      } else if (data && data.image) {
         setImagesSlider([...dataVariant.images, ...data?.image]);
       }
     }
@@ -149,7 +163,7 @@ const ProductCharacteristics = ({
     if (!data) {
       return;
     }
-    if (dataVariant) {
+    if (dataVariant?.variant) {
       addToCart({
         product_id: data.id,
         quantity: +orderQuantity,

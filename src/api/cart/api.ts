@@ -23,20 +23,13 @@ export const getCart = async () => {
     });
 };
 
-export const deleteCartItem = async (data: {
-  product_id?: string;
-  variant_id?: string;
-}) => {
-  const config: AxiosRequestConfig = {
-    data: {
-      product_id: data.product_id,
-      variant_id: data.variant_id,
-    },
+export const deleteCartItem = async (data: string) => {
+  const dataDele = {
+    variant_id: data,
   };
-  
 
   return await axiosConfig
-    .delete("cart", config)
+    .delete("cart", { data: dataDele })
     .then((response) => response.data.data)
     .catch((error) => {
       throw error;

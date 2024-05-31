@@ -240,6 +240,8 @@ export type Metadata = {
 
 export type SupplierDetailDto = {
   company: {
+    email: any;
+    phone: any;
     type: string;
     country: string;
     city: string;

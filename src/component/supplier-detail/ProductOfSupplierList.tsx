@@ -417,7 +417,6 @@ const ProductOfSupplierList = ({ listCategory }: { listCategory: CategoryDto[] }
     queryFn: async () => await getProductByCategory(filterProduct).then((response) => response.products),
   });
 
-  console.log(productData);
   return (
     <Box width={"100%"} mt={"32px"}>
       <Box
