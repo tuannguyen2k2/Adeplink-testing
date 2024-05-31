@@ -103,7 +103,7 @@ const SupplierInfo = ({ data }: { data: SupplierDetailDto }) => {
       )}
       <AccordionComponent title="Company Information">
         <Box sx={{ display: "flex", flexDirection: "column", gap: "8px" }}>
-          {data && data.company.year_established && (
+          {data && data.company.year_established ? (
             <Box display={"flex"} gap={"4px"}>
               <Typography fontFamily={theme.fontFamily.secondary} fontWeight={theme.fontWeight.semiBold} fontSize={14}>
                 Established on:
@@ -112,8 +112,8 @@ const SupplierInfo = ({ data }: { data: SupplierDetailDto }) => {
                 {moment(data.company.year_established).format("DD/MM/YYYY")}
               </Typography>
             </Box>
-          )}
-          {data && data.company.address && (
+          ): null}
+          {data && data.company.address ? (
             <Box display={"flex"} gap={"4px"}>
               <Typography fontFamily={theme.fontFamily.secondary} fontWeight={theme.fontWeight.semiBold} fontSize={14}>
                 Location:
@@ -122,8 +122,8 @@ const SupplierInfo = ({ data }: { data: SupplierDetailDto }) => {
                 {data.company.address}
               </Typography>
             </Box>
-          )}
-          {data && data.category[0]?.name && (
+          ): null}
+          {data && data.category[0]?.name ? (
             <Box display={"flex"} gap={"4px"}>
               <Typography fontFamily={theme.fontFamily.secondary} fontWeight={theme.fontWeight.semiBold} fontSize={14}>
                 Main products:
@@ -132,7 +132,7 @@ const SupplierInfo = ({ data }: { data: SupplierDetailDto }) => {
                 {data.category[0].name}
               </Typography>
             </Box>
-          )}
+          ): null}
           {data && data.company.website && (
             <Box display={"flex"} gap={"4px"}>
               <Typography fontFamily={theme.fontFamily.secondary} fontWeight={theme.fontWeight.semiBold} fontSize={14}>
@@ -143,7 +143,7 @@ const SupplierInfo = ({ data }: { data: SupplierDetailDto }) => {
               </Typography>
             </Box>
           )}
-          {data && data.company.year_established && (
+          {data && data.company.year_established ? (
             <Box display={"flex"} gap={"4px"}>
               <Typography fontFamily={theme.fontFamily.secondary} fontWeight={theme.fontWeight.semiBold} fontSize={14}>
                 Joined AdeptLink since:
@@ -152,7 +152,7 @@ const SupplierInfo = ({ data }: { data: SupplierDetailDto }) => {
                 {moment(data.company.year_established).format("YYYY")}
               </Typography>
             </Box>
-          )}
+          ): null}
         </Box>
       </AccordionComponent>
 
