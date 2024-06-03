@@ -112,7 +112,7 @@ const ProductCharacteristics = ({
   }, [colorSelected, packageSelected, sizeSelected, orderQuantity]);
 
   useEffect(() => {
-    if (dataVariant?.images && dataVariant?.images.length > 0) {
+    if (dataVariant?.images) {
       if (data && !data.image) {
         setImagesSlider([...dataVariant.images]);
       } else if (data && data.image) {

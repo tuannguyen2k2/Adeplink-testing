@@ -236,7 +236,7 @@ const SupplierSignUpModal = ({
                         <TextField
                           {...params}
                           label=""
-                          placeholder="Agriculture"
+                          placeholder="Viet Nam"
                         />
                       )}
                       PopperComponent={(props) => (
