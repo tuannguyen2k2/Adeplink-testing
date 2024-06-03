@@ -4,7 +4,7 @@ import { AxiosRequestConfig } from "axios";
 export const addToCart = async (data: {
   quantity: number;
   product_id: string;
-  variant_id: string;
+  variant_id?: string;
 }) => {
   return await axiosConfig
     .post("cart", data)

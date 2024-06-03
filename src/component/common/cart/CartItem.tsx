@@ -22,18 +22,20 @@ type CartItemType = {
     name: string;
     min_order: number;
     price: number;
-    image?: ImageType;
+    image?: string;
     subtotal: number;
     quantity?: number;
   };
   handleOnCheck: (e: ChangeEvent<HTMLInputElement>) => void;
   productId: string;
+  productSubTotal: number;
 };
 const CartItem = ({
   isVariant,
   data,
   handleOnCheck,
   productId,
+  productSubTotal,
 }: CartItemType) => {
   const theme = useTheme();
   const [quantity, setQuantity] = useState(data.quantity);
@@ -76,7 +78,7 @@ const CartItem = ({
         {!isVariant && (
           <Box width={100} height={100} ml={"20px"} mr={"14px"}>
             <Image
-              src={convertImage(data.image?.image_url) || NoImage}
+              src={convertImage(data.image) || NoImage}
               alt="product"
               width={100}
               height={100}
@@ -161,25 +163,27 @@ const CartItem = ({
           </Box>
         )}
 
-        <Typography
-          fontFamily={theme.fontFamily.secondary}
-          fontWeight={theme.fontWeight.medium}
-          color={theme.palette.primary.main}
-          ml={"34px"}
-          minWidth={"80px"}
-          textAlign={"center"}
-        >
-          {data.subtotal === 0
-            ? "Contact"
-            : data.subtotal.toLocaleString("en-US", {
-                style: "currency",
-                currency: "USD",
-                minimumFractionDigits: 2,
-                maximumFractionDigits: 2,
-              })}
-        </Typography>
+        {isVariant && (
+          <Typography
+            fontFamily={theme.fontFamily.secondary}
+            fontWeight={theme.fontWeight.medium}
+            color={theme.palette.primary.main}
+            ml={"34px"}
+            minWidth={"80px"}
+            textAlign={"center"}
+          >
+            {productSubTotal === 0
+              ? "Contact"
+              : data.subtotal.toLocaleString("en-US", {
+                  style: "currency",
+                  currency: "USD",
+                  minimumFractionDigits: 2,
+                  maximumFractionDigits: 2,
+                })}
+          </Typography>
+        )}
 
-        <IconButton onClick={handleDeleteCartItem}>
+        <IconButton onClick={handleDeleteCartItem} sx={{ml: "10px"}}>
           <IoCloseOutline color="#0B7ECA" size={20} />
         </IconButton>
       </Box>

@@ -48,6 +48,7 @@ export type VariantAttriButesType = {
 };
 
 export type TemporaryCartType = {
+  name: string | false;
   color?: string;
   package?: string;
   size?: string;
@@ -71,7 +72,7 @@ export type ProductCartType = {
   min_order: number;
   quantity: number;
   subtotal: number;
-  image: ImageType;
+  image: string;
   range_price: PriceProductDetailType[];
   variant: VariantCartType[];
 };

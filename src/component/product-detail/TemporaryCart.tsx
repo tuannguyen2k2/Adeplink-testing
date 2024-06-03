@@ -68,7 +68,7 @@ const TemporaryCart = ({
     const matchingPrice = getMatchingPriceByAmount(
       (temporaryCart[index].orderQuantity -= 1)
     );
-    temporaryCart[index].unitPrice = matchingPrice || null;
+    temporaryCart[index].unitPrice = matchingPrice ?? null;
     setTemporaryCart([...temporaryCart]);
   };
   const handleIncreaseQuantity = (index: number) => {
@@ -76,7 +76,7 @@ const TemporaryCart = ({
     const matchingPrice = getMatchingPriceByAmount(
       (temporaryCart[index].orderQuantity += 1)
     );
-    temporaryCart[index].unitPrice = matchingPrice || null;
+    temporaryCart[index].unitPrice = matchingPrice ?? null;
     setTemporaryCart([...temporaryCart]);
   };
 
@@ -111,6 +111,7 @@ const TemporaryCart = ({
     newTemporaryCart.splice(index, 1);
     setTemporaryCart(newTemporaryCart);
   };
+  console.log(temporaryCart);
   return (
     <>
       <Paper
@@ -265,7 +266,7 @@ const TemporaryCart = ({
                           width: "212px",
                         }}
                       >
-                        {item.color},&nbsp;{item.package},&nbsp;{item.size}
+                        {item.name || `${item.color}, ${item.package}, ${item.size}`}
                       </TableCell>
                       <TableCell
                         align="left"

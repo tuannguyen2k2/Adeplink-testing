@@ -1,4 +1,4 @@
-export const convertImage = (image?: string | null) => {
+export const convertImage = (image?: string | null ) => {
   if (image) {
     if (
       image.includes("https://localhost:8000") &&

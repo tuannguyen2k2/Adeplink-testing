@@ -50,12 +50,7 @@ const ProductList = ({ data }: ProductListType) => {
               display: "flex",
               justifyContent: "center",
               paddingLeft: "0!important",
-              paddingTop: {
-                xl: index > 2 ? "20px!important" : "0!important",
-                lg: index > 2 ? "20px!important" : "0!important",
-                md: index > 1 ? "20px!important" : "0!important",
-                sm: index > 0 ? "20px!important" : "0!important",
-              },
+              paddingTop: index > 2 ? "20px!important" : "0!important",
             }}
           >
             <Box

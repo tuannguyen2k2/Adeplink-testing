@@ -236,7 +236,8 @@ const Cart = () => {
                     <Box
                       display={"flex"}
                       justifyContent={"space-between"}
-                      px={"40px"}
+                      pl={"40px"}
+                      pr={"50px"}
                     >
                       <Typography
                         fontFamily={theme.fontFamily.secondary}
@@ -272,6 +273,7 @@ const Cart = () => {
                                 e: ChangeEvent<HTMLInputElement>
                               ) => handleCheckedProduct(e, supplier, product)}
                               productId={product.id}
+                              productSubTotal={product.subtotal}
                             />
                             <Divider
                               sx={{ borderColor: theme.blue[100], mx: "40px" }}
@@ -288,6 +290,7 @@ const Cart = () => {
                                   isVariant
                                   key={variant.id}
                                   productId={product.id}
+                                  productSubTotal={product.subtotal}
                                 />
                               );
                             })}

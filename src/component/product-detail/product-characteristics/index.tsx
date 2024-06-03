@@ -194,8 +194,14 @@ const ProductCharacteristics = ({
         quantity: +orderQuantity,
         variant_id: dataVariant?.variant.id,
       });
+    } else {
+      addToCart({
+        product_id: data.id,
+        quantity: +orderQuantity,
+      });
     }
     const dataCartItem = {
+      name: JSON.stringify(data.variant_attributes) === '{}' && data.name,
       color: color && color[colorSelected]?.name,
       package:
         data.variant_attributes?.package &&
@@ -207,6 +213,7 @@ const ProductCharacteristics = ({
       unitPrice:
         priceSelected !== undefined ? data.price[priceSelected].price : null,
     };
+
 
     if (temporaryCart) {
       let isDuplicateVariant = false;
