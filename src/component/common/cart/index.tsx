@@ -39,7 +39,7 @@ const Cart = () => {
   const getAllProductIdsAndVariantIds = (products: ProductCartType[]) => {
     return products.reduce((ids: string[], product) => {
       ids.push(product.id);
-      product.variant.forEach((variant) => {
+      product.variant?.forEach((variant) => {
         ids.push(variant.id);
       });
       return ids;
@@ -180,7 +180,12 @@ const Cart = () => {
         Cart
       </Typography>
       {cart && cart.total_items > 0 ? (
-        <Box display={"flex"} width={"100%"} justifyContent={"space-between"}>
+        <Box
+          display={"flex"}
+          width={"100%"}
+          justifyContent={"space-between"}
+
+        >
           <Box width={"66%"}>
             {cart?.items.map((supplier: SupplierCartType, indexSupplier) => {
               return (
@@ -246,7 +251,7 @@ const Cart = () => {
                       >
                         Item
                       </Typography>
-                      <Box display={"flex"} gap={"60px"}>
+                      <Box display={"flex"} gap={"100px"}>
                         <Typography
                           fontFamily={theme.fontFamily.secondary}
                           fontWeight={theme.fontWeight.semiBold}
@@ -278,7 +283,7 @@ const Cart = () => {
                             <Divider
                               sx={{ borderColor: theme.blue[100], mx: "40px" }}
                             />
-                            {product.variant.map((variant, indexVariant) => {
+                            {product.variant?.map((variant, indexVariant) => {
                               return (
                                 <CartItem
                                   handleOnCheck={(

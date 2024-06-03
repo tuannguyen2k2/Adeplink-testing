@@ -65,18 +65,22 @@ const TemporaryCart = ({
 
   const handleDecreaseQuantity = (index: number) => {
     temporaryCart[index].orderQuantity -= 1;
-    const matchingPrice = getMatchingPriceByAmount(
-      (temporaryCart[index].orderQuantity -= 1)
-    );
-    temporaryCart[index].unitPrice = matchingPrice ?? null;
+    let totalOrderQuantity = 0;
+    temporaryCart.forEach((item) => {
+      totalOrderQuantity += item.orderQuantity;
+    });
+    const matchingPrice = getMatchingPriceByAmount(totalOrderQuantity - 1);
+    temporaryCart[0].unitPrice = matchingPrice ?? null;
     setTemporaryCart([...temporaryCart]);
   };
   const handleIncreaseQuantity = (index: number) => {
     temporaryCart[index].orderQuantity += 1;
-    const matchingPrice = getMatchingPriceByAmount(
-      (temporaryCart[index].orderQuantity += 1)
-    );
-    temporaryCart[index].unitPrice = matchingPrice ?? null;
+    let totalOrderQuantity = 0;
+    temporaryCart.forEach((item) => {
+      totalOrderQuantity += item.orderQuantity;
+    });
+    const matchingPrice = getMatchingPriceByAmount(totalOrderQuantity + 1);
+    temporaryCart[0].unitPrice = matchingPrice ?? null;
     setTemporaryCart([...temporaryCart]);
   };
 
@@ -85,8 +89,15 @@ const TemporaryCart = ({
     index: number
   ) => {
     temporaryCart[index].orderQuantity = parseInt(e.target.value);
-    const matchingPrice = getMatchingPriceByAmount(parseInt(e.target.value));
-    temporaryCart[index].unitPrice = matchingPrice || null;
+    let totalOrderQuantity = 0;
+    temporaryCart.forEach((item, indexTemporary) => {
+      if (index !== indexTemporary) totalOrderQuantity += item.orderQuantity;
+    });
+
+    const matchingPrice = getMatchingPriceByAmount(
+      totalOrderQuantity + parseInt(e.target.value)
+    );
+    temporaryCart[0].unitPrice = matchingPrice ?? null;
     setTemporaryCart([...temporaryCart]);
   };
 
@@ -266,7 +277,8 @@ const TemporaryCart = ({
                           width: "212px",
                         }}
                       >
-                        {item.name || `${item.color}, ${item.package}, ${item.size}`}
+                        {item.name ||
+                          `${item.color}, ${item.package}, ${item.size}`}
                       </TableCell>
                       <TableCell
                         align="left"
@@ -278,8 +290,8 @@ const TemporaryCart = ({
                           color: "black",
                         }}
                       >
-                        {item.unitPrice
-                          ? `$${item.unitPrice}`
+                        {temporaryCart[0].unitPrice
+                          ? `$${temporaryCart[0].unitPrice}`
                           : "To be negotiated"}
                       </TableCell>
                       <TableCell
@@ -368,7 +380,7 @@ const TemporaryCart = ({
                     color: "black",
                   }}
                 >
-                  {(totalPrice).toLocaleString("en-US", {
+                  {totalPrice.toLocaleString("en-US", {
                     style: "currency",
                     currency: "USD",
                     minimumFractionDigits: 2,
@@ -420,7 +432,7 @@ const TemporaryCart = ({
                     fontWeight: theme.fontWeight.semiBold,
                   }}
                 >
-                        {(totalPrice + 100).toLocaleString("en-US", {
+                  {(totalPrice + 100).toLocaleString("en-US", {
                     style: "currency",
                     currency: "USD",
                     minimumFractionDigits: 2,
