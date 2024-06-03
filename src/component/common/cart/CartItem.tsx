@@ -23,7 +23,7 @@ type CartItemType = {
     min_order: number;
     price: number;
     image?: ImageType;
-    subtotal?: number;
+    subtotal: number;
     quantity?: number;
   };
   handleOnCheck: (e: ChangeEvent<HTMLInputElement>) => void;
@@ -169,7 +169,14 @@ const CartItem = ({
           minWidth={"80px"}
           textAlign={"center"}
         >
-          {data.subtotal === 0 ? "Contact" : data.subtotal}
+          {data.subtotal === 0
+            ? "Contact"
+            : data.subtotal.toLocaleString("en-US", {
+                style: "currency",
+                currency: "USD",
+                minimumFractionDigits: 2,
+                maximumFractionDigits: 2,
+              })}
         </Typography>
 
         <IconButton onClick={handleDeleteCartItem}>

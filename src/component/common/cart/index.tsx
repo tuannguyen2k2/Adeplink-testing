@@ -88,23 +88,22 @@ const Cart = () => {
       'input[type="checkbox"]'
     );
     const checkboxes = Array.from(checkboxElements);
-    let allChecked = true;
+    let allProductChecked = true;
     checkboxes.forEach((checkbox) => {
       if (
         getAllProductIds(supplier.product).includes(checkbox.id) &&
         checkbox.id !== product.id
       ) {
         if (!(checkbox as HTMLInputElement).checked) {
-          allChecked = false;
+          allProductChecked = false;
         }
       }
     });
 
     checkboxes.forEach((checkbox) => {
-      console.log(checkbox.id === supplier.id);
       if (
         checkbox.id === supplier.id &&
-        allChecked &&
+        allProductChecked &&
         e.currentTarget.checked
       ) {
         (checkbox as HTMLInputElement).checked = true;
@@ -113,6 +112,54 @@ const Cart = () => {
       }
       if (getAllVariantIds(product.variant).includes(checkbox.id)) {
         (checkbox as HTMLInputElement).checked = e.currentTarget.checked;
+      }
+    });
+  };
+  const handleCheckedVariant = (
+    e: ChangeEvent<HTMLInputElement>,
+    supplier: SupplierCartType,
+    product: ProductCartType
+  ) => {
+    e.stopPropagation();
+    const checkboxElements = document.querySelectorAll(
+      'input[type="checkbox"]'
+    );
+    const checkboxes = Array.from(checkboxElements);
+    let allVariantChecked = true;
+    let allProductChecked = true;
+    checkboxes.forEach((checkbox) => {
+      if (
+        getAllVariantIds(product.variant).includes(checkbox.id) &&
+        checkbox.id !== e.currentTarget.id
+      ) {
+        if (!(checkbox as HTMLInputElement).checked) {
+          allVariantChecked = false;
+        }
+      }
+      if (
+        getAllProductIds(supplier.product).includes(checkbox.id) &&
+        checkbox.id !== product.id
+      ) {
+        if (!(checkbox as HTMLInputElement).checked) {
+          allProductChecked = false;
+        }
+      }
+    });
+    checkboxes.forEach((checkbox) => {
+      if (checkbox.id === product.id) {
+        (checkbox as HTMLInputElement).checked =
+          e.currentTarget.checked && allVariantChecked;
+      }
+      if (
+        checkbox.id === supplier.id &&
+        allVariantChecked &&
+        allProductChecked &&
+        e.currentTarget.checked
+      ) {
+        (checkbox as HTMLInputElement).checked = true;
+      } else if (checkbox.id === supplier.id) {
+        console.log("true");
+        (checkbox as HTMLInputElement).checked = false;
       }
     });
   };
@@ -215,38 +262,42 @@ const Cart = () => {
                         </Typography>
                       </Box>
                     </Box>
-                    {supplier.product.map((product : ProductCartType, indexProduct) => {
-                      return (
-                        <Box key={product.id}>
-                          <CartItem
-                            data={product}
-                            handleOnCheck={(e: ChangeEvent<HTMLInputElement>) =>
-                              handleCheckedProduct(e, supplier, product)
-                            }
-                            productId={product.id}
-                          />
-                          <Divider
-                            sx={{ borderColor: theme.blue[100], mx: "40px" }}
-                          />
-                          {product.variant.map((variant, indexVariant) => {
-                            return (
-                              <CartItem
-                                handleOnCheck={(
-                                  e: ChangeEvent<HTMLInputElement>
-                                ) => console.log("first")}
-                                data={variant}
-                                isVariant
-                                key={variant.id}
-                                productId={product.id}
-                              />
-                            );
-                          })}
-                          {indexProduct !== 1 && (
-                            <Divider sx={{ borderColor: theme.blue[100] }} />
-                          )}
-                        </Box>
-                      );
-                    })}
+                    {supplier.product.map(
+                      (product: ProductCartType, indexProduct) => {
+                        return (
+                          <Box key={product.id}>
+                            <CartItem
+                              data={product}
+                              handleOnCheck={(
+                                e: ChangeEvent<HTMLInputElement>
+                              ) => handleCheckedProduct(e, supplier, product)}
+                              productId={product.id}
+                            />
+                            <Divider
+                              sx={{ borderColor: theme.blue[100], mx: "40px" }}
+                            />
+                            {product.variant.map((variant, indexVariant) => {
+                              return (
+                                <CartItem
+                                  handleOnCheck={(
+                                    e: ChangeEvent<HTMLInputElement>
+                                  ) =>
+                                    handleCheckedVariant(e, supplier, product)
+                                  }
+                                  data={variant}
+                                  isVariant
+                                  key={variant.id}
+                                  productId={product.id}
+                                />
+                              );
+                            })}
+                            {indexProduct !== 1 && (
+                              <Divider sx={{ borderColor: theme.blue[100] }} />
+                            )}
+                          </Box>
+                        );
+                      }
+                    )}
                   </AccordionDetails>
                 </Accordion>
               );
