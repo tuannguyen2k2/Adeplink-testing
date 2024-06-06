@@ -239,10 +239,21 @@ export type Metadata = {
   total_data: number;
 };
 
+export type GetRecommendSupplierType = {
+  id: string;
+  company_name: string;
+  is_feature: boolean;
+  image: string;
+  product_category_id: string;
+  category_name: string;
+  slug: string;
+  country: string;
+};
+
 export type SupplierDetailDto = {
   company: {
-    email: any;
-    phone: any;
+    email: string;
+    phone: string;
     type: string;
     country: string;
     city: string;
@@ -252,6 +263,7 @@ export type SupplierDetailDto = {
     slug: string;
     introduction: string;
     category_id: string;
+    category_name: string;
     company_name: string;
     website: string;
     state: string;
@@ -260,6 +272,7 @@ export type SupplierDetailDto = {
     id: string;
     created_at: string;
     user_id: string;
+    image: string;
   };
   category: [
     {

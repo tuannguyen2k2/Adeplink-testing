@@ -1,4 +1,8 @@
-import { useDeleteCartItem, useGetCart } from "@/api/cart/query";
+import {
+  useDeleteCartItem,
+  useGetCart,
+  useUpdateCartItem,
+} from "@/api/cart/query";
 import NoImage from "@/assets/images/no-image.png";
 import {
   ImageType,
@@ -53,19 +57,41 @@ const CartItem = ({
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const open = Boolean(anchorEl);
   const { getCart, data: cartData, isSuccess: getCartSuccess } = useGetCart();
+  const { updateCartItem } = useUpdateCartItem();
   const dispatch = useDispatch();
   useEffect(() => {
     cartData && dispatch(setCart(cartData));
   }, [cartData, getCartSuccess]);
   const handleIncreaseQuantity = () => {
-    quantity && setQuantity(quantity + 1);
+    if (quantity) {
+      setQuantity(quantity + 1);
+      updateQuantity(quantity + 1);
+    }
   };
   const handleDecreaseQuantity = () => {
-    quantity && setQuantity(quantity - 1);
+    if (quantity) {
+      setQuantity(quantity - 1);
+      updateQuantity(quantity - 1);
+    }
+  };
+  const updateQuantity = (newQuantity: number) => {
+    if (isVariant) {
+      updateCartItem({
+        product_id: productId,
+        variant_id: data.id,
+        quantity: newQuantity,
+      });
+    } else {
+      updateCartItem({
+        product_id: productId,
+        quantity: newQuantity,
+      });
+    }
   };
 
   const handleOnChangeQuantityInput = (e: ChangeEvent<HTMLInputElement>) => {
     setQuantity(parseInt(e.target.value));
+    updateQuantity(parseInt(e.target.value));
   };
 
   const handleDeleteCartItem = () => {

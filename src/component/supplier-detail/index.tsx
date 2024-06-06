@@ -1,8 +1,15 @@
 "use client";
 import { MAX_WIDTH_APP } from "@/constant/css";
-import { Box, Container, Pagination, Rating, Typography, useTheme } from "@mui/material";
+import {
+  Box,
+  Container,
+  Pagination,
+  Rating,
+  Typography,
+  useTheme,
+} from "@mui/material";
 import Image from "next/image";
-import SupplierBanner from "@/assets/images/supplier_banner.jpg";
+import SupplierBanner from "@/assets/images/supplier-background.png";
 import SupplierInfo from "./SupplierInfo";
 import { RatingOption, SortOption } from "@/constant/enum";
 import { useQuery } from "@tanstack/react-query";
@@ -27,25 +34,31 @@ const SupplierDetail = ({ params }: { params: { slug: string } }) => {
   const theme = useTheme();
   const [filterReview, setFilterReview] = useState<string>(RatingOption.All);
 
-  const [reviewFilter, setReviewFilter] = useState<PaginationDto & RatingFilter>({ star: null, with_media: null, page: 1, limit: 10, totalPage: 0 });
+  const [reviewFilter, setReviewFilter] = useState<
+    PaginationDto & RatingFilter
+  >({ star: null, with_media: null, page: 1, limit: 10, totalPage: 0 });
 
   const { data: supplierData, isLoading: isLoadingData } = useQuery({
     queryKey: [SUPPLIER_KEY, params.slug],
-    queryFn: async () => await getSupplierDetailBySlug(params.slug).then((response) => response.data),
+    queryFn: async () =>
+      await getSupplierDetailBySlug(params.slug).then(
+        (response) => response.data
+      ),
   });
 
   const { data: reviewData, isLoading: isLoadingReview } = useQuery({
     queryKey: [SUPPLIER_REVIEW_KEY, reviewFilter, params],
     queryFn: async () =>
-      await getSupplierReview(supplierData.company.slug, reviewFilter).then((response) => {
-        setReviewFilter({
-          ...reviewFilter,
-          totalPage: response.data.review.metadata.total_page,
-        });
-        return response.data;
-      }),
+      await getSupplierReview(supplierData.company.slug, reviewFilter).then(
+        (response) => {
+          setReviewFilter({
+            ...reviewFilter,
+            totalPage: response.data.review.metadata.total_page,
+          });
+          return response.data;
+        }
+      ),
   });
-
 
   const handleChangeFilter = (option: string) => {
     setFilterReview(option);
@@ -81,7 +94,7 @@ const SupplierDetail = ({ params }: { params: { slug: string } }) => {
       }
     }
   };
-  
+
   return (
     <Container
       sx={{
@@ -91,11 +104,28 @@ const SupplierDetail = ({ params }: { params: { slug: string } }) => {
         fontFamily: theme.fontFamily.secondary,
       }}
     >
-      <Box width={"100%"} height={160} mb={"32px"} border={`1px solid ${theme.blue[100]}`} borderRadius={"16px"}>
-        <Image src={SupplierBanner} alt="supplier banner" style={{ borderRadius: "16px" }} />
+      <Box
+        width={"100%"}
+        height={160}
+        mb={"32px"}
+        border={`1px solid ${theme.blue[100]}`}
+        borderRadius={"16px"}
+      >
+        <Image
+          src={SupplierBanner}
+          alt="supplier banner"
+          style={{ borderRadius: "16px", width: "100%", height: "100%" }}
+        />
       </Box>
       <SupplierInfo data={supplierData} />
-      <Box width={"100%"} p={"16px"} border={`1px solid ${theme.blue[100]}`} boxShadow={theme.boxShadow[100]} borderRadius={"16px"} mt={"32px"}>
+      <Box
+        width={"100%"}
+        p={"16px"}
+        border={`1px solid ${theme.blue[100]}`}
+        boxShadow={theme.boxShadow[100]}
+        borderRadius={"16px"}
+        mt={"32px"}
+      >
         <Typography
           sx={{
             color: theme.palette.primary.main,
@@ -115,13 +145,28 @@ const SupplierDetail = ({ params }: { params: { slug: string } }) => {
             .map((_, index) => {
               return (
                 <Box width={224} height={224} position={"relative"} key={index}>
-                  <Image src={"https://th.bing.com/th/id/OIP.Zfeg2aQarGBA5op6udDRXAHaEc?w=1000&h=600&rs=1&pid=ImgDetMain"} alt={""} fill objectFit="fill" className="rounded-lg" />
+                  <Image
+                    src={
+                      "https://th.bing.com/th/id/OIP.Zfeg2aQarGBA5op6udDRXAHaEc?w=1000&h=600&rs=1&pid=ImgDetMain"
+                    }
+                    alt={""}
+                    fill
+                    objectFit="fill"
+                    className="rounded-lg"
+                  />
                 </Box>
               );
             })}
         </Box>
       </Box>
-      <Box width={"100%"} p={"16px"} border={`1px solid ${theme.blue[100]}`} boxShadow={theme.boxShadow[100]} borderRadius={"16px"} mt={"32px"}>
+      <Box
+        width={"100%"}
+        p={"16px"}
+        border={`1px solid ${theme.blue[100]}`}
+        boxShadow={theme.boxShadow[100]}
+        borderRadius={"16px"}
+        mt={"32px"}
+      >
         <Typography
           sx={{
             color: theme.palette.primary.main,
@@ -158,16 +203,28 @@ const SupplierDetail = ({ params }: { params: { slug: string } }) => {
                     alignItems: "baseline",
                   }}
                 >
-                  <Typography sx={{ fontWeight: theme.fontWeight.bold, fontSize: 24 }}>{reviewData?.average}</Typography>
+                  <Typography
+                    sx={{ fontWeight: theme.fontWeight.bold, fontSize: 24 }}
+                  >
+                    {reviewData?.average}
+                  </Typography>
                   <Typography>&nbsp;out of 5</Typography>
                 </Box>
-                <Rating precision={0.1} sx={{ color: theme.yellow[100] }} value={reviewData?.average} readOnly />
+                <Rating
+                  precision={0.1}
+                  sx={{ color: theme.yellow[100] }}
+                  value={reviewData?.average}
+                  readOnly
+                />
               </Box>
               {/* <Box sx={{ display: "flex", overflowX: "hidden", ml: 3 }} {...events} ref={ref}> */}
               <Box sx={{ display: "flex", overflowX: "scrool", ml: 3 }}>
                 {Object.entries(RatingOption)
                   .filter(([key, value]) => {
-                    if (key !== RatingOption.All && value !== RatingOption.With_photo_video) {
+                    if (
+                      key !== RatingOption.All &&
+                      value !== RatingOption.With_photo_video
+                    ) {
                       const starCount = Number(key.replace("start_", ""));
                       return reviewData?.company_star[starCount] > 0;
                     }
@@ -196,7 +253,10 @@ const SupplierDetail = ({ params }: { params: { slug: string } }) => {
                           mr: 1,
                           fontSize: 14,
                           borderRadius: "4px",
-                          borderColor: filterReview === option.label ? theme.palette.primary.main : "#F0F6FF",
+                          borderColor:
+                            filterReview === option.label
+                              ? theme.palette.primary.main
+                              : "#F0F6FF",
                         })}
                         onClick={() => handleChangeFilter(option.label)}
                       >
@@ -236,7 +296,11 @@ const SupplierDetail = ({ params }: { params: { slug: string } }) => {
                   >
                     {item.user}
                   </Typography>
-                  <Rating sx={{ color: theme.yellow[100], mt: 1.5 }} value={item.vote_score} readOnly />
+                  <Rating
+                    sx={{ color: theme.yellow[100], mt: 1.5 }}
+                    value={item.vote_score}
+                    readOnly
+                  />
                   <Typography
                     sx={{
                       fontWeight: theme.fontWeight.regular,
@@ -254,7 +318,11 @@ const SupplierDetail = ({ params }: { params: { slug: string } }) => {
                       mt: 1,
                     }}
                   >
-                    <Typography sx={{ color: theme.palette.grey[400], fontSize: 14 }}>Product:&nbsp;</Typography>
+                    <Typography
+                      sx={{ color: theme.palette.grey[400], fontSize: 14 }}
+                    >
+                      Product:&nbsp;
+                    </Typography>
                     <Typography
                       sx={{
                         fontWeight: theme.fontWeight.semiBold,
@@ -262,7 +330,11 @@ const SupplierDetail = ({ params }: { params: { slug: string } }) => {
                         fontSize: 14,
                       }}
                     >
-                      <Link href={`${PRODUCT_PATH_URL.PRODUCT_DETAIL}/${item.product_slug}`}>{item.product_name}</Link>
+                      <Link
+                        href={`${PRODUCT_PATH_URL.PRODUCT_DETAIL}/${item.product_slug}`}
+                      >
+                        {item.product_name}
+                      </Link>
                     </Typography>
                   </Box>
 
@@ -288,7 +360,13 @@ const SupplierDetail = ({ params }: { params: { slug: string } }) => {
                           position: "relative",
                         }}
                       >
-                        <Image src={convertImage(item) || NoImage} alt="" fill objectFit="fill" className="rounded-lg" />
+                        <Image
+                          src={convertImage(item) || NoImage}
+                          alt=""
+                          fill
+                          objectFit="fill"
+                          className="rounded-lg"
+                        />
                       </Box>
                     ))}
                   </Box>
@@ -331,7 +409,7 @@ const SupplierDetail = ({ params }: { params: { slug: string } }) => {
             {Number(reviewFilter?.totalPage) > 1 && (
               <Box sx={{ display: "flex", justifyContent: "center" }}>
                 <Pagination
-                page={reviewFilter.page}
+                  page={reviewFilter.page}
                   count={reviewFilter.totalPage}
                   shape="rounded"
                   onChange={(event, page) => {

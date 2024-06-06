@@ -1,6 +1,6 @@
 "use client";
 import { useGetProductSearch } from "@/api/product/query";
-import { getAllSupplier } from "@/api/supplier";
+import { getSearchSupplier } from "@/api/supplier";
 import {
   RECENTLY_SEARCH_PRODUCT_RESULT,
   RECENTLY_SEARCH_SUPPLIER_RESULT,
@@ -65,9 +65,9 @@ const Search = () => {
     limit: 5,
   };
   const [selectedSearchOption, setSelectedSearchOption] = useState<
-  "product" | "supplier"
+    "product" | "supplier"
   >("product");
-  
+
   const debouncedValue = useDebounce(valueInput, 500);
   const [recentlySearchResult, setRecentlySearchResult] = useState(
     Cookies.get(RECENTLY_SEARCH_PRODUCT_RESULT)
@@ -86,7 +86,7 @@ const Search = () => {
   } = useQuery({
     queryKey: [SUPPLIER_KEY, pagination, filter, sortOrder],
     queryFn: async () =>
-      await getAllSupplier(filter, sortOrder, {
+      await getSearchSupplier(filter, sortOrder, {
         page: pagination.page,
         limit: pagination.limit,
       }).then((response) => {
@@ -139,7 +139,6 @@ const Search = () => {
       } else {
         router.push(`${SUPPLIER_PATH_URL.SUPPLIER_LIST}?keyword=${valueInput}`);
       }
-      
     }
   };
 

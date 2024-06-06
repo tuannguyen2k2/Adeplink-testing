@@ -48,7 +48,7 @@ const Cart = () => {
 
   const getAllVariantIds = (variants: VariantCartType[]) => {
     let ids: string[] = [];
-    variants.forEach((variant) => {
+    variants?.forEach((variant) => {
       ids.push(variant.id);
     });
     return ids;

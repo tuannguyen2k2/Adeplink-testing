@@ -36,3 +36,16 @@ export const deleteCartItem = async (data: {
       throw error;
     });
 };
+
+export const updateCartItem = async (data: {
+  product_id: string;
+  variant_id?: string;
+  quantity?: number;
+}) => {
+  return await axiosConfig
+    .put(`cart`, data)
+    .then((response) => response.data.data)
+    .catch((error) => {
+      throw error;
+    });
+};

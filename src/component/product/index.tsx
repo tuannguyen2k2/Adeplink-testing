@@ -349,7 +349,7 @@ const Product = () => {
               {listCountryFilter ? (
                 listCountryFilter?.map((country) => {
                   return (
-                    <Box display={"flex"} gap={1} key={country}>
+                    <Box display={"flex"} gap={1} mb={2} key={country}>
                       <CheckboxComponent
                         id={country}
                         handleOnCheck={handleOnCheckCountry}
