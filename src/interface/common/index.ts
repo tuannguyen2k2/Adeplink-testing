@@ -45,6 +45,7 @@ export type VariantAttriButesType = {
   color?: string[];
   size?: string[];
   package?: string[];
+  weight?: string[];
 };
 
 export type TemporaryCartType = {
@@ -52,6 +53,7 @@ export type TemporaryCartType = {
   color?: string;
   package?: string;
   size?: string;
+  weight?: string;
   orderQuantity: number;
   unitPrice: string | null;
 };

@@ -278,7 +278,11 @@ const TemporaryCart = ({
                         }}
                       >
                         {item.name ||
-                          `${item.color}, ${item.package}, ${item.size}`}
+                          `${item.color ? `${item.color}, ` : ""} ${
+                            item.package ? `${item.package}, ` : ""
+                          } ${item.size ? `${item.size}, ` : ""} ${
+                            item.weight ? item.weight : ""
+                          }`}
                       </TableCell>
                       <TableCell
                         align="left"

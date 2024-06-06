@@ -289,7 +289,6 @@ const SupplierInfo = ({ data }: { data: SupplierDetailDto }) => {
 export default SupplierInfo;
 
 const SupplierInfoSkeleton = () => {
-  const theme = useTheme();
   return (
     <Box width={"100%"}>
       <Box width={"100%"} display={"flex"}>

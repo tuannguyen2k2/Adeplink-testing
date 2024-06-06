@@ -58,6 +58,7 @@ const ProductCharacteristics = ({
   const [priceSelected, setPriceSelected] = useState<number | undefined>(1);
   const [colorSelected, setColorSelected] = useState(0);
   const [packageSelected, setPackageSelected] = useState(0);
+  const [weightSelected, setWeightSelected] = useState(0);
   const [sizeSelected, setSizeSelected] = useState(0);
   const [orderQuantity, setOrderQuantity] = useState<string>("0");
   const [openCart, setOpenCart] = useState(false);
@@ -93,23 +94,30 @@ const ProductCharacteristics = ({
   }, [addToCartSuccess]);
 
   useEffect(() => {
-    if (
-      data &&
+    const choices: string[] = [];
+
+    if (data?.variant_attributes) {
       data.variant_attributes?.color &&
+        choices.push(data.variant_attributes?.color[colorSelected]);
       data.variant_attributes?.size &&
-      data.variant_attributes?.package
-    ) {
+        choices.push(data.variant_attributes?.size[sizeSelected]);
+      data.variant_attributes?.package &&
+        choices.push(data.variant_attributes?.package[packageSelected]);
+      data.variant_attributes?.weight &&
+        choices.push(data.variant_attributes?.weight[weightSelected]);
       getVariantChoose({
         product_id: data?.id,
-        choices: [
-          data.variant_attributes?.color[colorSelected],
-          data.variant_attributes?.size[sizeSelected],
-          data.variant_attributes?.package[packageSelected],
-        ],
+        choices: choices,
         moq: 1,
       });
     }
-  }, [colorSelected, packageSelected, sizeSelected, orderQuantity]);
+  }, [
+    colorSelected,
+    packageSelected,
+    sizeSelected,
+    orderQuantity,
+    weightSelected,
+  ]);
 
   useEffect(() => {
     if (dataVariant?.images) {
@@ -201,19 +209,23 @@ const ProductCharacteristics = ({
       });
     }
     const dataCartItem = {
-      name: JSON.stringify(data.variant_attributes) === '{}' && data.name,
+      name: JSON.stringify(data.variant_attributes) === "{}" && data.name,
       color: color && color[colorSelected]?.name,
       package:
         data.variant_attributes?.package &&
         data.variant_attributes?.package[packageSelected],
+
       size:
         data.variant_attributes?.size &&
         data.variant_attributes?.size[sizeSelected],
+
+      weight:
+        data.variant_attributes?.weight &&
+        data.variant_attributes?.weight[weightSelected],
       orderQuantity: +orderQuantity,
       unitPrice:
         priceSelected !== undefined ? data.price[priceSelected].price : null,
     };
-
 
     if (temporaryCart) {
       let isDuplicateVariant = false;
@@ -221,7 +233,8 @@ const ProductCharacteristics = ({
         if (
           item.color === dataCartItem.color &&
           item.package === dataCartItem.package &&
-          item.size === dataCartItem.size
+          item.size === dataCartItem.size &&
+          item.weight === dataCartItem.weight
         ) {
           item.orderQuantity += +dataCartItem.orderQuantity;
           (item.unitPrice =
@@ -525,6 +538,65 @@ const ProductCharacteristics = ({
                       }`}
                       borderRadius={"4px"}
                       onClick={() => setSizeSelected(index)}
+                    >
+                      <Typography
+                        fontFamily={theme.fontFamily.secondary}
+                        fontSize={14}
+                      >
+                        {item}
+                      </Typography>
+                    </Box>
+                  );
+                })}
+              </Box>
+            </Box>
+          </>
+        )}
+        {data?.variant_attributes?.weight && (
+          <>
+            <Divider sx={{ borderColor: theme.blue[600], my: "20px" }} />
+            <Box width={"100%"}>
+              <Box display={"flex"} gap={"6px"} mb={"16px"}>
+                <Typography
+                  fontFamily={theme.fontFamily.secondary}
+                  fontSize={14}
+                  color={theme.palette.grey[400]}
+                >
+                  Weight:&nbsp;
+                </Typography>
+                <Typography
+                  fontFamily={theme.fontFamily.secondary}
+                  fontWeight={theme.fontWeight.medium}
+                  fontSize={14}
+                  textTransform={"capitalize"}
+                >
+                  {data?.variant_attributes?.weight[weightSelected]}
+                </Typography>
+              </Box>
+              <Box
+                component={"div"}
+                display={"flex"}
+                gap={"16px"}
+                flexWrap={"wrap"}
+                maxHeight={"160px"}
+                overflow={"auto"}
+              >
+                {data?.variant_attributes?.weight?.map((item, index) => {
+                  return (
+                    <Box
+                      component={"button"}
+                      key={index}
+                      width={"fit-content"}
+                      height={"fit-content"}
+                      bgcolor={"white"}
+                      p={"8px 12px"}
+                      border={`1px solid ${
+                        weightSelected === index
+                          ? theme.palette.primary.main
+                          : theme.blue[100]
+                      }`}
+                      borderRadius={"4px"}
+                      onClick={() => setWeightSelected(index)}
                     >
                       <Typography
                         fontFamily={theme.fontFamily.secondary}
