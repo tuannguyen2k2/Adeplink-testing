@@ -42,18 +42,12 @@ export type PriceProductListType = {
 };
 
 export type VariantAttriButesType = {
-  color?: string[];
-  size?: string[];
-  package?: string[];
-  weight?: string[];
+  [key: string]: string[];
 };
 
 export type TemporaryCartType = {
   name: string | false;
-  color?: string;
-  package?: string;
-  size?: string;
-  weight?: string;
+  attributeCartTemporary: { [key: string]: string[] };
   orderQuantity: number;
   unitPrice: string | null;
 };
@@ -109,7 +103,7 @@ export type ProductDto = {
   is_showcase: boolean;
   price: PriceProductListType;
   image: ImageType[];
-  variant_attributes?: VariantAttriButesType;
+  variant_attributes: VariantAttriButesType;
   slug: string;
 };
 
@@ -134,7 +128,7 @@ export type ProductDetailDto = {
   recommend_products: ProductDto[];
   supplier: SupplierDto;
   supplier_products: ProductDto[];
-  variant_attributes?: VariantAttriButesType;
+  variant_attributes: VariantAttriButesType;
 };
 export type ImageType = {
   updated_at: Date;

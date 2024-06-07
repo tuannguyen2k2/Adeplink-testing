@@ -122,7 +122,19 @@ const TemporaryCart = ({
     newTemporaryCart.splice(index, 1);
     setTemporaryCart(newTemporaryCart);
   };
-  console.log(temporaryCart);
+  const revertNameVariant = (attributeCartTemporary: {
+    [key: string]: string[];
+  }) => {
+    let name = "";
+    Object.entries(attributeCartTemporary).map(([key, value], index) => {
+      if (Object.keys(attributeCartTemporary).length - 1 == index) {
+        name += `${value}`;
+      } else {
+        name += `${value}, `;
+      }
+    });
+    return name;
+  };
   return (
     <>
       <Paper
@@ -278,11 +290,7 @@ const TemporaryCart = ({
                         }}
                       >
                         {item.name ||
-                          `${item.color ? `${item.color}, ` : ""} ${
-                            item.package ? `${item.package}, ` : ""
-                          } ${item.size ? `${item.size}, ` : ""} ${
-                            item.weight ? item.weight : ""
-                          }`}
+                          revertNameVariant(item.attributeCartTemporary)}
                       </TableCell>
                       <TableCell
                         align="left"

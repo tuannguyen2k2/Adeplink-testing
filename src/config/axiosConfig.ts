@@ -24,7 +24,6 @@ axiosConfig.interceptors.request.use(
         const accessToken = JSON.parse(
           Cookies.get(ADEPTLINK_ACCESS_TOKEN) as string
         );
-        console.log(accessToken);
         config.headers.Authorization = `Bearer ${accessToken}`;
 
         // const token = store.getState().auth.currentUser?.tokenData.token;
