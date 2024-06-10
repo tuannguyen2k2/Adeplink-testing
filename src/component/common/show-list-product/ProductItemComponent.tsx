@@ -64,7 +64,7 @@ const ProductItemComponent = ({ product }: { product: ProductDto }) => {
           </Typography>
         </Box>
       </Box>
-      <Divider sx={{ borderColor: theme.blue[600] }} />
+      <Divider sx={{ borderColor: theme.blue[600], mb: "8px" }} />
       <Price price={product.price} />
       <Box
         sx={{

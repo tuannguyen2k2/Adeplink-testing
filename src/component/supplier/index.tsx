@@ -225,6 +225,7 @@ const Supplier = () => {
                     count={supplierData?.metadata.total_page}
                     color="primary"
                     shape="rounded"
+                    page={pagination.page ? pagination.page : 1}
                     sx={{
                       justifyContent: "center",
                       mt: "20px",

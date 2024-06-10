@@ -23,7 +23,7 @@ const AuthPage = ({
   const [selectedTab, setSelectedTab] = useState<SlugType>(params.slug[0]);
   return (
     <div
-      className="w-full h-screen bg-white flex bg-['@/assets/images/login-background.png'] flex justify-end"
+      className="w-full h-screen bg-white bg-['@/assets/images/login-background.png'] flex justify-end"
       style={{
         backgroundImage: `url('${AuthBackgroundImage.src}')`,
         backgroundRepeat: "no-repeat",

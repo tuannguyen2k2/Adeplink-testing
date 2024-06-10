@@ -151,7 +151,14 @@ const Search = () => {
         <SearchResult
           selectedSearchOption="product"
           debouncedValue={debouncedValue}
-          data={debouncedValue !== "" ? productByCategory?.products : undefined}
+          data={
+            debouncedValue !== "" && productByCategory
+              ? productByCategory?.products.map((product) => ({
+                  name: product.name,
+                  slug: product.slug,
+                }))
+              : undefined
+          }
           setIsFocusInput={setIsFocusInput}
         />
       )}

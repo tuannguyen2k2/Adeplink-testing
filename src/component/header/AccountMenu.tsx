@@ -74,6 +74,8 @@ const AccountMenu = ({
           sx: {
             display: "flex",
             flexDirection: "column",
+            width: "250px",
+            borderRadius: "8px",
           },
         }}
       >
@@ -82,13 +84,19 @@ const AccountMenu = ({
           fontSize={14}
           fontWeight={theme.fontWeight.semiBold}
           fontFamily={theme.fontFamily.secondary}
-          px={"16px"}
+          px={"26px"}
+          sx={{
+            display: "-webkit-box",
+            WebkitBoxOrient: "vertical",
+            WebkitLineClamp: 1,
+            overflow: "hidden",
+          }}
         >
           {translate("hi")},&nbsp;{user?.name}
         </Typography>
         <Box
           height={"1px"}
-          width={"90%"}
+          width={"80%"}
           bgcolor={theme.blue[600]}
           alignSelf={"center"}
           mt={1}
@@ -106,6 +114,7 @@ const AccountMenu = ({
               fontSize: 12,
               fontWeight: theme.fontWeight.regular,
               fontFamily: theme.fontFamily.secondary,
+              px: "26px",
             },
           ]}
         >
@@ -123,6 +132,7 @@ const AccountMenu = ({
               fontSize: 12,
               fontWeight: theme.fontWeight.regular,
               fontFamily: theme.fontFamily.secondary,
+              px: "26px",
             },
           ]}
         >
@@ -140,6 +150,7 @@ const AccountMenu = ({
               fontSize: 12,
               fontWeight: theme.fontWeight.regular,
               fontFamily: theme.fontFamily.secondary,
+              px: "26px",
             },
           ]}
         >
@@ -147,7 +158,7 @@ const AccountMenu = ({
         </MenuItem>
         <Box
           height={"1px"}
-          width={"90%"}
+          width={"80%"}
           bgcolor={theme.blue[600]}
           alignSelf={"center"}
           my={"4px"}
@@ -166,6 +177,7 @@ const AccountMenu = ({
                   fontSize: 12,
                   fontWeight: theme.fontWeight.regular,
                   fontFamily: theme.fontFamily.secondary,
+                  px: "26px",
                 },
               ]}
             >
@@ -183,6 +195,7 @@ const AccountMenu = ({
                   fontSize: 12,
                   fontWeight: theme.fontWeight.regular,
                   fontFamily: theme.fontFamily.secondary,
+                  px: "26px",
                 },
               ]}
             >
@@ -205,6 +218,7 @@ const AccountMenu = ({
                   fontSize: 12,
                   fontWeight: theme.fontWeight.regular,
                   fontFamily: theme.fontFamily.secondary,
+                  px: "26px",
                   display: "flex",
                   alignItems: "end",
                   lineHeight: "1.6",
@@ -242,7 +256,7 @@ const AccountMenu = ({
         )}
         <Box
           height={"1px"}
-          width={"90%"}
+          width={"80%"}
           bgcolor={theme.blue[600]}
           alignSelf={"center"}
           my={"4px"}
@@ -259,6 +273,7 @@ const AccountMenu = ({
               fontSize: 12,
               fontWeight: theme.fontWeight.regular,
               fontFamily: theme.fontFamily.secondary,
+              px: "26px",
             },
           ]}
         >

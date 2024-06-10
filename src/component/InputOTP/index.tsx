@@ -1,16 +1,28 @@
-import React, { useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 
 type InputProps = {
   length?: number;
   onComplete: any;
-  //   onComplete: (pin: string) => void;
+  isResend: boolean;
+  setIsResend: React.Dispatch<React.SetStateAction<boolean>>;
   onSubmit?: any;
 };
 
-const InputOTP = ({ length = 6, onComplete, onSubmit }: InputProps) => {
+const InputOTP = ({
+  length = 6,
+  onComplete,
+  onSubmit,
+  isResend,
+  setIsResend,
+}: InputProps) => {
   const inputRef = useRef<HTMLInputElement[]>(Array(length).fill(null));
 
   const [OTP, setOTP] = useState<string[]>(Array(length).fill(""));
+
+  useEffect(() => {
+    setOTP(Array(length).fill(""));
+    setIsResend(false);
+  }, [isResend]);
 
   const handleTextChange = (input: string, index: number) => {
     const newPin = [...OTP];

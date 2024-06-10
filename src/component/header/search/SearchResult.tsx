@@ -1,4 +1,8 @@
 "use client";
+import {
+  RECENTLY_SEARCH_PRODUCT_RESULT,
+  RECENTLY_SEARCH_SUPPLIER_RESULT,
+} from "@/constant/cookies";
 import { PRODUCT_PATH_URL, SUPPLIER_PATH_URL } from "@/constant/pathUrl";
 import { SearchCookiesType } from "@/interface/common";
 import { getCateUrl } from "@/utils";
@@ -13,12 +17,13 @@ import {
   Typography,
   useTheme,
 } from "@mui/material";
+import Cookies from "js-cookie";
 import { useRouter } from "next-nprogress-bar";
 import { Dispatch, SetStateAction } from "react";
 import { LuClock5 } from "react-icons/lu";
 type ResultDataType = {
   name: string;
-  id: string;
+  slug: string;
 };
 
 type SearchResultType = {
@@ -26,7 +31,7 @@ type SearchResultType = {
   data?: ResultDataType[];
   selectedSearchOption: "supplier" | "product";
   setIsFocusInput: Dispatch<SetStateAction<boolean>>;
-  recentlySearchResultParse?: { keyword: string; id: string }[];
+  recentlySearchResultParse?: { keyword: string; slug: string }[];
   isSearchHeader?: boolean;
   totalData?: number | null;
   css?: {
@@ -72,9 +77,9 @@ const SearchResult = ({
               return (
                 <SearchResultItem
                   key={index}
-                  text={value.keyword}
+                  keyword={value.keyword}
                   selectedSearchOption={selectedSearchOption}
-                  id={value.id}
+                  slug={value.slug}
                   isRecently
                   setIsFocusInput={setIsFocusInput}
                   isSearchHeader={isSearchHeader}
@@ -86,10 +91,10 @@ const SearchResult = ({
           data?.map((value: ResultDataType, index: number) => {
             return (
               <SearchResultItem
-                key={value.id}
+                key={value.slug}
                 selectedSearchOption={selectedSearchOption}
-                text={value.name}
-                id={value.id}
+                keyword={value.name}
+                slug={value.slug}
               />
             );
           })}
@@ -105,7 +110,7 @@ const SearchResult = ({
             No results found
           </Typography>
         )}
-        {totalData && totalData > 5 ? (
+        {totalData && totalData > 5 && debouncedValue !== "" ? (
           <Box
             component={"button"}
             width={"100%"}
@@ -136,8 +141,8 @@ const SearchResult = ({
 };
 
 type SearchResultItemType = {
-  text: string;
-  id: string | null;
+  keyword: string;
+  slug: string | null;
   isRecently?: boolean;
   selectedSearchOption: "supplier" | "product";
   setIsFocusInput?: Dispatch<SetStateAction<boolean>>;
@@ -145,8 +150,8 @@ type SearchResultItemType = {
 };
 
 const SearchResultItem = ({
-  text,
-  id,
+  keyword,
+  slug,
   isRecently,
   selectedSearchOption,
   setIsFocusInput,
@@ -156,25 +161,69 @@ const SearchResultItem = ({
   const router = useRouter();
   const handleClickItem = () => {
     if (selectedSearchOption == "product") {
-      if (!id) {
+      if (!slug) {
         router.push(
           `${PRODUCT_PATH_URL.PRODUCT_LIST}?${
             isSearchHeader
-              ? `keyword=${text}`
-              : `keyword_by_category=${text}&${getCateUrl()}`
+              ? `keyword=${keyword}`
+              : `keyword_by_category=${keyword}&${getCateUrl()}`
           }`
         );
         setIsFocusInput && setIsFocusInput(false);
       } else {
-        router.push(`${PRODUCT_PATH_URL.PRODUCT_DETAIL}/${id}`);
+        const searchValue = {
+          keyword: keyword,
+          slug: slug,
+        };
+        const recentlySearchResult = Cookies.get(
+          RECENTLY_SEARCH_PRODUCT_RESULT
+        );
+        if (recentlySearchResult) {
+          const recentlySearchResultParse = JSON.parse(recentlySearchResult);
+          if (recentlySearchResultParse.length === 5) {
+            recentlySearchResultParse.pop();
+          }
+          Cookies.set(
+            RECENTLY_SEARCH_PRODUCT_RESULT,
+            JSON.stringify([searchValue, ...recentlySearchResultParse])
+          );
+        } else {
+          Cookies.set(
+            RECENTLY_SEARCH_PRODUCT_RESULT,
+            JSON.stringify([searchValue])
+          );
+        }
+        router.push(`${PRODUCT_PATH_URL.PRODUCT_DETAIL}/${slug}`);
         setIsFocusInput && setIsFocusInput(false);
       }
-    } else {
-      if (!id) {
-        router.push(`${SUPPLIER_PATH_URL.SUPPLIER_LIST}?keyword=${text}`);
+    } else if (selectedSearchOption == "supplier") {
+      if (!slug) {
+        router.push(`${SUPPLIER_PATH_URL.SUPPLIER_LIST}?keyword=${keyword}`);
         setIsFocusInput && setIsFocusInput(false);
       } else {
-        router.push(`${SUPPLIER_PATH_URL.SUPPLIER_DETAIL}/${id}`);
+        const searchValue = {
+          keyword: keyword,
+          slug: slug,
+        };
+        const recentlySearchResult = Cookies.get(
+          RECENTLY_SEARCH_SUPPLIER_RESULT
+        );
+        if (recentlySearchResult) {
+          const recentlySearchResultParse = JSON.parse(recentlySearchResult);
+          if (recentlySearchResultParse.length === 5) {
+            recentlySearchResultParse.pop();
+          }
+          Cookies.set(
+            RECENTLY_SEARCH_SUPPLIER_RESULT,
+            JSON.stringify([searchValue, ...recentlySearchResultParse])
+          );
+        } else {
+          Cookies.set(
+            RECENTLY_SEARCH_SUPPLIER_RESULT,
+            JSON.stringify([searchValue])
+          );
+        }
+        router.push(`${SUPPLIER_PATH_URL.SUPPLIER_DETAIL}/${slug}`);
         setIsFocusInput && setIsFocusInput(false);
       }
     }
@@ -205,7 +254,7 @@ const SearchResultItem = ({
               overflow: "hidden",
             }}
           >
-            {text}
+            {keyword}
           </Typography>
         </ListItemText>
       </ListItemButton>

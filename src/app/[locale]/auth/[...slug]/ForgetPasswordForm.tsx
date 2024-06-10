@@ -26,6 +26,7 @@ const ForgetPasswordForm = () => {
   const [isOtpError, setIsOtpError] = useState<boolean>(false);
   const { remaining, handleRunCountDown } = useCountdown(60);
   const router = useRouter();
+  const [isResend, setIsResend] = useState(false);
   const { sendOtpReset, error } = useSendOTPReset();
   const {
     verifyOtpReset,
@@ -155,6 +156,8 @@ const ForgetPasswordForm = () => {
 
           <div className="mt-5 w-4/5 mx-auto">
             <InputOTP
+              isResend={isResend}
+              setIsResend={setIsResend}
               length={6}
               onComplete={(value: any) => {
                 setIsValidateOtp(true), setOtp(value);

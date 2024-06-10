@@ -176,7 +176,7 @@ export type ProductSearchResultDto = {
 
 export type SearchCookiesType = {
   keyword: string;
-  id: string | null;
+  slug: string | null;
 };
 
 export type FilterSupplierDto = {

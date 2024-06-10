@@ -59,7 +59,8 @@ const Search = () => {
   const [isFocusInput, setIsFocusInput] = useState<boolean>(false);
   const [valueInput, setValueInput] = useState<string>("");
   const [loading, setLoading] = useState(false);
-  const { getProductSearch, isSuccess, data } = useGetProductSearch();
+  const { getProductSearch, isSuccess, data, isPending } =
+    useGetProductSearch();
   const pagination = {
     page: 1,
     limit: 5,
@@ -120,7 +121,7 @@ const Search = () => {
 
       const searchValue = {
         keyword: valueInput,
-        id: null,
+        slug: null,
       };
       if (recentlySearchResult) {
         const recentlySearchResultParse = JSON.parse(recentlySearchResult);
@@ -170,10 +171,12 @@ const Search = () => {
   }, [debouncedValue, selectedSearchOption]);
 
   useEffect(() => {
-    if (isSuccess || supplierSuccess) {
+    if (isPending || isLoading) {
+      setLoading(true);
+    } else {
       setLoading(false);
     }
-  }, [isSuccess, supplierSuccess]);
+  }, [isPending, isLoading]);
 
   return (
     <Box
@@ -287,20 +290,19 @@ const Search = () => {
             },
           }}
         />
-        {isFocusInput && valueInput !== "" && !loading && !isLoading && (
+        {isFocusInput && valueInput !== "" && !loading && (
           <IconButton sx={{ mr: "10px" }} onClick={() => setValueInput("")}>
             <IoMdClose color="#0C71B9" size={18} />
           </IconButton>
         )}
-        {loading ||
-          (isLoading && (
-            <CircularProgress
-              className={classes.spinner}
-              size={16}
-              color="primary"
-            />
-          ))}
-        {isFocusInput && (
+        {loading && (
+          <CircularProgress
+            className={classes.spinner}
+            size={16}
+            color="primary"
+          />
+        )}
+        {isFocusInput && !loading && (
           <SearchResult
             debouncedValue={debouncedValue}
             selectedSearchOption={selectedSearchOption}
@@ -309,11 +311,11 @@ const Search = () => {
                 ? selectedSearchOption === "product"
                   ? data?.products.map((product) => ({
                       name: product.name,
-                      id: product.slug,
+                      slug: product.slug,
                     }))
                   : supplierData?.companies.map((company) => ({
                       name: company.company_name,
-                      id: company.slug,
+                      slug: company.slug,
                     }))
                 : undefined
             }

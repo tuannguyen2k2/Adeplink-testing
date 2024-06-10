@@ -191,7 +191,7 @@ const ChangePasswordFormPage = () => {
           showSuccessModal={showSuccessModal}
           title={
             <div>
-              <h3 className="font-bold text-2xl text-center font-sans">
+              <h3 className="font-bold text-2xl text-center font-sans mt-8">
                 <span className="text-[#0C71BA]">Successful</span> password
                 reset!
               </h3>

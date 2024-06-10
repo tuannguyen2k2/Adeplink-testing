@@ -61,6 +61,7 @@ const SignupFormPage = () => {
     error: verifyOTPError,
   } = useVerifyOTP();
   const { remaining, handleRunCountDown } = useCountdown(60);
+  const [isResend, setIsResend] = useState(false);
   const [isChecked, setIsChecked] = useState(false);
   const { register, handleSubmit, formState, setValue, watch, getValues } =
     useForm<SignUpBuyerForm>();
@@ -104,6 +105,7 @@ const SignupFormPage = () => {
   };
   const handleResendCode = () => {
     resendOtp(getValues().email);
+    setIsResend(true);
     handleRunCountDown();
   };
 
@@ -401,6 +403,8 @@ const SignupFormPage = () => {
           <div className="mt-1 w-4/5 mx-auto">
             <InputOTP
               length={6}
+              isResend={isResend}
+              setIsResend={setIsResend}
               onComplete={(value: any) => {
                 setIsValidateOtp(true);
                 setOtp(value);
@@ -447,7 +451,7 @@ const SignupFormPage = () => {
           showSuccessModal={showSuccessModal}
           title={
             <div>
-              <h3 className="font-bold text-2xl text-center font-sans">
+              <h3 className="font-bold text-2xl text-center font-sans mt-8">
                 Registered <span className="text-[#0C71BA]">successfully</span>!
               </h3>
               <div className="text-center font-medium font-sans text-[16px] mt-1">
