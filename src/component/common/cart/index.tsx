@@ -19,15 +19,18 @@ import { useGetAllProductRecommended } from "@/api/product/query";
 import { ChangeEvent, useEffect } from "react";
 import ListProductComponent from "../show-list-product/ListProductComponent";
 import { PRODUCT_PATH_URL } from "@/constant/pathUrl";
-import { useSelector } from "react-redux";
-import { cartSelector } from "@/store/selector";
+import { useDispatch, useSelector } from "react-redux";
+import { cartSelector, checkOutSelector } from "@/store/selector";
 import {
+  CartType,
   ProductCartType,
   SupplierCartType,
   VariantCartType,
 } from "@/interface/common";
 import CartEmpty from "@/assets/images/cart_empty.png";
 import Image from "next/image";
+import { useTickAllCartItem, useTickCartItem } from "@/api/cart/query";
+import { setCart, setCheckOut } from "@/store/slice/appSlice";
 
 const Cart = () => {
   const { getAllProductRecommended, data } = useGetAllProductRecommended();
@@ -36,6 +39,11 @@ const Cart = () => {
   }, []);
   const theme = useTheme();
   const cart = useSelector(cartSelector);
+  const { tickAllCartItem } = useTickAllCartItem();
+  const { tickCartItem } = useTickCartItem();
+  const dispatch = useDispatch();
+  const checkout = useSelector(checkOutSelector);
+  console.log(cart);
   const getAllProductIdsAndVariantIds = (products: ProductCartType[]) => {
     return products.reduce((ids: string[], product) => {
       ids.push(product.id);
@@ -64,17 +72,51 @@ const Cart = () => {
 
   const handleCheckedSupplier = (
     e: ChangeEvent<HTMLInputElement>,
-    ids: string[]
+    ids: string[],
+    supplier: SupplierCartType
   ) => {
     e.stopPropagation();
     const checkboxElements = document.querySelectorAll(
       'input[type="checkbox"]'
     );
+    supplier = {
+      ...supplier,
+      is_tick: e.currentTarget.checked,
+      product: supplier.product.map((product) => ({
+        ...product,
+        is_tick: e.currentTarget.checked,
+        variant: product.variant.map((variant) => ({
+          ...variant,
+          is_tick: e.currentTarget.checked,
+        })),
+      })),
+    };
+    if (cart) {
+      dispatch(
+        setCart({
+          ...cart,
+          items: cart.items.map((item) => {
+            if (item.id === supplier.id) {
+              return {
+                ...supplier,
+              };
+            } else {
+              return item;
+            }
+          }),
+        })
+      );
+    }
+
     const checkboxes = Array.from(checkboxElements);
     checkboxes.forEach((checkbox) => {
       if (ids.includes(checkbox.id)) {
         (checkbox as HTMLInputElement).checked = e.currentTarget.checked;
       }
+    });
+    tickAllCartItem({
+      id: e.currentTarget.id,
+      is_tick: e.currentTarget.checked,
     });
   };
 
@@ -84,6 +126,44 @@ const Cart = () => {
     product: ProductCartType
   ) => {
     e.stopPropagation();
+    tickCartItem({
+      product_id: e.currentTarget.id,
+      is_tick: e.currentTarget.checked,
+    });
+    supplier = {
+      ...supplier,
+      product: supplier.product.map((item) => {
+        if (item.id == product.id) {
+          return {
+            ...item,
+            is_tick: e.currentTarget.checked,
+            variant: item.variant.map((variant) => ({
+              ...variant,
+              is_tick: e.currentTarget.checked,
+            })),
+          };
+        } else {
+          return item;
+        }
+      }),
+    };
+    if (cart) {
+      dispatch(
+        setCart({
+          ...cart,
+          items: cart.items.map((item) => {
+            if (item.id === supplier.id) {
+              return {
+                ...supplier,
+              };
+            } else {
+              return item;
+            }
+          }),
+        })
+      );
+    }
+
     const checkboxElements = document.querySelectorAll(
       'input[type="checkbox"]'
     );
@@ -121,6 +201,49 @@ const Cart = () => {
     product: ProductCartType
   ) => {
     e.stopPropagation();
+    supplier = {
+      ...supplier,
+      product: supplier.product.map((item) => {
+        if (item.id == product.id) {
+          return {
+            ...item,
+            variant: item.variant.map((variant) => {
+              if (variant.id == e.currentTarget.id) {
+                return {
+                  ...variant,
+                  is_tick: e.currentTarget.checked,
+                };
+              } else {
+                return variant;
+              }
+            }),
+          };
+        } else {
+          return item;
+        }
+      }),
+    };
+    if (cart) {
+      dispatch(
+        setCart({
+          ...cart,
+          items: cart.items.map((item) => {
+            if (item.id === supplier.id) {
+              return {
+                ...supplier,
+              };
+            } else {
+              return item;
+            }
+          }),
+        })
+      );
+    }
+    tickCartItem({
+      product_id: product.id,
+      variant_id: e.currentTarget.id,
+      is_tick: e.currentTarget.checked,
+    });
     const checkboxElements = document.querySelectorAll(
       'input[type="checkbox"]'
     );
@@ -158,10 +281,23 @@ const Cart = () => {
       ) {
         (checkbox as HTMLInputElement).checked = true;
       } else if (checkbox.id === supplier.id) {
-        console.log("true");
         (checkbox as HTMLInputElement).checked = false;
       }
     });
+  };
+
+  const calculateSubTotal = () => {
+    let subTotal = 0;
+    cart?.items.forEach((supplier) => {
+      supplier.product.forEach((product) => {
+        product.variant.forEach((variant) => {
+          if (variant.is_tick) {
+            subTotal += variant.price * variant.quantity;
+          }
+        });
+      });
+    });
+    return subTotal;
   };
   return (
     <Container
@@ -180,12 +316,7 @@ const Cart = () => {
         Cart
       </Typography>
       {cart && cart.total_items > 0 ? (
-        <Box
-          display={"flex"}
-          width={"100%"}
-          justifyContent={"space-between"}
-
-        >
+        <Box display={"flex"} width={"100%"} justifyContent={"space-between"}>
           <Box width={"66%"}>
             {cart?.items.map((supplier: SupplierCartType, indexSupplier) => {
               return (
@@ -225,9 +356,11 @@ const Cart = () => {
                         handleOnCheck={(e: ChangeEvent<HTMLInputElement>) =>
                           handleCheckedSupplier(
                             e,
-                            getAllProductIdsAndVariantIds(supplier.product)
+                            getAllProductIdsAndVariantIds(supplier.product),
+                            supplier
                           )
                         }
+                        defaultChecked={supplier.is_tick}
                       />
                       <Typography
                         fontFamily={theme.fontFamily.secondary}
@@ -279,6 +412,8 @@ const Cart = () => {
                               ) => handleCheckedProduct(e, supplier, product)}
                               productId={product.id}
                               productSubTotal={product.subtotal}
+                              rangePrice={product.range_price}
+                              supplierId={supplier.id}
                             />
                             <Divider
                               sx={{ borderColor: theme.blue[100], mx: "40px" }}
@@ -296,6 +431,8 @@ const Cart = () => {
                                   key={variant.id}
                                   productId={product.id}
                                   productSubTotal={product.subtotal}
+                                  rangePrice={product.range_price}
+                                  supplierId={supplier.id}
                                 />
                               );
                             })}
@@ -333,7 +470,7 @@ const Cart = () => {
                 Order summary
               </Typography>
               <Typography fontFamily={theme.fontFamily.secondary} fontSize={14}>
-                Total: 12 items
+                Total: {cart.total_items} items
               </Typography>
             </Box>
             <Divider
@@ -358,7 +495,7 @@ const Cart = () => {
                   fontFamily={theme.fontFamily.secondary}
                   fontSize={14}
                 >
-                  {(990.99).toLocaleString("en-US", {
+                  {calculateSubTotal().toLocaleString("en-US", {
                     style: "currency",
                     currency: "USD",
                     minimumFractionDigits: 2,
@@ -397,7 +534,7 @@ const Cart = () => {
                   fontFamily={theme.fontFamily.secondary}
                   fontWeight={theme.fontWeight.semiBold}
                 >
-                  {(1090.99).toLocaleString("en-US", {
+                  {(calculateSubTotal() + 100).toLocaleString("en-US", {
                     style: "currency",
                     currency: "USD",
                     minimumFractionDigits: 2,

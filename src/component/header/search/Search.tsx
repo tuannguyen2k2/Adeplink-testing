@@ -177,6 +177,7 @@ const Search = () => {
       setLoading(false);
     }
   }, [isPending, isLoading]);
+  console.log(loading);
 
   return (
     <Box

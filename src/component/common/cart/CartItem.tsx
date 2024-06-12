@@ -5,6 +5,7 @@ import {
 } from "@/api/cart/query";
 import NoImage from "@/assets/images/no-image.png";
 import {
+  CartType,
   ImageType,
   PriceProductDetailType,
   ProductCartType,
@@ -26,8 +27,9 @@ import { IoIosInformationCircleOutline } from "react-icons/io";
 import { IoCloseOutline } from "react-icons/io5";
 import CheckboxComponent from "../CheckboxComponent";
 import QuantityComponent from "../QuantityComponent";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { setCart } from "@/store/slice/appSlice";
+import { cartSelector } from "@/store/selector";
 type CartItemType = {
   isVariant?: boolean;
   data: {
@@ -37,13 +39,16 @@ type CartItemType = {
     price: number;
     image?: string;
     subtotal: number;
-    quantity?: number;
+    quantity: number;
+    is_tick: boolean;
     range_price?: PriceProductDetailType[];
     variant?: VariantCartType[] | null;
   };
   handleOnCheck: (e: ChangeEvent<HTMLInputElement>) => void;
   productId: string;
+  supplierId: string;
   productSubTotal: number;
+  rangePrice: PriceProductDetailType[];
 };
 const CartItem = ({
   isVariant,
@@ -51,6 +56,8 @@ const CartItem = ({
   handleOnCheck,
   productId,
   productSubTotal,
+  rangePrice,
+  supplierId,
 }: CartItemType) => {
   const theme = useTheme();
   const [quantity, setQuantity] = useState(data.quantity);
@@ -59,9 +66,76 @@ const CartItem = ({
   const { getCart, data: cartData, isSuccess: getCartSuccess } = useGetCart();
   const { updateCartItem } = useUpdateCartItem();
   const dispatch = useDispatch();
+  const [priceUnit, setPriceUnit] = useState<number>(0);
+  const cart = useSelector(cartSelector);
   useEffect(() => {
     cartData && dispatch(setCart(cartData));
   }, [cartData, getCartSuccess]);
+
+  useEffect(() => {
+    let totalItemChecked = 0;
+    cart?.items.forEach((supplier) => {
+      if (supplier.id == supplierId) {
+        supplier.product.forEach((product) => {
+          if (product.id == productId) {
+            product.variant.forEach((variant) => {
+              if (variant.is_tick) {
+                totalItemChecked += variant.quantity;
+              }
+            });
+          }
+        });
+      }
+    });
+    let hasRange = false;
+    rangePrice.map((range) => {
+      if (
+        +range.min_amount <= totalItemChecked &&
+        +range.max_amount >= totalItemChecked
+      ) {
+        hasRange = true;
+        setPriceUnit(+range.price);
+      }
+    });
+    !hasRange && setPriceUnit(0);
+  }, [cart]);
+
+  const handleUpdateCart = ({ quantity }: { quantity: number }) => {
+    if (isVariant) {
+      if (cart) {
+        const updatedCartData: CartType = {
+          ...cart,
+          items: cart.items.map((supplier) => ({
+            ...supplier,
+            product: supplier.product.map((product) => ({
+              ...product,
+              variant: product.variant.map((variant) => {
+                if (variant.id === data.id) {
+                  let price = 0;
+                  rangePrice.map((range) => {
+                    if (
+                      +range.min_amount <= quantity &&
+                      +range.max_amount >= quantity
+                    ) {
+                      price = +range.price;
+                    }
+                  });
+
+                  return {
+                    ...variant,
+                    quantity,
+                    price,
+                  };
+                }
+                return variant;
+              }),
+            })),
+          })),
+        };
+        dispatch(setCart({ ...updatedCartData }));
+      }
+    }
+  };
   const handleIncreaseQuantity = () => {
     if (quantity) {
       setQuantity(quantity + 1);
@@ -80,11 +154,16 @@ const CartItem = ({
         product_id: productId,
         variant_id: data.id,
         quantity: newQuantity,
+        min_order: data.min_order,
+        price: rangePrice,
       });
+      handleUpdateCart({ quantity: newQuantity });
     } else {
       updateCartItem({
         product_id: productId,
         quantity: newQuantity,
+        min_order: data.min_order,
+        price: rangePrice,
       });
     }
   };
@@ -103,6 +182,53 @@ const CartItem = ({
     getCart();
   };
 
+  const calculateSubTotalPrice = (price: number) => {
+    if (price * data.quantity === 0) {
+      return "Contact";
+    } else {
+      return (price * data.quantity).toLocaleString("en-US", {
+        style: "currency",
+        currency: "USD",
+        minimumFractionDigits: 2,
+        maximumFractionDigits: 2,
+      });
+    }
+  };
+
+  const calculatePriceUnit = (price: number) => {
+    if (price == 0) {
+      return (
+        <Typography
+          fontWeight={theme.fontWeight.medium}
+          fontFamily={theme.fontFamily.secondary}
+          fontSize={14}
+        >
+          Contact for best prices
+        </Typography>
+      );
+    } else {
+      return (
+        <Box display={"flex"}>
+          <Typography
+            fontWeight={theme.fontWeight.medium}
+            fontFamily={theme.fontFamily.secondary}
+            fontSize={14}
+          >
+            {price.toLocaleString("en-US", {
+              style: "currency",
+              currency: "USD",
+              minimumFractionDigits: 2,
+              maximumFractionDigits: 2,
+            })}
+          </Typography>
+          <Typography fontFamily={theme.fontFamily.secondary} fontSize={14}>
+            / unit
+          </Typography>
+        </Box>
+      );
+    }
+  };
+
   const { deleteCartItem } = useDeleteCartItem();
   return (
     <Box
@@ -116,6 +242,7 @@ const CartItem = ({
         <CheckboxComponent
           id={data.id}
           handleOnCheck={(e: ChangeEvent<HTMLInputElement>) => handleOnCheck(e)}
+          defaultChecked={data.is_tick}
         />
         {!isVariant && (
           <Box width={100} height={100} ml={"20px"} mr={"14px"}>
@@ -149,33 +276,7 @@ const CartItem = ({
           </Typography>
           <Box>
             {(isVariant || !data.variant) && (
-              <>
-                {data.price > 0 ? (
-                  <Box display={"flex"}>
-                    <Typography
-                      fontWeight={theme.fontWeight.medium}
-                      fontFamily={theme.fontFamily.secondary}
-                      fontSize={14}
-                    >
-                      $9
-                    </Typography>
-                    <Typography
-                      fontFamily={theme.fontFamily.secondary}
-                      fontSize={14}
-                    >
-                      / unit
-                    </Typography>
-                  </Box>
-                ) : (
-                  <Typography
-                    fontWeight={theme.fontWeight.medium}
-                    fontFamily={theme.fontFamily.secondary}
-                    fontSize={14}
-                  >
-                    Contact for best prices
-                  </Typography>
-                )}
-              </>
+              <>{calculatePriceUnit(data.is_tick ? priceUnit : data.price)}</>
             )}
             {!isVariant && (
               <Box display={"flex"} gap={"8px"}>
@@ -226,8 +327,22 @@ const CartItem = ({
                           justifyContent={"space-between"}
                           gap={"60px"}
                         >
-                          <Typography>{`${item.min_amount}-${item.max_amount}`}</Typography>
-                          <Typography>{`$${item.price}`}</Typography>
+                          <Typography
+                            fontFamily={theme.fontFamily.secondary}
+                            color={
+                              +item.price == priceUnit
+                                ? theme.palette.primary.main
+                                : "black"
+                            }
+                          >{`${item.min_amount}-${item.max_amount}`}</Typography>
+                          <Typography
+                            fontFamily={theme.fontFamily.secondary}
+                            color={
+                              +item.price == priceUnit
+                                ? theme.palette.primary.main
+                                : "black"
+                            }
+                          >{`$${item.price}`}</Typography>
                         </Box>
                       </MenuItem>
                     );
@@ -259,14 +374,7 @@ const CartItem = ({
             minWidth={"134px"}
             textAlign={"end"}
           >
-            {productSubTotal === 0
-              ? "Contact"
-              : data.subtotal.toLocaleString("en-US", {
-                  style: "currency",
-                  currency: "USD",
-                  minimumFractionDigits: 2,
-                  maximumFractionDigits: 2,
-                })}
+            {calculateSubTotalPrice(data.is_tick ? priceUnit : data.price)}
           </Typography>
         )}
 

@@ -53,6 +53,7 @@ const FilterComponent = ({ filter, setFilter, categoryData, countryData }: Filte
       setFilter(newValue);
     }
   };
+  console.log(filter);
 
   // if (!categoryData || !countryData) return <div>Loading...</div>;
 

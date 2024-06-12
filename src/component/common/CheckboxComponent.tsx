@@ -5,8 +5,14 @@ interface CheckboxComponentProps {
   id: string;
   handleOnCheck: (e: ChangeEvent<HTMLInputElement>, id: string) => void;
   checked?: boolean;
+  defaultChecked?: boolean;
 }
-const CheckboxComponent = ({ id, handleOnCheck,checked }: CheckboxComponentProps) => {
+const CheckboxComponent = ({
+  id,
+  handleOnCheck,
+  checked,
+  defaultChecked,
+}: CheckboxComponentProps) => {
   return (
     <div className="checkbox-wrapper-19">
       <input
@@ -14,6 +20,7 @@ const CheckboxComponent = ({ id, handleOnCheck,checked }: CheckboxComponentProps
         id={id}
         onChange={(e: ChangeEvent<HTMLInputElement>) => handleOnCheck(e, id)}
         checked={checked}
+        defaultChecked={defaultChecked}
       />
       <label htmlFor={id} className="check-box" />
     </div>

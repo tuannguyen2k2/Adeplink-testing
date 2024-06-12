@@ -28,7 +28,7 @@ import TemporaryCart from "../TemporaryCart";
 import { useAddToCart, useGetCart } from "@/api/cart/query";
 import { useDispatch, useSelector } from "react-redux";
 import { setCart } from "@/store/slice/appSlice";
-import { userSelector } from "@/store/selector";
+import { cartSelector, userSelector } from "@/store/selector";
 import { AUTH_PATH_URL } from "@/constant/pathUrl";
 
 const useStyles = makeStyles({
@@ -56,13 +56,9 @@ const ProductCharacteristics = ({
   const theme = useTheme();
   const router = useRouter();
   const [priceSelected, setPriceSelected] = useState<number | undefined>(1);
-  const [colorSelected, setColorSelected] = useState(0);
-  const [packageSelected, setPackageSelected] = useState(0);
-  const [weightSelected, setWeightSelected] = useState(0);
   const [attributeSelected, setAttributeSelected] = useState<{
     [key: string]: string;
   }>({});
-  const [sizeSelected, setSizeSelected] = useState(0);
   const [orderQuantity, setOrderQuantity] = useState<string>("0");
   const [openCart, setOpenCart] = useState(false);
   const [temporaryCart, setTemporaryCart] = useState<TemporaryCartType[]>([]);
@@ -71,7 +67,9 @@ const ProductCharacteristics = ({
   const { getCart, data: cartData, isSuccess: getCartSuccess } = useGetCart();
   const [color, setColor] = useState<{ name: string; code: string }[]>();
   const user = useSelector(userSelector);
+
   const dispatch = useDispatch();
+  
   useEffect(() => {
     cartData && dispatch(setCart(cartData));
   }, [cartData, getCartSuccess]);
@@ -217,11 +215,15 @@ const ProductCharacteristics = ({
         product_id: data.id,
         quantity: +orderQuantity,
         variant_id: dataVariant?.variant.id,
+        min_order: data.min_order,
+        price: data.price,
       });
     } else {
       addToCart({
         product_id: data.id,
         quantity: +orderQuantity,
+        min_order: data.min_order,
+        price: data.price,
       });
     }
 

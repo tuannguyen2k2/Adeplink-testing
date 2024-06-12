@@ -59,6 +59,7 @@ export type VariantCartType = {
   min_order: number;
   quantity: number;
   subtotal: number;
+  is_tick: boolean;
 };
 
 export type ProductCartType = {
@@ -71,10 +72,12 @@ export type ProductCartType = {
   image: string;
   range_price: PriceProductDetailType[];
   variant: VariantCartType[];
+  is_tick: boolean;
 };
 export type SupplierCartType = {
   id: string;
   name: string;
+  is_tick: boolean;
   product: ProductCartType[];
 };
 
