@@ -26,9 +26,7 @@ const Header = () => {
   const theme = useTheme();
   const { isMobile, isTablet } = useDevices();
   const router = useRouter();
-  const pathname = usePathname();
   const translate = useTranslations();
-  const locale = Cookies.get("NEXT_LOCALE");
   const dispatch = useDispatch();
   const { data: categoriesHierarchy, getCategoriesHierarchy } =
     useGetCategoriesHierarchy();
@@ -41,7 +39,6 @@ const Header = () => {
 
   useEffect(() => {
     cart && dispatch(setCart(cart));
-    console.log(cart);
   }, [cart, isSuccess]);
   return (
     <AppBar

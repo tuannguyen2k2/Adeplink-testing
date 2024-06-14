@@ -28,6 +28,7 @@ const themeColors = {
   red: {
     100: "#FF4E00",
     200: "#d51616",
+    300: "#DC2626",
   },
   yellow: {
     100: "#FFAD5F",

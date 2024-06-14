@@ -327,3 +327,19 @@ export type ProductRatingDto = {
     }
   ];
 };
+
+export type BillingAddressFormType = {
+  company: string;
+  first_name: string;
+  last_name: string;
+  phone: string;
+  email: string;
+  address_line1: string;
+  address_line2: string;
+  city: string;
+  state: string;
+  country: string;
+  zipcode: string;
+  street: string;
+  street_number: string;
+};

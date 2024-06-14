@@ -28,8 +28,8 @@ import { IoCloseOutline } from "react-icons/io5";
 import CheckboxComponent from "../CheckboxComponent";
 import QuantityComponent from "../QuantityComponent";
 import { useDispatch, useSelector } from "react-redux";
-import { setCart } from "@/store/slice/appSlice";
-import { cartSelector } from "@/store/selector";
+import { setCart, setSupplierContact } from "@/store/slice/appSlice";
+import { cartSelector, supplierContactSelector } from "@/store/selector";
 type CartItemType = {
   isVariant?: boolean;
   data: {
@@ -68,6 +68,7 @@ const CartItem = ({
   const dispatch = useDispatch();
   const [priceUnit, setPriceUnit] = useState<number>(0);
   const cart = useSelector(cartSelector);
+  const supplierContact = useSelector(supplierContactSelector);
   useEffect(() => {
     cartData && dispatch(setCart(cartData));
   }, [cartData, getCartSuccess]);
@@ -78,26 +79,35 @@ const CartItem = ({
       if (supplier.id == supplierId) {
         supplier.product.forEach((product) => {
           if (product.id == productId) {
-            product.variant.forEach((variant) => {
-              if (variant.is_tick) {
-                totalItemChecked += variant.quantity;
-              }
-            });
+            if (product.variant) {
+              product.variant.forEach((variant) => {
+                if (variant.is_tick) {
+                  totalItemChecked += variant.quantity;
+                }
+              });
+            } else if (product.is_tick) {
+              totalItemChecked += product.quantity;
+            }
           }
         });
       }
     });
     let hasRange = false;
-    rangePrice.map((range) => {
-      if (
-        +range.min_amount <= totalItemChecked &&
-        +range.max_amount >= totalItemChecked
-      ) {
-        hasRange = true;
-        setPriceUnit(+range.price);
-      }
-    });
-    !hasRange && setPriceUnit(0);
+
+    rangePrice.length > 0 &&
+      rangePrice.map((range) => {
+        if (
+          +range.min_amount <= totalItemChecked &&
+          +range.max_amount >= totalItemChecked
+        ) {
+          hasRange = true;
+          setPriceUnit(+range.price);
+        }
+      });
+
+    if (!hasRange) {
+      setPriceUnit(0);
+    }
   }, [cart]);
 
   const handleUpdateCart = ({ quantity }: { quantity: number }) => {
@@ -109,27 +119,58 @@ const CartItem = ({
             ...supplier,
             product: supplier.product.map((product) => ({
               ...product,
-              variant: product.variant.map((variant) => {
-                if (variant.id === data.id) {
-                  let price = 0;
-                  rangePrice.map((range) => {
-                    if (
-                      +range.min_amount <= quantity &&
-                      +range.max_amount >= quantity
-                    ) {
-                      price = +range.price;
-                    }
-                  });
-
-                  return {
-                    ...variant,
-                    quantity,
-                    price,
-                  };
-                }
-                return variant;
-              }),
+              variant:
+                product.variant &&
+                product.variant.map((variant) => {
+                  if (variant.id === data.id) {
+                    let price = 0;
+                    rangePrice.map((range) => {
+                      if (
+                        +range.min_amount <= quantity &&
+                        +range.max_amount >= quantity
+                      ) {
+                        price = +range.price;
+                      }
+                    });
+                    return {
+                      ...variant,
+                      quantity,
+                      price,
+                    };
+                  }
+                  return variant;
+                }),
             })),
+          })),
+        };
+        dispatch(setCart({ ...updatedCartData }));
+      }
+    } else {
+      if (cart) {
+        const updatedCartData: CartType = {
+          ...cart,
+          items: cart.items.map((supplier) => ({
+            ...supplier,
+            product: supplier.product.map((product) => {
+              if (product.id == data.id) {
+                let price = 0;
+                rangePrice.map((range) => {
+                  if (
+                    +range.min_amount <= quantity &&
+                    +range.max_amount >= quantity
+                  ) {
+                    price = +range.price;
+                  }
+                });
+                return {
+                  ...product,
+                  quantity,
+                  price,
+                };
+              } else {
+                return product;
+              }
+            }),
           })),
         };
         dispatch(setCart({ ...updatedCartData }));
@@ -149,6 +190,7 @@ const CartItem = ({
     }
   };
   const updateQuantity = (newQuantity: number) => {
+    handleUpdateCart({ quantity: newQuantity });
     if (isVariant) {
       updateCartItem({
         product_id: productId,
@@ -157,7 +199,6 @@ const CartItem = ({
         min_order: data.min_order,
         price: rangePrice,
       });
-      handleUpdateCart({ quantity: newQuantity });
     } else {
       updateCartItem({
         product_id: productId,

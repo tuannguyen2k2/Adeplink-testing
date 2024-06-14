@@ -1,36 +1,35 @@
 "use client";
+import { useTickAllCartItem, useTickCartItem } from "@/api/cart/query";
+import { useGetAllProductRecommended } from "@/api/product/query";
+import CartEmpty from "@/assets/images/cart_empty.png";
 import { MAX_WIDTH_APP } from "@/constant/css";
+import { PRODUCT_PATH_URL } from "@/constant/pathUrl";
+import {
+  ProductCartType,
+  SupplierCartType,
+  VariantCartType
+} from "@/interface/common";
+import { cartSelector } from "@/store/selector";
+import { setCart } from "@/store/slice/appSlice";
 import {
   Accordion,
   AccordionDetails,
   AccordionSummary,
   Box,
-  Button,
   Container,
   Divider,
-  TextField,
   Typography,
-  useTheme,
+  useTheme
 } from "@mui/material";
-import { IoIosArrowDown } from "react-icons/io";
-import CheckboxComponent from "../CheckboxComponent";
-import CartItem from "./CartItem";
-import { useGetAllProductRecommended } from "@/api/product/query";
-import { ChangeEvent, useEffect } from "react";
-import ListProductComponent from "../show-list-product/ListProductComponent";
-import { PRODUCT_PATH_URL } from "@/constant/pathUrl";
-import { useDispatch, useSelector } from "react-redux";
-import { cartSelector, checkOutSelector } from "@/store/selector";
-import {
-  CartType,
-  ProductCartType,
-  SupplierCartType,
-  VariantCartType,
-} from "@/interface/common";
-import CartEmpty from "@/assets/images/cart_empty.png";
+import { useRouter } from "next-nprogress-bar";
 import Image from "next/image";
-import { useTickAllCartItem, useTickCartItem } from "@/api/cart/query";
-import { setCart, setCheckOut } from "@/store/slice/appSlice";
+import { ChangeEvent, useEffect } from "react";
+import { IoIosArrowDown } from "react-icons/io";
+import { useDispatch, useSelector } from "react-redux";
+import CheckboxComponent from "../CheckboxComponent";
+import ListProductComponent from "../show-list-product/ListProductComponent";
+import CartItem from "./CartItem";
+import OrderSummary from "./OrderSummary";
 
 const Cart = () => {
   const { getAllProductRecommended, data } = useGetAllProductRecommended();
@@ -42,8 +41,8 @@ const Cart = () => {
   const { tickAllCartItem } = useTickAllCartItem();
   const { tickCartItem } = useTickCartItem();
   const dispatch = useDispatch();
-  const checkout = useSelector(checkOutSelector);
-  console.log(cart);
+  const router = useRouter();
+
   const getAllProductIdsAndVariantIds = (products: ProductCartType[]) => {
     return products.reduce((ids: string[], product) => {
       ids.push(product.id);
@@ -85,10 +84,12 @@ const Cart = () => {
       product: supplier.product.map((product) => ({
         ...product,
         is_tick: e.currentTarget.checked,
-        variant: product.variant.map((variant) => ({
-          ...variant,
-          is_tick: e.currentTarget.checked,
-        })),
+        variant:
+          product.variant &&
+          product.variant.map((variant) => ({
+            ...variant,
+            is_tick: e.currentTarget.checked,
+          })),
       })),
     };
     if (cart) {
@@ -137,10 +138,12 @@ const Cart = () => {
           return {
             ...item,
             is_tick: e.currentTarget.checked,
-            variant: item.variant.map((variant) => ({
-              ...variant,
-              is_tick: e.currentTarget.checked,
-            })),
+            variant:
+              item.variant &&
+              item.variant.map((variant) => ({
+                ...variant,
+                is_tick: e.currentTarget.checked,
+              })),
           };
         } else {
           return item;
@@ -209,8 +212,18 @@ const Cart = () => {
             ...item,
             variant: item.variant.map((variant) => {
               if (variant.id == e.currentTarget.id) {
+                let price = 0;
+                product.range_price.map((range) => {
+                  if (
+                    +range.min_amount <= variant.quantity &&
+                    +range.max_amount >= variant.quantity
+                  ) {
+                    price = +range.price;
+                  }
+                });
                 return {
                   ...variant,
+                  price,
                   is_tick: e.currentTarget.checked,
                 };
               } else {
@@ -286,19 +299,6 @@ const Cart = () => {
     });
   };
 
-  const calculateSubTotal = () => {
-    let subTotal = 0;
-    cart?.items.forEach((supplier) => {
-      supplier.product.forEach((product) => {
-        product.variant.forEach((variant) => {
-          if (variant.is_tick) {
-            subTotal += variant.price * variant.quantity;
-          }
-        });
-      });
-    });
-    return subTotal;
-  };
   return (
     <Container
       sx={{
@@ -324,13 +324,15 @@ const Cart = () => {
                   key={supplier.id}
                   defaultExpanded
                   sx={{
-                    mt: indexSupplier > 0 ? "16px" : "0",
                     fontFamily: theme.fontFamily.secondary,
                     boxShadow: "none",
                     border: `1px solid ${theme.blue[100]}`,
                     borderRadius: "8px!important",
                     "&.MuiAccordion-root::before": {
                       display: "none",
+                    },
+                    "&.MuiAccordion-root": {
+                      mt: "16px!important",
                     },
                   }}
                 >
@@ -343,11 +345,13 @@ const Cart = () => {
                       fontWeight: theme.fontWeight.semiBold,
                       bgcolor: theme.blue[100],
                       height: "48px",
+
                       "&.Mui-expanded": {
                         minHeight: "48px",
                         height: "48px!important",
                       },
-                      borderRadius: "8px",
+                      borderTopLeftRadius: "8px",
+                      borderTopRightRadius: "8px",
                     }}
                   >
                     <Box display={"flex"} gap={"20px"} alignItems={"center"}>
@@ -448,147 +452,7 @@ const Cart = () => {
               );
             })}
           </Box>
-          <Box
-            width={"32%"}
-            p={"16px"}
-            border={`1px solid ${theme.blue[100]}`}
-            borderRadius={"8px"}
-            boxShadow={`0px 0px 20px 2px rgba(0, 0, 0, 0.1)`}
-            height={"fit-content"}
-          >
-            <Box
-              display={"flex"}
-              alignItems={"center"}
-              justifyContent={"space-between"}
-            >
-              <Typography
-                fontFamily={theme.fontFamily.secondary}
-                color={theme.black[200]}
-                fontWeight={theme.fontWeight.semiBold}
-                fontSize={20}
-              >
-                Order summary
-              </Typography>
-              <Typography fontFamily={theme.fontFamily.secondary} fontSize={14}>
-                Total: {cart.total_items} items
-              </Typography>
-            </Box>
-            <Divider
-              sx={{ borderColor: theme.blue[600], mt: "10px", mb: "20px" }}
-            />
-            <Box
-              p={"16px"}
-              bgcolor={theme.blue[1100]}
-              borderRadius={"8px"}
-              display={"flex"}
-              flexDirection={"column"}
-              gap={"16px"}
-            >
-              <Box display={"flex"} justifyContent={"space-between"}>
-                <Typography
-                  fontFamily={theme.fontFamily.secondary}
-                  fontSize={14}
-                >
-                  Cart subtotal
-                </Typography>
-                <Typography
-                  fontFamily={theme.fontFamily.secondary}
-                  fontSize={14}
-                >
-                  {calculateSubTotal().toLocaleString("en-US", {
-                    style: "currency",
-                    currency: "USD",
-                    minimumFractionDigits: 2,
-                    maximumFractionDigits: 2,
-                  })}
-                </Typography>
-              </Box>
-              <Box display={"flex"} justifyContent={"space-between"}>
-                <Typography
-                  fontFamily={theme.fontFamily.secondary}
-                  fontSize={14}
-                >
-                  Shipping fee
-                </Typography>
-                <Typography
-                  fontFamily={theme.fontFamily.secondary}
-                  fontSize={14}
-                >
-                  {(100).toLocaleString("en-US", {
-                    style: "currency",
-                    currency: "USD",
-                    minimumFractionDigits: 2,
-                    maximumFractionDigits: 2,
-                  })}
-                </Typography>
-              </Box>
-              <Divider sx={{ borderColor: theme.blue[600] }} />
-              <Box display={"flex"} justifyContent={"space-between"}>
-                <Typography
-                  fontFamily={theme.fontFamily.secondary}
-                  fontWeight={theme.fontWeight.semiBold}
-                >
-                  Total
-                </Typography>
-                <Typography
-                  fontFamily={theme.fontFamily.secondary}
-                  fontWeight={theme.fontWeight.semiBold}
-                >
-                  {(calculateSubTotal() + 100).toLocaleString("en-US", {
-                    style: "currency",
-                    currency: "USD",
-                    minimumFractionDigits: 2,
-                    maximumFractionDigits: 2,
-                  })}
-                </Typography>
-              </Box>
-              <Typography
-                fontFamily={theme.fontFamily.secondary}
-                color={theme.palette.grey[400]}
-                fontSize={14}
-              >
-                *A request for quotation will be send to this supplier and they
-                will get in touch with your order soon!
-              </Typography>
-
-              <Box>
-                <Typography
-                  fontFamily={theme.fontFamily.secondary}
-                  fontSize={14}
-                  mb={"6px"}
-                >
-                  Message
-                </Typography>
-                <TextField
-                  rows={4}
-                  multiline
-                  sx={{
-                    width: "100%",
-                    bgcolor: "white",
-                    border: `1px solid ${theme.blue[600]}`,
-                    borderRadius: "8px",
-                    "& .MuiOutlinedInput-root": {
-                      fontFamily: theme.fontFamily.secondary,
-                    },
-                  }}
-                />
-              </Box>
-              <Button
-                sx={{
-                  bgcolor: `${theme.palette.primary.main}!important`,
-                  padding: "12px 16px",
-                  borderRadius: "8px",
-                  color: "white",
-                  fontFamily: theme.fontFamily.secondary,
-                  fontWeight: theme.fontWeight.medium,
-                  width: "100%",
-                  boxShadow: "0 4px 4 0 rgba(0, 0, 0, 0.25)",
-                }}
-              >
-                Process to Checkout
-              </Button>
-            </Box>
-          </Box>
+          <OrderSummary />
         </Box>
       ) : (
         <Box

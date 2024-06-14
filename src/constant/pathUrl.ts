@@ -8,7 +8,7 @@ export const AUTH_PATH_URL = {
   LOGIN: `/${locale}/auth/login`,
   SIGN_UP: `/${locale}/auth/signup`,
   FORGET_PASSWORD: `/${locale}/auth/forget-password`,
-  CHANGE_PASSWORD: `/${locale}/auth/change-password`
+  CHANGE_PASSWORD: `/${locale}/auth/change-password`,
 };
 
 export const PRODUCT_PATH_URL = {
@@ -22,3 +22,5 @@ export const SUPPLIER_PATH_URL = {
 };
 
 export const CART_PATH_URL = `/${locale}/cart`;
+export const CHECKOUT_PATH_URL = `/${locale}/check-out`;
+export const SEND_REQUEST_PATH_URL = `/${locale}/send-request`;

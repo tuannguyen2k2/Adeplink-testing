@@ -3,12 +3,12 @@ import { PayloadAction, createSlice } from "@reduxjs/toolkit";
 
 type AppSliceState = {
   cart: CartType | null;
-  checkout: any;
+  supplierContact: string[];
 };
 
 const initialState: AppSliceState = {
   cart: null,
-  checkout: [],
+  supplierContact: [],
 };
 
 export const appSlice = createSlice({
@@ -18,11 +18,11 @@ export const appSlice = createSlice({
     setCart: (state, action: PayloadAction<CartType | null>) => {
       state.cart = action.payload;
     },
-    setCheckOut: (state, action: PayloadAction<any>) => {
-      state.checkout = action.payload;
+    setSupplierContact: (state, action: PayloadAction<string[]>) => {
+      state.supplierContact = action.payload;
     },
   },
 });
 
-export const { setCart, setCheckOut } = appSlice.actions;
+export const { setCart, setSupplierContact } = appSlice.actions;
 export default appSlice.reducer;
