@@ -413,6 +413,7 @@ const Product = () => {
                     border: `1px solid ${theme.palette.grey[50]}`,
                     input: {
                       padding: "12px 16px",
+                      fontFamily: theme.fontFamily.secondary,
                     },
                   }}
                   placeholder="From"
@@ -439,6 +440,7 @@ const Product = () => {
                     border: `1px solid ${theme.palette.grey[50]}`,
                     input: {
                       padding: "12px 16px",
+                      fontFamily: theme.fontFamily.secondary,
                     },
                   }}
                   onChange={(e: ChangeEvent<HTMLInputElement>) =>
@@ -487,6 +489,7 @@ const Product = () => {
                   border: `1px solid ${theme.palette.grey[50]}`,
                   input: {
                     padding: "10px 16px",
+                    fontFamily: theme.fontFamily.secondary,
                   },
                 }}
                 inputProps={{

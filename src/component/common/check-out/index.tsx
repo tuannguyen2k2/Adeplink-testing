@@ -8,7 +8,9 @@ import {
   Button,
   Container,
   Divider,
+  FormControlLabel,
   InputAdornment,
+  Radio,
   TextField,
   Typography,
   useTheme,
@@ -25,6 +27,9 @@ import { SUPPLIER_CONTACT } from "@/constant/cookies";
 import { Controller, useForm } from "react-hook-form";
 import { SiVisa } from "react-icons/si";
 import ShippingAddress from "./shipping/ShippingAddress";
+import Image from "next/image";
+import MasterCard from "@/assets/icons/mastercard.svg";
+import Paypal from "@/assets/icons/paypal.svg";
 interface PaymentForm {
   cardholder: string;
   cardNumber: string;
@@ -254,6 +259,45 @@ const CheckOut = () => {
           <Divider
             sx={{ borderColor: theme.blue[600], mt: "10px", mb: "20px" }}
           />
+          <Box
+            display={"flex"}
+            alignItems={"center"}
+            justifyContent={"space-between"}
+          >
+            <FormControlLabel
+              sx={{ fontFamily: theme.fontFamily.secondary }}
+              value="female"
+              control={<Radio size="small" />}
+              label={
+                <Typography
+                  sx={{ fontFamily: theme.fontFamily.secondary, fontSize: 14 }}
+                >
+                  Credit or debit card
+                </Typography>
+              }
+            />
+            <Box display={"flex"} gap={"4px"}>
+              <Box
+                border={`1px solid ${theme.palette.grey[100]}`}
+                p={"1px 8px 0px"}
+                borderRadius={"4px"}
+              >
+                <SiVisa color="#142688" size={24} />
+              </Box>
+              <Box
+                border={`1px solid ${theme.palette.grey[100]}`}
+                p={"0px 8px"}
+                borderRadius={"4px"}
+              >
+                <Image
+                  src={MasterCard}
+                  alt="master-card"
+                  width={24}
+                  height={24}
+                />
+              </Box>
+            </Box>
+          </Box>
           <form>
             <Typography
               fontFamily={theme.fontFamily.secondary}
@@ -406,6 +450,30 @@ const CheckOut = () => {
                   )}
                 />
               </Box>
+            </Box>
+            <Divider sx={{ borderColor: theme.blue[600], my: "10px" }} />
+            <Box
+              display={"flex"}
+              alignItems={"center"}
+              justifyContent={"space-between"}
+            >
+              <FormControlLabel
+                sx={{ fontFamily: theme.fontFamily.secondary }}
+                value="female"
+                control={<Radio size="small" />}
+                label={
+                  <Typography
+                    sx={{
+                      fontFamily: theme.fontFamily.secondary,
+                      fontSize: 14,
+                    }}
+                  >
+                    Credit or debit card
+                  </Typography>
+                }
+              />
+
+              <Image src={Paypal} alt="paypal" width={60} height={60} />
             </Box>
             <Button
               sx={{
