@@ -1,3 +1,4 @@
+/* eslint-disable react/no-unescaped-entities */
 "use client";
 import React, { useEffect, useState } from "react";
 import AppLogo from "@/assets/icons/logo.svg";
@@ -23,11 +24,12 @@ const ForgetPasswordForm = () => {
   const [showValidateEmail, setShowValidateEmail] = useState<boolean>(false);
   const [otp, setOtp] = useState("");
   const [isValidateOtp, setIsValidateOtp] = useState(false);
+  const [isEmailNotFound, setIsEmailNotFound] = useState(false);
   const [isOtpError, setIsOtpError] = useState<boolean>(false);
   const { remaining, handleRunCountDown } = useCountdown(60);
   const router = useRouter();
   const [isResend, setIsResend] = useState(false);
-  const { sendOtpReset, error } = useSendOTPReset();
+  const { sendOtpReset, error: sendOtpError } = useSendOTPReset();
   const {
     verifyOtpReset,
     isSuccess: isVerifySuccess,
@@ -37,6 +39,12 @@ const ForgetPasswordForm = () => {
   const { register, handleSubmit, formState, getValues } = useForm<{
     email: string;
   }>();
+
+  useEffect(() => {
+    if (sendOtpError) {
+      setIsEmailNotFound(true);
+    }
+  }, [sendOtpError]);
   const onSubmit: SubmitHandler<{ email: string }> = async (data) => {
     setShowValidateEmail(true);
     sendOtpReset(data.email);
@@ -104,6 +112,10 @@ const ForgetPasswordForm = () => {
                       message: "email invalid",
                     },
                   })}
+                  onChange={() => {
+                    setIsEmailNotFound(false);
+                    setShowValidateEmail(false);
+                  }}
                 />
               </div>
               {formState.errors.email && (
@@ -111,10 +123,17 @@ const ForgetPasswordForm = () => {
                   {formState.errors.email.message}
                 </div>
               )}
+
+              {isEmailNotFound && (
+                <div className="text-red-500">
+                  We couldn't find an account with that email address. Please
+                  check your email and try again.
+                </div>
+              )}
             </div>
 
             <button
-              className={`w-full text-white px-3 py-2 rounded ${
+              className={`w-full text-white px-3 py-2 mt-2 rounded ${
                 formState.isValid
                   ? "bg-[#0C71BA]"
                   : "bg-[#DBE9FE] cursor-not-allowed"
@@ -135,7 +154,7 @@ const ForgetPasswordForm = () => {
         </div>
       </div>
 
-      {showValidateEmail && (
+      {showValidateEmail && !isEmailNotFound && (
         <Modal
           open={showValidateEmail}
           onCancel={() => setShowValidateEmail(false)}

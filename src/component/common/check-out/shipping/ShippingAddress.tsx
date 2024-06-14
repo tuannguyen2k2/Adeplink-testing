@@ -58,7 +58,7 @@ export const ShippingAddress = () => {
           My billing and delivery information are the same.
         </Typography>
       </Box>
-      <BillingAddressForm />
+      {!checkSame && <BillingAddressForm />}
     </Box>
   );
 };

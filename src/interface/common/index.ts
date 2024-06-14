@@ -1,3 +1,5 @@
+import { ICity, ICountry, IState } from "country-state-city";
+
 export type BannerDto = {
   id: string;
   created_at: string;
@@ -336,9 +338,9 @@ export type BillingAddressFormType = {
   email: string;
   address_line1: string;
   address_line2: string;
-  city: string;
-  state: string;
-  country: string;
+  city: ICity;
+  state: IState;
+  country: ICountry;
   zipcode: string;
   street: string;
   street_number: string;
