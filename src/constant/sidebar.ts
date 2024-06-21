@@ -2,60 +2,61 @@ import { FaThLarge } from "react-icons/fa";
 import { IoLayersSharp, IoCube, IoSettings, IoLogOut } from "react-icons/io5";
 import { HiUsers } from "react-icons/hi2";
 import { BiSolidLayout } from "react-icons/bi";
+import { ADMIN_PATH_SUPPLIERS_URL } from "./pathUrl";
 
 export const NAVIGATION = [
   {
     label: "Dashboard",
     Icon: FaThLarge,
-    path: "/",
+    path: "/dashboard",
   },
 
   {
     label: "Categories",
     Icon: BiSolidLayout,
-    path: "/",
+    path: "/categroies",
   },
   {
     label: "Products",
     Icon: IoCube,
-    path: "/",
+    path: "/products",
   },
   {
     label: "Orders",
     Icon: IoLayersSharp,
-    path: "/",
+    path: "/orders",
   },
   {
     label: "Users",
     Icon: HiUsers,
-    path: "/",
-    children: [
+    path: "/users",
+    subItems: [
       {
         label: "Buyer",
-        path: "",
+        path: "/buyer",
       },
       {
         label: "Supplier",
-        path: "",
+        path: ADMIN_PATH_SUPPLIERS_URL,
       },
       {
         label: "Admin",
-        path: "",
+        path: "admin_",
       },
       {
         label: "Buyers",
-        path: "",
+        path: "buyers",
       },
     ],
   },
   {
     label: "Settings",
     Icon: IoSettings,
-    path: "/",
+    path: "/settings",
   },
   {
     label: "Logout",
     Icon: IoLogOut,
-    path: "/",
+    path: "/logout",
   },
 ];

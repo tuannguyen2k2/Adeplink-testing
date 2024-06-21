@@ -461,6 +461,18 @@ export type OrderResponseType = {
   status: string;
   links: { href: string; rel: string; method: string }[];
 };
+export type CountryType = {
+  name: string;
+  phoneCode: string;
+  isoCode: string;
+};
+
+export type StateType = {
+  province_id: string;
+  province_name: string;
+  province_type: string;
+  province_iso_code?: string;
+};
 
 export type CountryType = {
   name: string;

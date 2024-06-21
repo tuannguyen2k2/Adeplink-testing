@@ -24,3 +24,6 @@ export const SUPPLIER_PATH_URL = {
 export const CART_PATH_URL = `/${locale}/cart`;
 export const CHECKOUT_PATH_URL = `/${locale}/check-out`;
 export const SEND_REQUEST_PATH_URL = `/${locale}/send-request`;
+
+// admin
+export const ADMIN_PATH_SUPPLIERS_URL = `/${locale}/admin/users/suppliers`;

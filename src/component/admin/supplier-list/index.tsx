@@ -1,4 +1,7 @@
 import {
+  Accordion,
+  AccordionDetails,
+  AccordionSummary,
   Box,
   Button,
   Divider,
@@ -7,168 +10,169 @@ import {
   useTheme,
 } from "@mui/material";
 import { FaAngleUp } from "react-icons/fa6";
-import CAutocomplete from "../autocomplete";
+import CAutocomplete, { IOption } from "../autocomplete";
 import CSelect from "../select";
 import CDatePicker from "../date-picker";
 import CSearch from "../search";
 import CTable from "../table";
+import { useMemo, useState } from "react";
+import { FilterSupplierDto } from "@/interface/common";
+import { useQuery } from "@tanstack/react-query";
+import { getSearchSupplier } from "@/api/supplier";
+import { SUPPLIER_KEY } from "@/constant/queryKey";
+import CPagination from "../table/pagination";
+import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
+import { HiDotsVertical } from "react-icons/hi";
+import MenuRow from "../menu-row";
 
 const columns = [
-  { field: "company", headerName: "Company", width: 150 },
-  { field: "fullName", headerName: "Full name", width: 150 },
-  { field: "mainCategory", headerName: "Main category", width: 150 },
-  { field: "email", headerName: "Email Address", width: 250 },
-  { field: "phone", headerName: "Phone number", width: 180 },
-  { field: "country", headerName: "Country/Region", width: 150 },
-  { field: "createdOn", headerName: "Created on", width: 150 },
+  { field: "company_name", headerName: "Company", width: 150, sortable: false },
+  { field: "fullName", headerName: "Full name", width: 150, sortable: false },
+  {
+    field: "main_category",
+    headerName: "Main category",
+    width: 150,
+    sortable: false,
+  },
+  { field: "email", headerName: "Email Address", width: 250, sortable: false },
+  { field: "phone", headerName: "Phone number", width: 180, sortable: false },
+  {
+    field: "country",
+    headerName: "Country/Region",
+    width: 150,
+    sortable: false,
+  },
+  { field: "createdOn", headerName: "Created on", width: 150, sortable: false },
   {
     field: "status",
     headerName: "Status",
     width: 150,
+    sortable: false,
     renderCell: (params: any) => (
-      <span
-        style={{
-          color: params.value === "Active" ? "#00B69B" : "#979797",
-          backgroundColor: params.value === "Active" ? "#D9F7E8" : "#E2E2E2",
-          padding: "5px 10px",
-          borderRadius: "5px",
-          fontWeight: 500,
-          fontSize: "12px",
-        }}
-      >
-        {params.value}
-      </span>
+      <>
+        {params.value && (
+          <span
+            style={{
+              color: params.value === "Active" ? "#00B69B" : "#979797",
+              backgroundColor:
+                params.value === "Active" ? "#D9F7E8" : "#E2E2E2",
+              padding: "5px 10px",
+              borderRadius: "5px",
+              fontWeight: 500,
+              fontSize: "12px",
+            }}
+          >
+            {params.value}
+          </span>
+        )}
+      </>
     ),
   },
-];
-
-const rows = [
   {
-    id: 1,
-    company: "AIVision",
-    fullName: "Anh Mai",
-    mainCategory: "Agriculture",
-    email: "anhmai@aivision.com",
-    phone: "84232123456789",
-    country: "Vietnam",
-    createdOn: "30/04/2024",
-    status: "Active",
-  },
-  {
-    id: 2,
-    company: "AIVision",
-    fullName: "Anh Mai",
-    mainCategory: "Agriculture",
-    email: "anhmai@aivision.com",
-    phone: "84232123456789",
-    country: "Vietnam",
-    createdOn: "30/04/2024",
-    status: "Active",
-  },
-  {
-    id: 3,
-    company: "AIVision",
-    fullName: "Anh Mai",
-    mainCategory: "Agriculture",
-    email: "anhmai@aivision.com",
-    phone: "84232123456789",
-    country: "Vietnam",
-    createdOn: "30/04/2024",
-    status: "Active",
-  },
-  {
-    id: 4,
-    company: "AIVision",
-    fullName: "Anh Mai",
-    mainCategory: "Agriculture",
-    email: "anhmai@aivision.com",
-    phone: "84232123456789",
-    country: "Vietnam",
-    createdOn: "30/04/2024",
-    status: "Active",
-  },
-  {
-    id: 5,
-    company: "AIVision",
-    fullName: "Anh Mai",
-    mainCategory: "Agriculture",
-    email: "anhmai@aivision.com",
-    phone: "84232123456789",
-    country: "Vietnam",
-    createdOn: "30/04/2024",
-    status: "Active",
-  },
-  {
-    id: 6,
-    company: "AIVision",
-    fullName: "Anh Mai",
-    mainCategory: "Agriculture",
-    email: "anhmai@aivision.com",
-    phone: "84232123456789",
-    country: "Vietnam",
-    createdOn: "30/04/2024",
-    status: "Active",
-  },
-  {
-    id: 7,
-    company: "AIVision",
-    fullName: "Anh Mai",
-    mainCategory: "Agriculture",
-    email: "anhmai@aivision.com",
-    phone: "84232123456789",
-    country: "Vietnam",
-    createdOn: "30/04/2024",
-    status: "Deactive",
-  },
-  {
-    id: 8,
-    company: "AIVision",
-    fullName: "Anh Mai",
-    mainCategory: "Agriculture",
-    email: "anhmai@aivision.com",
-    phone: "84232123456789",
-    country: "Vietnam",
-    createdOn: "30/04/2024",
-    status: "Deactive",
-  },
-  {
-    id: 9,
-    company: "AIVision",
-    fullName: "Anh Mai",
-    mainCategory: "Agriculture",
-    email: "anhmai@aivision.com",
-    phone: "84232123456789",
-    country: "Vietnam",
-    createdOn: "30/04/2024",
-    status: "Deactive",
-  },
-  {
-    id: 10,
-    company: "AIVision",
-    fullName: "Anh Mai",
-    mainCategory: "Agriculture",
-    email: "anhmai@aivision.com",
-    phone: "84232123456789",
-    country: "Vietnam",
-    createdOn: "30/04/2024",
-    status: "Deactive",
+    field: "",
+    width: 50,
+    sortable: false,
+    renderCell: (params: any) => <MenuRow />,
   },
 ];
 
 const SupplierListPage = () => {
   const theme = useTheme();
 
+  const [page, setPage] = useState<number>(1);
+
+  const [filter, setFilter] = useState<FilterSupplierDto>({
+    keyword: "",
+    category_ids: [],
+    countries: [],
+  });
+  const sortOrder = "";
+  const { data: supplierData } = useQuery({
+    queryKey: [SUPPLIER_KEY, page, filter, sortOrder],
+    queryFn: async () =>
+      await getSearchSupplier(filter, sortOrder, {
+        page: page,
+        limit: 10,
+      }).then((response) => {
+        return response.data;
+      }),
+  });
+
+  const categories: IOption[] = useMemo(() => {
+    if (supplierData?.categories) {
+      return Object.entries(supplierData?.categories).map(([value, label]) => ({
+        value,
+        label,
+      }));
+    } else {
+      return [];
+    }
+  }, [supplierData?.categories]);
+
+  const countries: IOption[] = useMemo(() => {
+    if (supplierData?.countries) {
+      return supplierData?.countries.map((country) => ({
+        value: country,
+        label: country,
+      }));
+    } else {
+      return [];
+    }
+  }, [supplierData?.countries]);
+
+  const handelSearch = (q: string) => {
+    setFilter({ ...filter, keyword: q });
+  };
+
+  const handelCategory = (value: string) => {
+    if (value) {
+      setFilter({ ...filter, category_ids: [value] });
+    } else {
+      setFilter({ ...filter, category_ids: [] });
+    }
+  };
+
+  const handelCountry = (value: string) => {
+    if (value) {
+      setFilter({ ...filter, countries: [value] });
+    } else {
+      setFilter({ ...filter, countries: [] });
+    }
+  };
+
+  const [expanded, setExpanded] = useState(false);
+
+  const handleExpansion = () => {
+    setExpanded((prevExpanded) => !prevExpanded);
+  };
+
   return (
     <Box>
-      <Box
+      <Accordion
         sx={{
           padding: "16px",
           borderRadius: "16px",
           border: "1px solid #E6EFFB",
           backgroundColor: "#ffffff",
+          boxShadow: "none",
+
+          "&:first-of-type": {
+            borderTopLeftRadius: "16px",
+            borderTopRightRadius: "16px",
+          },
+          "&:last-of-type": {
+            borderBottomLeftRadius: "16px",
+            borderBottomRightRadius: "16px",
+          },
         }}
+        expanded={expanded}
+        onChange={handleExpansion}
       >
-        <Box display="flex" justifyContent="space-between" alignItems="center">
+        <AccordionSummary
+          expandIcon={<ExpandMoreIcon />}
+          aria-controls="panel1-content"
+          id="panel1-header"
+        >
           <Typography
             fontWeight={theme.fontWeight.bold}
             fontFamily={theme.fontFamily.secondary}
@@ -177,44 +181,54 @@ const SupplierListPage = () => {
           >
             Suppliers list
           </Typography>
-          <FaAngleUp size={24} />
-        </Box>
-        <Divider
-          sx={{
-            borderColor: "#E6EFFB",
-          }}
-        />
-        <Grid container paddingY={2} spacing={4}>
-          <Grid item xs={4}>
-            <CAutocomplete label="Main category" />
+        </AccordionSummary>
+
+        <AccordionDetails>
+          <Divider
+            sx={{
+              borderColor: "#E6EFFB",
+            }}
+          />
+          <Grid container paddingY={2} spacing={4}>
+            <Grid item xs={4}>
+              <CAutocomplete
+                label="Main category"
+                onChange={handelCategory}
+                options={categories}
+              />
+            </Grid>
+            <Grid item xs={4}>
+              <CAutocomplete
+                label="Country/Region"
+                onChange={handelCountry}
+                options={countries}
+              />
+            </Grid>
+            <Grid item xs={4}>
+              <CSelect
+                label="Status"
+                options={[
+                  { value: 1, title: "Active" },
+                  { value: 2, title: "Deactive" },
+                ]}
+              />
+            </Grid>
           </Grid>
-          <Grid item xs={4}>
-            <CAutocomplete label="Country/Region" />
-          </Grid>
-          <Grid item xs={4}>
-            <CSelect
-              label="Status"
-              options={[
-                { value: 1, title: "Active" },
-                { value: 2, title: "Deactive" },
-              ]}
-            />
-          </Grid>
-        </Grid>
-        <Box>
-          <Typography
-            fontWeight={theme.fontWeight.medium}
-            fontFamily={theme.fontFamily.secondary}
-            fontSize={14}
-          >
-            Created on
-          </Typography>
-          <Box sx={{ display: "flex", gap: "16px" }}>
-            <CDatePicker />
-            <CDatePicker />
+          <Box>
+            <Typography
+              fontWeight={theme.fontWeight.medium}
+              fontFamily={theme.fontFamily.secondary}
+              fontSize={14}
+            >
+              Created on
+            </Typography>
+            <Box sx={{ display: "flex", gap: "16px" }}>
+              <CDatePicker />
+              <CDatePicker />
+            </Box>
           </Box>
-        </Box>
-      </Box>
+        </AccordionDetails>
+      </Accordion>
 
       <Box
         sx={{
@@ -267,11 +281,25 @@ const SupplierListPage = () => {
               11
             </Typography>
           </Box>
-          <CSearch width="300px" border="1px solid #E6EFFB" />
+          <CSearch
+            width="300px"
+            border="1px solid #E6EFFB"
+            onChange={handelSearch}
+          />
         </Box>
       </Box>
 
-      <CTable rows={rows} columns={columns} checkboxSelection />
+      <CTable
+        rows={supplierData?.companies || []}
+        columns={columns}
+        checkboxSelection
+      />
+      <CPagination
+        onChangePage={setPage}
+        totalData={supplierData?.metadata?.total_data || 0}
+        currentPage={supplierData?.metadata?.current_page || 1}
+        totalPage={supplierData?.metadata?.total_page || 0}
+      />
     </Box>
   );
 };

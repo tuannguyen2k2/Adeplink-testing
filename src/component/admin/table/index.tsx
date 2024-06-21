@@ -1,17 +1,7 @@
-import CheckboxComponent from "@/component/common/CheckboxComponent";
-import { Box, Pagination, TablePaginationProps, useTheme } from "@mui/material";
-import {
-  DataGrid,
-  GridColDef,
-  GridPagination,
-  gridPageCountSelector,
-  useGridApiContext,
-  useGridSelector,
-} from "@mui/x-data-grid";
-import MuiPagination from "@mui/material/Pagination";
+import { Box, useTheme } from "@mui/material";
+import { DataGrid, GridColDef } from "@mui/x-data-grid";
 import { PiSquareLight } from "react-icons/pi";
 import { LiaCheckSquareSolid } from "react-icons/lia";
-import CPagination from "./pagination";
 
 // const CustomPagination = (props: any) => {
 //   return <GridPagination ActionsComponent={CPagination} {...props} />;
@@ -51,9 +41,8 @@ const CTable = ({
           onRowClick && onRowClick(params?.id);
         }}
         pagination
-        // slots={{
-        //   pagination: CustomPagination,
-        // }}
+        disableColumnFilter
+        // autoHeight={false}
         slotProps={{
           baseCheckbox: {
             checkedIcon: <LiaCheckSquareSolid color="#0C71B9" />,
@@ -61,13 +50,13 @@ const CTable = ({
           },
         }}
         sx={{
+          minHeight: "600px",
+
           fontFamily: theme.fontFamily.secondary,
           "& .MuiDataGrid-columnHeader, ": {
             backgroundColor: "#F0F6FF",
-          },
-          "& .MuiDataGrid-topContainer": {
-            "& .MuiDataGrid-filler": {
-              backgroundColor: "#F0F6FF",
+            "&:focus-within": {
+              outline: "none",
             },
           },
 
@@ -109,9 +98,22 @@ const CTable = ({
           "& .MuiDataGrid-footerContainer ": {
             backgroundColor: "#ffff",
           },
+
+          "& .MuiButtonBase-root": {
+            "&:hover": {
+              backgroundColor: "inherit",
+            },
+          },
+          "& .MuiDataGrid-virtualScroller": {
+            "& .MuiDataGrid-filler": {
+              "& .css-tgsonj": {
+                backgroundColor: "#FFFFFF",
+                border: "none",
+              },
+            },
+          },
         }}
       />
-      <CPagination />
     </Box>
   );
 };

@@ -179,7 +179,6 @@ const SignupFormPage = () => {
   // console.log(getValues().fullname);
   // console.log(getValues().password);
   // console.log(getValues().phoneNumber);
-  console.log(selectedCountry);
   return (
     <React.Fragment>
       <div className="bg-white h-full w-4/5 mx-auto">
@@ -236,9 +235,18 @@ const SignupFormPage = () => {
                 popupIcon={
                   <MdOutlineKeyboardArrowDown size={18} color="black" />
                 }
+
+                onChange={(e, value) => {
+                  if (value) {
+                    setValue("country", value?.name);
+                    setSelectedCountry(value.name);
+                  }
+                }}
+
                 {...register("country", {
                   shouldUnregister: true,
                 })}
+
               />
               {formState.errors.country?.message && (
                 <div className="text-red-500 w-full font-medium text-[13px]">
@@ -425,6 +433,9 @@ const SignupFormPage = () => {
             <input
               type="checkbox"
               className="w-[18px] h-[18px] cursor-pointer"
+              onChange={() => {
+                setIsChecked(!isChecked);
+              }}
               {...register("isCheck", {
                 shouldUnregister: true,
                 onChange: () => {
@@ -447,6 +458,7 @@ const SignupFormPage = () => {
             className={`w-full text-white mt-6 px-3 py-2 rounded-lg ${
               isChecked &&
               formState.isValid &&
+              selectedCountry &&
               selectedCountry != "" &&
               validated.lengthValidated &&
               validated.numberValidated &&
@@ -457,6 +469,7 @@ const SignupFormPage = () => {
             }`}
             type="submit"
             disabled={
+              !selectedCountry ||
               !isChecked ||
               selectedCountry == "" ||
               !formState.isValid ||

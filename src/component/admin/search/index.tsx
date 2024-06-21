@@ -1,19 +1,30 @@
 import { Box, TextField, useTheme } from "@mui/material";
 import { useTranslations } from "next-intl";
+import { ChangeEvent } from "react";
 import { IoMdSearch } from "react-icons/io";
 
 const CSearch = ({
   width,
   sx,
   border,
+  onChange,
 }: {
   width: string;
   sx?: object;
   border?: string;
+  onChange?: (q: string) => void;
 }) => {
   const theme = useTheme();
 
   const translate = useTranslations();
+
+  const handleInputChange = (
+    event: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+  ) => {
+    if (onChange) {
+      onChange(event.target.value);
+    }
+  };
 
   return (
     <Box
@@ -45,7 +56,7 @@ const CSearch = ({
             },
             ...sx,
           }}
-          placeholder={translate("Search")}
+          placeholder="Search"
           InputProps={{
             sx: {
               input: {
@@ -55,6 +66,7 @@ const CSearch = ({
               },
             },
           }}
+          onChange={handleInputChange}
         />
       </Box>
     </Box>
