@@ -23,15 +23,14 @@ interface ISidebarItem {
   ICon: React.ComponentType<{ color?: string }>;
   url: string;
 
-  children?: { label: string; path: string }[];
+  subItems?: { label: string; path: string }[];
 }
 
 const SidebarItem = ({
   open,
   label,
   ICon,
-
-  children,
+  subItems,
   url,
 }: ISidebarItem) => {
   const theme = useTheme();
@@ -53,7 +52,7 @@ const SidebarItem = ({
   }, [open, url]);
 
   const handleClick = () => {
-    if (children) {
+    if (subItems) {
       setOpen(!_open);
     }
   };
@@ -118,7 +117,7 @@ const SidebarItem = ({
                     },
                   }}
                 />
-                {children && (
+                {subItems && (
                   <> {_open ? <FaAngleDown /> : <FaAngleRight />} </>
                 )}
               </>
@@ -129,8 +128,8 @@ const SidebarItem = ({
         {open && (
           <Collapse in={_open} timeout="auto">
             <List component="div" disablePadding>
-              {children &&
-                children.map((item, index) => (
+              {subItems &&
+                subItems.map((item, index) => (
                   <Link key={index} href={item.path}>
                     <ListItemButton sx={{ pl: "30px" }}>
                       <ListItemIcon sx={{ minWidth: "24px" }}>

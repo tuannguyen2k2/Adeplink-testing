@@ -119,7 +119,7 @@ const SidebarAdmin = () => {
               url={item.path}
               open={open}
               key={index}
-              children={item.subItems}
+              subItems={item.subItems}
             />
           ))}
         </List>

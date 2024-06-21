@@ -166,6 +166,13 @@ export type FilterProductDto = {
   limit?: string;
 };
 
+export type FilterProductOfSupplierDto = {
+  company_slug: string;
+  category_id?: string;
+  page: string;
+  limit: string;
+};
+
 export type ProductSearchResultDto = {
   products: ProductSearchDto[];
   categories: { [key: string]: string };
@@ -460,18 +467,6 @@ export type OrderResponseType = {
   id: string;
   status: string;
   links: { href: string; rel: string; method: string }[];
-};
-export type CountryType = {
-  name: string;
-  phoneCode: string;
-  isoCode: string;
-};
-
-export type StateType = {
-  province_id: string;
-  province_name: string;
-  province_type: string;
-  province_iso_code?: string;
 };
 
 export type CountryType = {
