@@ -1,28 +1,27 @@
 "use client";
 import {
   Box,
+  FormHelperText,
   TextField,
   TextFieldPropsSizeOverrides,
   Typography,
   useTheme,
 } from "@mui/material";
-import { HTMLInputTypeAttribute, ReactNode } from "react";
+import { OverridableStringUnion } from "@mui/types";
+import { HTMLInputTypeAttribute } from "react";
 import {
   Control,
   Controller,
-  FieldErrors,
-  RegisterOptions,
-  ValidationRule,
+  FieldError,
+  RegisterOptions
 } from "react-hook-form";
-import { OverridableStringUnion } from "@mui/types";
 
 type TextFieldComponentType = {
   name: string;
   label: string;
   required?: boolean;
   control: Control<any>;
-  helperText?: ReactNode;
-  error?: boolean;
+  error?: FieldError;
   placeholder?: string;
   defaultValue?: any;
   size?: OverridableStringUnion<
@@ -41,7 +40,6 @@ const TextFieldComponent = ({
   label,
   required,
   control,
-  helperText,
   error,
   placeholder,
   size = "small",
@@ -73,23 +71,25 @@ const TextFieldComponent = ({
         defaultValue={defaultValue}
         rules={rules}
         render={({ field }) => (
-          <TextField
-            {...field}
-            size={size}
-            type={type}
-            sx={{
-              border: `1px solid ${theme.blue[600]}`,
-              width: "100%",
-              borderRadius: "8px",
-              input: {
-                fontFamily: theme.fontFamily.secondary,
-                fontSize: 14,
-              },
-            }}
-            placeholder={placeholder}
-            error={error}
-            helperText={helperText}
-          />
+          <Box width={"100%"}>
+            <TextField
+              {...field}
+              size={size}
+              type={type}
+              sx={{
+                border: `1px solid ${theme.blue[600]}`,
+                width: "100%",
+                borderRadius: "8px",
+                input: {
+                  fontFamily: theme.fontFamily.secondary,
+                  fontSize: 14,
+                },
+              }}
+              placeholder={placeholder}
+              error={!!error}
+            />
+            <FormHelperText error={true}>{error?.message}</FormHelperText>
+          </Box>
         )}
       />
     </Box>

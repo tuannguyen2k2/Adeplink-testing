@@ -65,7 +65,7 @@ const ProductList = ({ data }: ProductListType) => {
               flexDirection={"column"}
               bgcolor={"common.white"}
               p={"16px"}
-              borderRadius={"10px"}
+              borderRadius={"16px"}
               border={`1px solid ${theme.blue[100]}`}
             >
               <Box width={268} height={268}>
@@ -108,6 +108,7 @@ const ProductList = ({ data }: ProductListType) => {
                       overflow: "hidden",
                       mb: 1,
                       cursor: "pointer",
+                      height: "50px",
                     }}
                   >
                     {product.name}
@@ -117,15 +118,14 @@ const ProductList = ({ data }: ProductListType) => {
                   height={"1px"}
                   width={1}
                   bgcolor={theme.blue[600]}
-                  mt={2}
                   mb={1}
                 />
                 <Price price={product.price} />
                 <Box display={"flex"} gap={0.5} color={theme.palette.grey[400]}>
-                  <Typography fontFamily={theme.fontFamily.secondary}>
+                  <Typography fontFamily={theme.fontFamily.secondary} fontSize={14}>
                     MOQ
                   </Typography>
-                  <Typography fontFamily={theme.fontFamily.secondary}>
+                  <Typography fontFamily={theme.fontFamily.secondary} fontSize={14}>
                     {product.min_order}
                   </Typography>
                 </Box>

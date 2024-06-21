@@ -87,7 +87,7 @@ export const useSendOTP = () => {
 };
 
 export const useSendOTPReset = () => {
-  const { error, isPending, mutate, reset, isSuccess } = useMutation({
+  const { error, isPending, mutate, reset, isSuccess, data } = useMutation({
     mutationFn: sendOtpReset,
     onSuccess: (data) => {},
     onError: () => {
@@ -96,7 +96,7 @@ export const useSendOTPReset = () => {
       }, 2000);
     },
   });
-  return { sendOtpReset: mutate, isPending, error, isSuccess };
+  return { sendOtpReset: mutate, isPending, error, isSuccess, data };
 };
 
 export const useVerifyOTP = () => {

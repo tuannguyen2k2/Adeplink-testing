@@ -2,7 +2,6 @@
 import NoImage from "@/assets/images/no-image.png";
 import { SEND_REQUEST_PATH_URL } from "@/constant/pathUrl";
 import { ProductCartType, SupplierCartType } from "@/interface/common";
-import { supplierContactSelector } from "@/store/selector";
 import { convertImage } from "@/utils";
 import {
   Accordion,
@@ -19,7 +18,8 @@ import Image from "next/image";
 import { usePathname } from "next/navigation";
 import { ChangeEvent, useEffect, useState } from "react";
 import { IoIosArrowDown } from "react-icons/io";
-import { useSelector } from "react-redux";
+import LogoShipping from "@/assets/images/logo_shipping.png";
+import ListShippingMethodModal from "./shipping/ListShippingMethodModal";
 const SupplierAccordion = ({
   data,
   totalItem,
@@ -106,7 +106,7 @@ const SupplierAccordion = ({
         {data.name}
       </AccordionSummary>
       <AccordionDetails>
-        <Box display={"flex"} justifyContent={"space-between"} pl={"40px"}>
+        <Box display={"flex"} justifyContent={"space-between"} pl={"30px"}>
           <Typography
             fontFamily={theme.fontFamily.secondary}
             fontWeight={theme.fontWeight.semiBold}
@@ -127,7 +127,7 @@ const SupplierAccordion = ({
               fontSize={14}
               fontWeight={theme.fontWeight.semiBold}
             >
-              SubtotalItem
+              Subtotal
             </Typography>
           </Box>
         </Box>
@@ -136,7 +136,7 @@ const SupplierAccordion = ({
             return (
               <Box key={product.id} my={"20px"}>
                 <Box display={"flex"}>
-                  <Box width={100} height={100} ml={"20px"} mr={"14px"}>
+                  <Box width={100} height={100} mr={"14px"}>
                     <Image
                       src={convertImage(product.image) || NoImage}
                       alt="product"
@@ -221,58 +221,59 @@ const SupplierAccordion = ({
             );
           } else {
             return (
-              <Box
-                key={product.id}
-                my={"20px"}
-                display={"flex"}
-                justifyContent={"space-between"}
-              >
-                <Box display={"flex"}>
-                  <Box width={100} height={100} ml={"20px"} mr={"14px"}>
-                    <Image
-                      src={convertImage(product.image) || NoImage}
-                      alt="product"
-                      width={100}
-                      height={100}
-                      style={{ height: "100%", maxWidth: "100px" }}
-                      className="rounded-lg"
-                    />
+              <Box key={product.id}>
+                <Box
+                  my={"20px"}
+                  display={"flex"}
+                  justifyContent={"space-between"}
+                >
+                  <Box display={"flex"}>
+                    <Box width={100} height={100} mr={"14px"}>
+                      <Image
+                        src={convertImage(product.image) || NoImage}
+                        alt="product"
+                        width={100}
+                        height={100}
+                        style={{ height: "100%", maxWidth: "100px" }}
+                        className="rounded-lg"
+                      />
+                    </Box>
+                    <Typography
+                      sx={{
+                        display: "-webkit-box",
+                        WebkitBoxOrient: "vertical",
+                        WebkitLineClamp: 2,
+                        overflow: "hidden",
+                        fontWeight: theme.fontWeight.medium,
+                        fontFamily: theme.fontFamily.secondary,
+                        py: "14px",
+                      }}
+                    >
+                      {product.name}
+                    </Typography>
                   </Box>
-                  <Typography
-                    sx={{
-                      display: "-webkit-box",
-                      WebkitBoxOrient: "vertical",
-                      WebkitLineClamp: 2,
-                      overflow: "hidden",
-                      fontWeight: theme.fontWeight.medium,
-                      fontFamily: theme.fontFamily.secondary,
-                      py: "14px",
-                    }}
-                  >
-                    {product.name}
-                  </Typography>
-                </Box>
-                <Box display={"flex"} py={"14px"}>
-                  <Typography
-                    mr={"60px"}
-                    sx={{
-                      fontFamily: theme.fontFamily.secondary,
-                      fontWeight: theme.fontWeight.regular,
-                    }}
-                  >
-                    {product.quantity}
-                  </Typography>
-                  <Typography
-                    minWidth={"134px"}
-                    color={theme.palette.primary.main}
-                    sx={{
-                      fontFamily: theme.fontFamily.secondary,
-                      fontWeight: theme.fontWeight.regular,
-                      textAlign: "end",
-                    }}
-                  >
-                    {calculateSubTotalPrice(product.price, product.quantity)}
-                  </Typography>
+                  <Box display={"flex"} py={"14px"}>
+                    <Typography
+                      mr={"60px"}
+                      sx={{
+                        fontFamily: theme.fontFamily.secondary,
+                        fontWeight: theme.fontWeight.regular,
+                      }}
+                    >
+                      {product.quantity}
+                    </Typography>
+                    <Typography
+                      minWidth={"134px"}
+                      color={theme.palette.primary.main}
+                      sx={{
+                        fontFamily: theme.fontFamily.secondary,
+                        fontWeight: theme.fontWeight.regular,
+                        textAlign: "end",
+                      }}
+                    >
+                      {calculateSubTotalPrice(product.price, product.quantity)}
+                    </Typography>
+                  </Box>
                 </Box>
                 {index !== productTickedInCart.length - 1 && (
                   <Divider sx={{ borderColor: theme.blue[100], mx: "10px" }} />
@@ -281,6 +282,7 @@ const SupplierAccordion = ({
             );
           }
         })}
+        <ShippingMethod />
       </AccordionDetails>
       {pathname == SEND_REQUEST_PATH_URL ? (
         <SendRequestForm totalItem={totalItem} />
@@ -316,6 +318,104 @@ const SupplierAccordion = ({
         </Box>
       )}
     </Accordion>
+  );
+};
+
+const ShippingMethod = () => {
+  const theme = useTheme();
+  const pathname = usePathname();
+  const [openListShippingMethodModal, setOpenListShippingMethodModal] =
+    useState(false);
+  
+  return (
+    <Box display={"flex"} flexDirection={"column"}>
+      <Typography
+        fontSize={14}
+        fontFamily={theme.fontFamily.secondary}
+        fontWeight={theme.fontWeight.semiBold}
+      >
+        Shipping method:
+      </Typography>
+      {pathname == SEND_REQUEST_PATH_URL ? (
+        <Typography
+          fontSize={14}
+          fontFamily={theme.fontFamily.secondary}
+          mt={"8px"}
+        >
+          To be negotiated on Shipping fee
+        </Typography>
+      ) : (
+        <Box
+          p={"10px"}
+          border={`1px solid ${theme.blue[1200]}`}
+          borderRadius={"8px"}
+          display={"flex"}
+          justifyContent={"space-between"}
+          alignItems={"center"}
+          mt={"16px"}
+        >
+          <Box display={"flex"} alignItems={"center"} gap={"10px"}>
+            <Image
+              src={LogoShipping}
+              alt="logo_shipping"
+              width={62}
+              height={62}
+            />
+            <Box display={"flex"} flexDirection={"column"} gap={"8px"}>
+              <Box display={"flex"} gap={"16px"}>
+                <Typography
+                  fontFamily={theme.fontFamily.secondary}
+                  fontWeight={theme.fontWeight.medium}
+                  fontSize={14}
+                >
+                  {"FedEx (Standard)"}
+                </Typography>
+                <Box
+                  component={"button"}
+                  fontFamily={theme.fontFamily.secondary}
+                  fontSize={14}
+                  color={theme.palette.primary.main}
+                  onClick={() => {
+                    setOpenListShippingMethodModal(true);
+                  }}
+                >
+                  Change
+                </Box>
+                <ListShippingMethodModal
+                  openListShippingMethodModal={openListShippingMethodModal}
+                  setOpenListShippingMethodModal={
+                    setOpenListShippingMethodModal
+                  }
+                />
+              </Box>
+              <Typography fontFamily={theme.fontFamily.secondary} fontSize={14}>
+                Estimated delivery by&nbsp;
+                <Typography
+                  fontFamily={theme.fontFamily.secondary}
+                  component={"strong"}
+                  fontWeight={theme.fontWeight.semiBold}
+                  fontSize={14}
+                >
+                  Jul 4
+                </Typography>
+              </Typography>
+            </Box>
+          </Box>
+          <Typography
+            fontFamily={theme.fontFamily.secondary}
+            color={theme.palette.primary.main}
+            fontWeight={theme.fontWeight.medium}
+          >
+            {(100).toLocaleString("en-US", {
+              style: "currency",
+              currency: "USD",
+              minimumFractionDigits: 2,
+              maximumFractionDigits: 2,
+            })}
+          </Typography>
+        </Box>
+      )}
+    </Box>
   );
 };
 

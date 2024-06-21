@@ -19,7 +19,12 @@ import Cookies from "js-cookie";
 import Image from "next/image";
 import { useRouter } from "next-nprogress-bar";
 import { useSearchParams } from "next/navigation";
-import React, { useEffect, useState } from "react";
+import React, {
+  ChangeEvent,
+  ChangeEventHandler,
+  useEffect,
+  useState,
+} from "react";
 import { SubmitHandler, useForm } from "react-hook-form";
 import { IoMdArrowBack } from "react-icons/io";
 
@@ -29,6 +34,7 @@ const ChangePasswordFormPage = () => {
     confirm: boolean;
   }>({ password: false, confirm: false });
   const [showValidatePassword, setShowValidatePassword] = useState(false);
+  const [hasConfirmPassword, setHasConfirmPassword] = useState(false);
   const [showSuccessModal, setShowSuccessModal] = useState(false);
   const [validated, setValidated] = useState({
     upperValidated: false,
@@ -89,11 +95,11 @@ const ChangePasswordFormPage = () => {
           </h3>
           <h4 className="text-center">Please enter the new password</h4>
 
-          <form onSubmit={handleSubmit(onSubmit)} className="mt-5 w-[80%]">
-            <div className="mb-5">
+          <form onSubmit={handleSubmit(onSubmit)} className="mt-9 w-[80%]">
+            <div className="mb-8">
               <InputComponent
                 title="New password"
-                className="  relative mb-2"
+                className="  relative mb-8"
                 error={formState.errors.password?.message}
               >
                 <Tooltip
@@ -147,6 +153,13 @@ const ChangePasswordFormPage = () => {
                       value === watch("password") ||
                       "Confirm password do not match",
                   })}
+                  onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
+                    if (event.target.value !== "") {
+                      setHasConfirmPassword(true);
+                    } else {
+                      setHasConfirmPassword(false);
+                    }
+                  }}
                 />
                 <Icon
                   titleAccess={
@@ -166,19 +179,29 @@ const ChangePasswordFormPage = () => {
             </div>
 
             <button
-              className={`w-full text-white px-3 py-2 rounded ${
-                formState.isValid
+              className={`w-full text-white px-3 py-2 rounded-lg ${
+                validated.lengthValidated &&
+                validated.numberValidated &&
+                validated.specialValidated &&
+                validated.upperValidated &&
+                hasConfirmPassword
                   ? "bg-[#0C71BA]"
                   : "bg-[#DBE9FE] cursor-not-allowed"
               }`}
               type="submit"
-              disabled={!formState.isValid}
+              disabled={
+                !validated.lengthValidated ||
+                !validated.numberValidated ||
+                !validated.specialValidated ||
+                !validated.upperValidated ||
+                !hasConfirmPassword
+              }
             >
               Reset
             </button>
           </form>
           <div
-            className="hover:underline font-medium text-[#0C71BA] hover:cursor-pointer mt-5 flex gap-1"
+            className="hover:underline font-medium text-[#0C71BA] hover:cursor-pointer mt-8 flex gap-1"
             onClick={() => router.push(AUTH_PATH_URL.LOGIN)}
           >
             <IoMdArrowBack size={24} />

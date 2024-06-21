@@ -4,9 +4,12 @@ import { useGetAllCategoryRoot } from "@/api/category/query";
 import { useSignUpBecomeSupplier } from "@/api/user/query";
 import { InputComponent } from "@/component/common/InputComponent";
 import { countryData } from "@/constant";
-import { CategoryDto } from "@/interface/common";
+import { CategoryDto, CityType, CountryType, StateType } from "@/interface/common";
 import { SignUpSupplierForm } from "@/model/form/AuthForm";
-import { setUser } from "@/store/slice/accountSlice";
+import { DatePicker } from "@mui/x-date-pickers/DatePicker";
+import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
+import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
+import dayjs, { Dayjs } from "dayjs";
 import {
   Autocomplete,
   Box,
@@ -29,6 +32,7 @@ import React, { useEffect, useState } from "react";
 import { SubmitHandler, useForm } from "react-hook-form";
 import { MdOutlineKeyboardArrowDown } from "react-icons/md";
 import { useDispatch } from "react-redux";
+import { useGetDistrictsVN, useGetProvincesVN } from "@/api/country/query";
 
 type SupplierSignUpModalType = {
   openSupplierSignUpModal: boolean;
@@ -43,9 +47,10 @@ const SupplierSignUpModal = ({
   const [phase, setPhase] = useState(1);
   const [selectedCategory, setSelectedCategory] =
     useState<CategoryDto | null>();
-  const [selectedCountry, setSelectedCountry] = useState<ICountry | null>();
-  const [selectedState, setSelectedState] = useState<IState | null>();
-  const [selectedCity, setSelectedCity] = useState<ICity | null>();
+  const [selectedYear, setSelectedYear] = useState<Dayjs | null>(null);
+  const [selectedCountry, setSelectedCountry] = useState<CountryType | null>();
+  const [selectedState, setSelectedState] = useState<StateType | null>();
+  const [selectedCity, setSelectedCity] = useState<CityType | null>();
   const { getAllCategoryRoot, data } = useGetAllCategoryRoot();
   const dispatch = useDispatch();
   const {
@@ -69,18 +74,27 @@ const SupplierSignUpModal = ({
   const onSubmit: SubmitHandler<SignUpSupplierForm> = async (data) => {
     signUpBecomeSupplier({
       category_id: getValues().category.id,
-      country: getValues().country.name,
-      state: getValues().state.name,
-      city: getValues().city.name,
+      country: getValues().country,
+      state: getValues().state,
+      city: getValues().city,
       number_of_employees: getValues().numberOfEmployees
         ? parseInt(getValues().numberOfEmployees, 10)
         : null,
-      year_established: getValues().yearEstablished
-        ? parseInt(getValues().yearEstablished, 10)
-        : null,
+      year_established: selectedYear ? +selectedYear.format("YYYY") : null,
     });
     setPhase(3);
   };
+  const { getProvincesVN, data: provincesDataVN } = useGetProvincesVN();
+  const { getDistrictsVN, data: districtsDataVN } = useGetDistrictsVN();
+  useEffect(() => {
+    getProvincesVN();
+  }, []);
+
+  useEffect(() => {
+    if (selectedState) {
+      getDistrictsVN(selectedState.province_id);
+    }
+  }, [selectedState]);
 
   const handleCloseModal = () => {
     setSelectedCountry(null);
@@ -92,13 +106,40 @@ const SupplierSignUpModal = ({
     getAllCategoryRoot();
   }, []);
 
-  useEffect(() => {
-    setSelectedState(null);
-  }, [selectedCountry]);
-
-  useEffect(() => {
-    setSelectedCity(null);
-  }, [selectedState]);
+  const shouldDisableYear = (date: Dayjs) => {
+    const currentYear = dayjs().year();
+    return date.year() > currentYear;
+  };
+  const getOptionsState = () => {
+    if (selectedCountry?.name === "Viet Nam") {
+      return provincesDataVN;
+    } else if (selectedCountry?.name === "Canada") {
+      return State.getStatesOfCountry(selectedCountry?.isoCode).map(
+        (state) => ({
+          province_id: state.isoCode,
+          province_name: state.name,
+          province_type: state.name,
+          province_iso_code: state.isoCode,
+        })
+      );
+    }
+  };
+  const getOptionsCity = () => {
+    if (selectedCountry?.name === "Viet Nam") {
+      return districtsDataVN;
+    } else if (
+      selectedCountry?.name === "Canada" &&
+      selectedState?.province_iso_code
+    ) {
+      return City.getCitiesOfState(
+        selectedCountry?.isoCode,
+        selectedState?.province_iso_code
+      ).map((city) => ({
+        district_id: city.name,
+        district_name: city.name,
+      }));
+    }
+  };
   return (
     <Modal
       open={openSupplierSignUpModal}
@@ -189,10 +230,24 @@ const SupplierSignUpModal = ({
                         {...params}
                         label=""
                         placeholder="Agriculture"
+                        sx={{
+                          input: {
+                            fontFamily: theme.fontFamily.secondary,
+                            fontSize: 16,
+                          },
+                        }}
                       />
                     )}
                     PopperComponent={(props) => (
-                      <Popper {...props} sx={{ zIndex: "2001!important" }} />
+                      <Popper
+                        {...props}
+                        sx={{
+                          zIndex: "2001!important",
+                          "& .MuiAutocomplete-option": {
+                            fontFamily: theme.fontFamily.secondary,
+                          },
+                        }}
+                      />
                     )}
                     popupIcon={
                       <MdOutlineKeyboardArrowDown size={18} color="black" />
@@ -228,19 +283,40 @@ const SupplierSignUpModal = ({
                   <div>
                     <Autocomplete
                       className=" border-[1px] border-solid border-gray-400 rounded-lg"
-                      options={Country.getAllCountries()}
+                      options={countryData}
                       getOptionLabel={(country) => country.name}
                       value={selectedCountry}
                       size="small"
+                      onInputChange={(event, newInputValue, reason) => {
+                        if (reason === "clear") {
+                          setSelectedCountry(null);
+                          setSelectedState(null);
+                          setSelectedCity(null);
+                        }
+                      }}
                       renderInput={(params) => (
                         <TextField
                           {...params}
                           label=""
                           placeholder="Viet Nam"
+                          sx={{
+                            input: {
+                              fontFamily: theme.fontFamily.secondary,
+                              fontSize: 16,
+                            },
+                          }}
                         />
                       )}
                       PopperComponent={(props) => (
-                        <Popper {...props} sx={{ zIndex: "2001!important" }} />
+                        <Popper
+                          {...props}
+                          sx={{
+                            zIndex: "2001!important",
+                            "& .MuiAutocomplete-option": {
+                              fontFamily: theme.fontFamily.secondary,
+                            },
+                          }}
+                        />
                       )}
                       popupIcon={
                         <MdOutlineKeyboardArrowDown size={18} color="black" />
@@ -248,9 +324,13 @@ const SupplierSignUpModal = ({
                       {...register("country", {
                         required: "Country required",
                       })}
-                      onChange={(e, value: ICountry | null) => {
-                        setValue("country", value as ICountry);
-                        setSelectedCountry(value);
+                      onChange={(e, value) => {
+                        if (value) {
+                          setValue("country", value.name);
+                          setSelectedCountry(value);
+                          setValue("state", "");
+                          setSelectedState(null);
+                        }
                       }}
                     />
                     {formState.errors.country?.message && (
@@ -268,22 +348,51 @@ const SupplierSignUpModal = ({
                   <div>
                     <Autocomplete
                       className=" border-[1px] border-solid border-gray-400 rounded-lg"
-                      options={State.getStatesOfCountry(
-                        selectedCountry?.isoCode
-                      )}
-                      getOptionLabel={(state) => state.name}
+                      options={getOptionsState() || []}
+                      getOptionLabel={(state) => state.province_name}
                       value={selectedState}
                       size="small"
                       disabled={!selectedCountry}
+                      onInputChange={(event, newInputValue, reason) => {
+                        if (reason === "clear") {
+                          setValue("state", "");
+                          setSelectedState(null);
+                          setValue("city", "");
+                          setSelectedCity(null);
+                        }
+                      }}
                       renderInput={(params) => (
                         <TextField
                           {...params}
                           label=""
-                          placeholder="Anh Tran"
+                          placeholder="Ho Chi Minh"
+                          sx={{
+                            input: {
+                              fontFamily: theme.fontFamily.secondary,
+                              fontSize: 16,
+                            },
+                          }}
+                          onChange={(
+                            e: React.ChangeEvent<
+                              HTMLInputElement | HTMLTextAreaElement
+                            >
+                          ) => setValue("state", e.target.value)}
+                          inputProps={{
+                            ...params.inputProps,
+                            value: getValues().state ? getValues().state : "",
+                          }}
                         />
                       )}
                       PopperComponent={(props) => (
-                        <Popper {...props} sx={{ zIndex: "2001!important" }} />
+                        <Popper
+                          {...props}
+                          sx={{
+                            zIndex: "2001!important",
+                            "& .MuiAutocomplete-option": {
+                              fontFamily: theme.fontFamily.secondary,
+                            },
+                          }}
+                        />
                       )}
                       popupIcon={
                         <MdOutlineKeyboardArrowDown size={18} color="black" />
@@ -291,9 +400,13 @@ const SupplierSignUpModal = ({
                       {...register("state", {
                         required: "State required",
                       })}
-                      onChange={(e, value: IState | null) => {
-                        setValue("state", value as IState);
-                        setSelectedState(value);
+                      onChange={(e, value) => {
+                        if (value) {
+                          setValue("state", value.province_name);
+                          setSelectedState(value);
+                          setValue("city", "");
+                          setSelectedCity(null);
+                        }
                       }}
                     />
                     {formState.errors.state?.message && (
@@ -311,15 +424,14 @@ const SupplierSignUpModal = ({
                   <div>
                     <Autocomplete
                       className=" border-[1px] border-solid border-gray-400 rounded-lg"
-                      options={
-                        selectedCountry && selectedState
-                          ? City.getCitiesOfState(
-                              selectedCountry?.isoCode,
-                              selectedState?.isoCode
-                            )
-                          : []
-                      }
-                      getOptionLabel={(city) => city.name}
+                      options={getOptionsCity() || []}
+                      getOptionLabel={(city) => city.district_name}
+                      onInputChange={(event, newInputValue, reason) => {
+                        if (reason === "clear") {
+                          setSelectedCity(null);
+                          setValue("city", "");
+                        }
+                      }}
                       value={selectedCity}
                       disabled={!selectedState}
                       size="small"
@@ -327,11 +439,29 @@ const SupplierSignUpModal = ({
                         <TextField
                           {...params}
                           label=""
-                          placeholder="Adept Link"
+                          placeholder="Thu Duc"
+                          sx={{
+                            input: {
+                              fontFamily: theme.fontFamily.secondary,
+                              fontSize: 16,
+                            },
+                          }}
+                          inputProps={{
+                            ...params.inputProps,
+                            value: getValues().city ? getValues().city : "",
+                          }}
                         />
                       )}
                       PopperComponent={(props) => (
-                        <Popper {...props} sx={{ zIndex: "2001!important" }} />
+                        <Popper
+                          {...props}
+                          sx={{
+                            zIndex: "2001!important",
+                            "& .MuiAutocomplete-option": {
+                              fontFamily: theme.fontFamily.secondary,
+                            },
+                          }}
+                        />
                       )}
                       popupIcon={
                         <MdOutlineKeyboardArrowDown size={18} color="black" />
@@ -339,9 +469,11 @@ const SupplierSignUpModal = ({
                       {...register("city", {
                         required: "City required",
                       })}
-                      onChange={(e, value: ICity | null) => {
-                        setValue("city", value as ICity);
-                        setSelectedCity(value);
+                      onChange={(e, value) => {
+                        if (value) {
+                          setValue("city", value?.district_name);
+                          setSelectedCity(value);
+                        }
                       }}
                     />
                     {formState.errors.city?.message && (
@@ -377,25 +509,32 @@ const SupplierSignUpModal = ({
                       })}
                     />
                   </InputComponent>
-                  <InputComponent
-                    notRequire
-                    title="In which year your company was established?"
-                    className="font-semibold mb-2 "
-                    error={formState.errors.yearEstablished?.message}
-                  >
-                    <input
-                      size={14}
-                      placeholder="100"
-                      type="number"
-                      className="focus:outline-none w-full"
-                      {...register("yearEstablished", {
-                        pattern: {
-                          value: new RegExp(/^[0-9]+$/),
-                          message: "Year Established invalid",
+                  <h4 className="mb-1 font-sans font-semibold">
+                    <span style={{ whiteSpace: "nowrap" }}>
+                      In which year your company was established?
+                    </span>
+                  </h4>
+                  <LocalizationProvider dateAdapter={AdapterDayjs}>
+                    <DatePicker
+                      views={["year"]}
+                      value={selectedYear}
+                      onChange={(date: Dayjs | null) => {
+                        setSelectedYear(date);
+                      }}
+                      format="YYYY"
+                      shouldDisableYear={shouldDisableYear}
+                      sx={{
+                        border: `1px solid ${theme.palette.grey[600]}`,
+                        width: "100%",
+                        borderRadius: "8px",
+                        input: {
+                          height: "0.4rem",
+                          fontSize: 14,
+                          fontFamily: theme.fontFamily.secondary,
                         },
-                      })}
+                      }}
                     />
-                  </InputComponent>
+                  </LocalizationProvider>
                 </div>
               </div>
             </div>

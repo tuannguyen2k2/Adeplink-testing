@@ -16,7 +16,6 @@
   }
 }
 
-
 body {
   color: rgb(var(--foreground-rgb));
   background: linear-gradient(
@@ -62,14 +61,23 @@ html *::-webkit-scrollbar-track {
 .ant-tooltip-inner {
   width: fit-content;
 }
-.ant-modal-mask{
-  z-index: 1999!important;
+.ant-modal-mask {
+  z-index: 1999 !important;
 }
-.ant-modal-wrap{
-  z-index: 2000!important;
+.ant-modal-wrap {
+  z-index: 2000 !important;
 }
-.ant-modal-content{
+.ant-modal-content {
   width: fit-content;
+}
+.modal-success {
+  .ant-modal-content {
+    border-radius: 24px;
+    padding: 20px 120px;
+  }
+}
+.MuiPickersPopper-root {
+  z-index: 2001 !important;
 }
 input#quantity-component {
   text-align: center;

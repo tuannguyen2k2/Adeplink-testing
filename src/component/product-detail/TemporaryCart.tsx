@@ -64,6 +64,9 @@ const TemporaryCart = ({
   };
 
   const handleDecreaseQuantity = (index: number) => {
+    if (temporaryCart[index].orderQuantity - 1 < 0) {
+      return;
+    }
     temporaryCart[index].orderQuantity -= 1;
     let totalOrderQuantity = 0;
     temporaryCart.forEach((item) => {
@@ -168,8 +171,15 @@ const TemporaryCart = ({
           </Badge>
         </Button>
       </Paper>
-      <Drawer open={openCart} anchor="right" onClose={handleCloseCart} sx={{}}>
-        <Box sx={{ width: 600, borderTopLeftRadius: 16, px: 2, py: 3 }}>
+      <Drawer
+        open={openCart}
+        anchor="right"
+        onClose={handleCloseCart}
+        PaperProps={{
+          sx: { borderTopLeftRadius: "16px", borderBottomLeftRadius: "16px" },
+        }}
+      >
+        <Box sx={{ width: 600, px: 2, py: 3 }}>
           <Box
             sx={{
               display: "flex",
@@ -209,7 +219,7 @@ const TemporaryCart = ({
 
           <Box>
             <TableContainer
-              sx={{ height: `calc(100vh - 300px )`, overflowY: "scroll" }}
+              sx={{ height: `calc(100vh - 390px )`, overflowY: "scroll" }}
             >
               <Table
                 stickyHeader

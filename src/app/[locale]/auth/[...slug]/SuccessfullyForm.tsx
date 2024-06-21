@@ -16,7 +16,7 @@ const SuccessfullyForm = () => {
     handleRunCountDown();
   }, []);
   return (
-    <div className="w-[80%] lg:w-3/5 mx-auto">
+    <div className="w-[80%] lg:w-3/5 mx-auto bg-white">
       <h3 className="font-bold text-2xl text-center mt-[100px]">
         Registered <span className="text-[#0C71BA]">successfully</span>!
       </h3>

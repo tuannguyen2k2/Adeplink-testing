@@ -29,7 +29,12 @@ const ForgetPasswordForm = () => {
   const { remaining, handleRunCountDown } = useCountdown(60);
   const router = useRouter();
   const [isResend, setIsResend] = useState(false);
-  const { sendOtpReset, error: sendOtpError } = useSendOTPReset();
+  const {
+    sendOtpReset,
+    error: sendOtpError,
+    isSuccess,
+    data,
+  } = useSendOTPReset();
   const {
     verifyOtpReset,
     isSuccess: isVerifySuccess,
@@ -41,10 +46,13 @@ const ForgetPasswordForm = () => {
   }>();
 
   useEffect(() => {
-    if (sendOtpError) {
+    if (data?.code == 1) {
+      setIsEmailNotFound(false);
+    }
+    if ((sendOtpError as any)?.response?.data?.code == "4000") {
       setIsEmailNotFound(true);
     }
-  }, [sendOtpError]);
+  }, [sendOtpError, isSuccess]);
   const onSubmit: SubmitHandler<{ email: string }> = async (data) => {
     setShowValidateEmail(true);
     sendOtpReset(data.email);
@@ -53,6 +61,7 @@ const ForgetPasswordForm = () => {
   const handleResendCode = () => {
     sendOtpReset(getValues().email);
     handleRunCountDown();
+    setIsOtpError(false);
   };
   const handleSubmitOTP = async () => {
     try {
@@ -125,7 +134,7 @@ const ForgetPasswordForm = () => {
               )}
 
               {isEmailNotFound && (
-                <div className="text-red-500">
+                <div className="text-red-500 text-[13px] mt-2">
                   We couldn't find an account with that email address. Please
                   check your email and try again.
                 </div>
@@ -133,7 +142,7 @@ const ForgetPasswordForm = () => {
             </div>
 
             <button
-              className={`w-full text-white px-3 py-2 mt-2 rounded ${
+              className={`w-full text-white px-3 py-2 mt-2 rounded-lg ${
                 formState.isValid
                   ? "bg-[#0C71BA]"
                   : "bg-[#DBE9FE] cursor-not-allowed"
@@ -154,14 +163,14 @@ const ForgetPasswordForm = () => {
         </div>
       </div>
 
-      {showValidateEmail && !isEmailNotFound && (
+      {showValidateEmail && !isEmailNotFound && isSuccess && (
         <Modal
           open={showValidateEmail}
           onCancel={() => setShowValidateEmail(false)}
           okButtonProps={{ style: { backgroundColor: "#1677ff" } }}
           footer={false}
         >
-          <h4 className="text-center text-xl font-semibold font-sans">
+          <h4 className="text-center text-xl font-semibold font-sans mt-6">
             Email <span className="text-[#0C71BA]">verification</span>
           </h4>
           <div className="text-center font-sans">
@@ -191,8 +200,8 @@ const ForgetPasswordForm = () => {
               onClick={handleResendCode}
               className={
                 remaining == 0
-                  ? "text-blue-500 font-medium"
-                  : "text-red-400 font-medium"
+                  ? "text-[#0C71BA] font-medium"
+                  : "text-[#DC2626] font-medium"
               }
             >
               Resend Code&nbsp;

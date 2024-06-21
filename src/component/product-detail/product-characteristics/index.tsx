@@ -69,7 +69,7 @@ const ProductCharacteristics = ({
   const user = useSelector(userSelector);
 
   const dispatch = useDispatch();
-  
+
   useEffect(() => {
     cartData && dispatch(setCart(cartData));
   }, [cartData, getCartSuccess]);
@@ -246,21 +246,29 @@ const ProductCharacteristics = ({
     };
 
     if (temporaryCart) {
-      let isDuplicateVariant = false;
+      let isDuplicate = false;
       temporaryCart.map((item) => {
+        if (item.name === dataCartItem.name) {
+          isDuplicate = true;
+          item.orderQuantity += dataCartItem.orderQuantity;
+          item.unitPrice =
+            priceSelected !== undefined
+              ? data.price[priceSelected].price
+              : null;
+        }
         if (
           item.attributeCartTemporary == dataCartItem.attributeCartTemporary
         ) {
           item.orderQuantity += +dataCartItem.orderQuantity;
-          (item.unitPrice =
+          item.unitPrice =
             priceSelected !== undefined
               ? data.price[priceSelected].price
-              : null),
-            (isDuplicateVariant = true);
+              : null;
+          isDuplicate = true;
           return;
         }
       });
-      if (isDuplicateVariant) {
+      if (isDuplicate) {
         setTemporaryCart([...temporaryCart]);
       } else {
         setTemporaryCart([dataCartItem, ...temporaryCart]);

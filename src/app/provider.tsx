@@ -16,6 +16,9 @@ import { theme } from "@/utils/theme";
 import { Provider as ReduxProvider } from "react-redux";
 import store from "@/store";
 import { ProgressProvider } from "./AppProvider";
+import { LocalizationProvider } from "@mui/x-date-pickers";
+import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
+
 export default function ReactQueryProvider({
   children,
 }: {
@@ -26,16 +29,18 @@ export default function ReactQueryProvider({
     <QueryClientProvider client={queryClient}>
       <ProgressProvider>
         <ReduxProvider store={store}>
-          <MuiThemeProvider theme={theme}>
-            <ThemeProvider
-              attribute="class"
-              enableSystem={false}
-              defaultTheme="light"
-            >
-              <TooltipProvider>{children}</TooltipProvider>
-              <ReactQueryDevtools />
-            </ThemeProvider>
-          </MuiThemeProvider>
+          <LocalizationProvider dateAdapter={AdapterDayjs}>
+            <MuiThemeProvider theme={theme}>
+              <ThemeProvider
+                attribute="class"
+                enableSystem={false}
+                defaultTheme="light"
+              >
+                <TooltipProvider>{children}</TooltipProvider>
+                <ReactQueryDevtools />
+              </ThemeProvider>
+            </MuiThemeProvider>
+          </LocalizationProvider>
         </ReduxProvider>
       </ProgressProvider>
     </QueryClientProvider>

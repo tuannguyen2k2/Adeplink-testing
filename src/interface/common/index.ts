@@ -75,6 +75,7 @@ export type ProductCartType = {
   range_price: PriceProductDetailType[];
   variant: VariantCartType[];
   is_tick: boolean;
+  slug: string;
 };
 export type SupplierCartType = {
   id: string;
@@ -188,6 +189,17 @@ export type FilterSupplierDto = {
   keyword?: string | null;
   category_ids?: string[];
   countries?: string[];
+  page?: number;
+  limit?: number;
+  is_newest?: boolean;
+  is_sorted?: boolean;
+};
+
+export type GetSearchSupplierType = {
+  companies: SupplierDto[];
+  categories: Object;
+  countries: string[];
+  metadata: Metadata;
 };
 
 export type CompanyDto = {
@@ -330,7 +342,7 @@ export type ProductRatingDto = {
   ];
 };
 
-export type BillingAddressFormType = {
+export type AddressFormType = {
   company: string;
   first_name: string;
   last_name: string;
@@ -338,10 +350,132 @@ export type BillingAddressFormType = {
   email: string;
   address_line1: string;
   address_line2: string;
-  city: ICity;
-  state: IState;
-  country: ICountry;
+  city: string;
+  state: string;
+  country: string;
   zipcode: string;
   street: string;
   street_number: string;
+  id: string;
+  is_default: boolean;
+};
+
+export type ListAddressesType = {
+  email: string;
+  name: string;
+  phone: string;
+  is_supplier: boolean;
+  id: string;
+  is_active: boolean;
+  addresses: AddressType[];
+};
+
+export type AddressDto = {
+  company: string;
+  first_name: string;
+  last_name: string;
+  phone: string;
+  email?: string;
+  address_line1: string;
+  address_line2?: string;
+  city: string;
+  state: string;
+  country: string;
+  zipcode: string;
+  street?: string;
+  street_number?: string;
+  is_default?: boolean;
+};
+
+export type AddressType = {
+  company: string;
+  first_name: string;
+  last_name: string;
+  phone: string;
+  email?: string;
+  address_line1: string;
+  address_line2?: string;
+  city: string;
+  state: string;
+  country: string;
+  zipcode: string;
+  street?: string;
+  street_number?: string;
+  is_default?: boolean;
+  id: string;
+};
+
+export type OrderFormType = {
+  shipping_method: {
+    name: string;
+    price: string;
+  };
+  shipping_address: {
+    first_name: string;
+    last_name: string;
+    phone: string;
+    email: string;
+    address_line1: string;
+    address_line2: string;
+    country: string;
+    state: string;
+    city: string;
+    zipcode: string;
+  };
+  billing_address: {
+    first_name: string;
+    last_name: string;
+    phone: string;
+    email: string;
+    address_line1: string;
+    address_line2: string;
+    country: string;
+    state: string;
+    city: string;
+    zipcode: string;
+  };
+  total_price: number;
+  total_item: number;
+  items: {
+    supplier_id: string;
+    supplier_name: string;
+    product: [
+      {
+        id: string;
+        name: string;
+        variant: [
+          {
+            id: string;
+            name: string;
+            price: number;
+            quantity: number;
+          }
+        ];
+      }
+    ];
+  };
+};
+
+export type OrderResponseType = {
+  id: string;
+  status: string;
+  links: { href: string; rel: string; method: string }[];
+};
+
+export type CountryType = {
+  name: string;
+  phoneCode: string;
+  isoCode: string;
+};
+
+export type StateType = {
+  province_id: string;
+  province_name: string;
+  province_type: string;
+  province_iso_code?: string;
+};
+
+export type CityType = {
+  district_id: string;
+  district_name: string;
 };

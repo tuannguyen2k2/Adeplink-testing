@@ -216,7 +216,6 @@ const Product = () => {
       `${PRODUCT_PATH_URL.PRODUCT_LIST}?${updatedSearchParams.toString()}`
     );
   };
-  console.log(data);
   return (
     <Container
       sx={{

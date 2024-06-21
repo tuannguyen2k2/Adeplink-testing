@@ -2,21 +2,13 @@ import axiosConfig from "@/config/axiosConfig";
 import { SortOption } from "@/constant/enum";
 import {
   FilterSupplierDto,
+  GetSearchSupplierType,
   IResponse,
   Metadata,
   PaginationDto,
   RatingFilter,
   SupplierDto,
 } from "@/interface/common";
-
-type GetSearchSupplierType = {
-  companies: SupplierDto[];
-  categories: Object;
-  countries: string[];
-  metadata: Metadata;
-};
-
-
 
 export const getSearchSupplier = async (
   filter: FilterSupplierDto,

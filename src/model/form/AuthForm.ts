@@ -1,4 +1,4 @@
-import { CategoryDto } from "@/interface/common";
+import { CategoryDto, StateType } from "@/interface/common";
 import { ICountry, IState, ICity } from "country-state-city";
 export type LoginForm = {
   username: string;
@@ -17,15 +17,16 @@ export type SignUpBuyerForm = {
   fullname: string;
   companyName: string;
   phoneNumber: string;
-  country: ICountry;
+  country: string;
   confirm?: string;
+  isCheck: boolean;
 };
 
 export type SignUpSupplierForm = {
   category: CategoryDto;
-  country: ICountry;
-  state: IState;
-  city: ICity;
+  country: string;
+  state: string;
+  city: string;
   yearEstablished: string;
   numberOfEmployees: string;
 };

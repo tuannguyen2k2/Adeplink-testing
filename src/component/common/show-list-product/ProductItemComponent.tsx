@@ -74,6 +74,7 @@ const ProductItemComponent = ({ product }: { product: ProductDto }) => {
         }}
       >
         <Typography
+          fontSize={14}
           sx={{
             fontFamily: theme.fontFamily.secondary,
             fontWeight: theme.fontWeight.regular,
@@ -82,6 +83,7 @@ const ProductItemComponent = ({ product }: { product: ProductDto }) => {
           MOQ:&nbsp;
         </Typography>
         <Typography
+          fontSize={14}
           sx={{
             fontFamily: theme.fontFamily.secondary,
             fontWeight: theme.fontWeight.medium,

@@ -1,7 +1,15 @@
 import React from "react";
 import Link from "next/link";
 import { KeyboardArrowRight } from "@mui/icons-material";
-import { Box, Divider, Grid, Icon, Skeleton, Typography, useTheme } from "@mui/material";
+import {
+  Box,
+  Divider,
+  Grid,
+  Icon,
+  Skeleton,
+  Typography,
+  useTheme,
+} from "@mui/material";
 import ProductItemComponent from "./ProductItemComponent";
 import { ProductDto } from "@/interface/common";
 import { MdArrowForwardIos } from "react-icons/md";
@@ -14,19 +22,29 @@ type ListProductComponentProps = {
   data?: ProductDto[];
 };
 
-const ListProductComponent = ({ title, url, data }: ListProductComponentProps) => {
+const ListProductComponent = ({
+  title,
+  url,
+  data,
+}: ListProductComponentProps) => {
   const theme = useTheme();
   const router = useRouter();
   return (
     <React.Fragment>
       {title && (
-        <Box sx={{ display: "flex", justifyContent: "space-between" }}>
+        <Box
+          sx={{
+            display: "flex",
+            justifyContent: "space-between",
+            alignItems: "center",
+            mb: "32px",
+          }}
+        >
           <Typography
             sx={{
               fontWeight: theme.fontWeight.bold,
               fontSize: 20,
               fontFamily: theme.fontFamily.secondary,
-              mb: 2,
             }}
           >
             {title}
@@ -58,12 +76,30 @@ const ListProductComponent = ({ title, url, data }: ListProductComponentProps) =
       <Grid container width={"100%"} spacing={2}>
         {data
           ? data?.map((item) => (
-              <Grid item xs={12} sm={6} md={4} lg={12 / 5} xl={12 / 5} key={item.id} sx={{ display: "flex", justifyContent: "center" }}>
+              <Grid
+                item
+                xs={12}
+                sm={6}
+                md={4}
+                lg={12 / 5}
+                xl={12 / 5}
+                key={item.id}
+                sx={{ display: "flex", justifyContent: "center" }}
+              >
                 <ProductItemComponent product={item} />
               </Grid>
             ))
           : Array.from(Array(10)).map((_, id) => (
-              <Grid item xs={12} sm={6} md={4} lg={12 / 5} xl={12 / 5} key={id} sx={{ display: "flex", justifyContent: "center" }}>
+              <Grid
+                item
+                xs={12}
+                sm={6}
+                md={4}
+                lg={12 / 5}
+                xl={12 / 5}
+                key={id}
+                sx={{ display: "flex", justifyContent: "center" }}
+              >
                 <ProductItemSkeleton />
               </Grid>
             ))}

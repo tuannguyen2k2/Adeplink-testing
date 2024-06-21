@@ -1,5 +1,5 @@
-export const convertImage = (image?: string | null ) => {
-  if (image) {
+export const convertImage = (image?: string | null) => {
+  if (image && process.env.NEXT_APP_API_URL) {
     if (
       image.includes("https://localhost:8000") &&
       process.env.NEXT_APP_API_URL
@@ -8,6 +8,8 @@ export const convertImage = (image?: string | null ) => {
         "https://localhost:8000",
         process.env.NEXT_APP_API_URL
       );
+    } else if (image.includes(process.env.NEXT_APP_API_URL)) {
+      return image;
     } else if (process.env.NEXT_APP_API_URL) {
       return `${process.env.NEXT_APP_API_URL}/${image}`;
     }

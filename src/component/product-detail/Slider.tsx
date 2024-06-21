@@ -107,7 +107,7 @@ const SliderProduct = ({ images }: { images?: ImageType[] }) => {
             alt={""}
             width={623}
             height={623}
-            style={{ height: "100%" }}
+            style={{ height: "100%", borderRadius: "16px" }}
           />
         </Box>
       </Box>
@@ -150,7 +150,7 @@ const SliderProduct = ({ images }: { images?: ImageType[] }) => {
                     alt={"product image"}
                     width={88}
                     height={88}
-                    style={{ height: "100%" }}
+                    style={{ height: "100%", borderRadius: "8px" }}
                   />
                 </Box>
               );
@@ -180,7 +180,7 @@ const SliderProduct = ({ images }: { images?: ImageType[] }) => {
                     alt={image?.id}
                     width={88}
                     height={88}
-                    style={{ height: "100%" }}
+                    style={{ height: "100%", borderRadius: "8px" }}
                   />
                 </Box>
               );
@@ -232,6 +232,7 @@ const SliderProduct = ({ images }: { images?: ImageType[] }) => {
                         justifyContent: "center",
                         outline: "none",
                         width: "90%!important",
+                        borderRadius: "16px",
                       }}
                     >
                       <Image
@@ -239,7 +240,7 @@ const SliderProduct = ({ images }: { images?: ImageType[] }) => {
                         alt={image?.id}
                         width={623}
                         height={623}
-                        style={{ height: "100%" }}
+                        style={{ height: "100%", borderRadius: "16px" }}
                       />
                     </Box>
                   );
@@ -261,7 +262,7 @@ const SliderProduct = ({ images }: { images?: ImageType[] }) => {
                   alt={images[0]?.id}
                   width={623}
                   height={623}
-                  style={{ height: "100%" }}
+                  style={{ height: "100%", borderRadius: "16px" }}
                 />
               </Box>
             )}
@@ -285,7 +286,7 @@ const SliderProduct = ({ images }: { images?: ImageType[] }) => {
                       alt={image.id}
                       width={88}
                       height={88}
-                      style={{ height: "100%" }}
+                      style={{ height: "100%", borderRadius: "8px" }}
                     />
                   </Box>
                 );

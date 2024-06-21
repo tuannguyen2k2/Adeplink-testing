@@ -30,6 +30,8 @@ import QuantityComponent from "../QuantityComponent";
 import { useDispatch, useSelector } from "react-redux";
 import { setCart, setSupplierContact } from "@/store/slice/appSlice";
 import { cartSelector, supplierContactSelector } from "@/store/selector";
+import { useRouter } from "next-nprogress-bar";
+import { PRODUCT_PATH_URL } from "@/constant/pathUrl";
 type CartItemType = {
   isVariant?: boolean;
   data: {
@@ -40,6 +42,7 @@ type CartItemType = {
     image?: string;
     subtotal: number;
     quantity: number;
+    slug?: string;
     is_tick: boolean;
     range_price?: PriceProductDetailType[];
     variant?: VariantCartType[] | null;
@@ -67,6 +70,7 @@ const CartItem = ({
   const { updateCartItem } = useUpdateCartItem();
   const dispatch = useDispatch();
   const [priceUnit, setPriceUnit] = useState<number>(0);
+  const router = useRouter();
   const cart = useSelector(cartSelector);
   const supplierContact = useSelector(supplierContactSelector);
   useEffect(() => {
@@ -304,17 +308,27 @@ const CartItem = ({
           height={isVariant ? "fit-content" : "100px"}
           pl={isVariant ? "52px" : "0"}
         >
-          <Typography
-            sx={{
-              display: "-webkit-box",
-              WebkitBoxOrient: "vertical",
-              WebkitLineClamp: 2,
-              overflow: "hidden",
-              fontWeight: theme.fontWeight.medium,
-            }}
+          <Box
+            component={"button"}
+            textAlign={"start"}
+            onClick={() =>
+              !isVariant &&
+              data.slug &&
+              router.push(`${PRODUCT_PATH_URL.PRODUCT_DETAIL}/${data.slug}`)
+            }
           >
-            {data.name}
-          </Typography>
+            <Typography
+              sx={{
+                display: "-webkit-box",
+                WebkitBoxOrient: "vertical",
+                WebkitLineClamp: 2,
+                overflow: "hidden",
+                fontWeight: theme.fontWeight.medium,
+              }}
+            >
+              {data.name}
+            </Typography>
+          </Box>
           <Box>
             {(isVariant || !data.variant) && (
               <>{calculatePriceUnit(data.is_tick ? priceUnit : data.price)}</>

@@ -57,7 +57,7 @@ const OrderSuccessfully = () => {
           options that can enhance your business operations.
         </Typography>
       </Box>
-      <Divider sx={{ borderColor: theme.blue[100], my: "30px" }} />
+      <Divider sx={{ borderColor: theme.blue[100], my: "32px" }} />
       <ListProductComponent
         title={"Recommended Products"}
         url={PRODUCT_PATH_URL.PRODUCT_LIST}

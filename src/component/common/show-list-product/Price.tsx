@@ -37,7 +37,12 @@ export const Price = ({ price }: PriceType) => {
           fontWeight={theme.fontWeight.medium}
           fontFamily={theme.fontFamily.secondary}
         >
-          ${price.min_price}.00
+          {price.min_price.toLocaleString("en-US", {
+            style: "currency",
+            currency: "USD",
+            minimumFractionDigits: 2,
+            maximumFractionDigits: 2,
+          })}
         </Typography>
       </Box>
     );
@@ -58,7 +63,12 @@ export const Price = ({ price }: PriceType) => {
           fontWeight={theme.fontWeight.medium}
           fontFamily={theme.fontFamily.secondary}
         >
-          ${price.min_price}.00
+          {price.min_price.toLocaleString("en-US", {
+            style: "currency",
+            currency: "USD",
+            minimumFractionDigits: 2,
+            maximumFractionDigits: 2,
+          })}
         </Typography>
         <Typography
           fontSize={14}
@@ -74,7 +84,12 @@ export const Price = ({ price }: PriceType) => {
           fontWeight={theme.fontWeight.medium}
           fontFamily={theme.fontFamily.secondary}
         >
-          ${price.max_price}.00
+          {price.max_price.toLocaleString("en-US", {
+            style: "currency",
+            currency: "USD",
+            minimumFractionDigits: 2,
+            maximumFractionDigits: 2,
+          })}
         </Typography>
       </Box>
     );

@@ -16,6 +16,7 @@ const SupplierInfo = ({ data }: { data?: SupplierDto }) => {
       {data ? (
         <Box
           width={"50%"}
+          maxWidth={623}
           height={"100%"}
           minHeight={"120px"}
           display={"flex"}

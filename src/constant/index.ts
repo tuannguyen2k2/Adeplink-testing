@@ -1,4 +1,7 @@
-export const countryData = ["Vietnam", "USA", "Canada"];
+export const countryData = [
+  { name: "Viet Nam", phoneCode: "84", isoCode: "VN" },
+  { name: "Canada", phoneCode: "1", isoCode: "CA" },
+];
 
 export const phoneNumberData = [
   {

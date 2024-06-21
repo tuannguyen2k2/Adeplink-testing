@@ -13,12 +13,13 @@ import {
 import { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import { cartSelector, supplierContactSelector } from "@/store/selector";
-import { SupplierCartType } from "@/interface/common";
+import { CartType, SupplierCartType } from "@/interface/common";
 import SupplierAccordion from "../SupplierAccordion";
 import Cookies from "js-cookie";
 import { SUPPLIER_CONTACT } from "@/constant/cookies";
 import { useRouter } from "next-nprogress-bar";
 import { CHECKOUT_PATH_URL } from "@/constant/pathUrl";
+import { useGetCart } from "@/api/cart/query";
 
 const SendRequest = () => {
   const theme = useTheme();
@@ -27,7 +28,11 @@ const SendRequest = () => {
     SupplierCartType[]
   >([]);
   const [totalItems, setTotalItems] = useState(0);
-  const cart = useSelector(cartSelector);
+  const { getCart, data: cart } = useGetCart();
+
+  useEffect(() => {
+    getCart();
+  }, []);
 
   useEffect(() => {
     if (cart) {
@@ -111,7 +116,11 @@ const SendRequest = () => {
               }
             });
             return (
-              <SupplierAccordion key={data.id} data={data} totalItem={totalItem} />
+              <SupplierAccordion
+                key={data.id}
+                data={data}
+                totalItem={totalItem}
+              />
             );
           })}
         </Box>

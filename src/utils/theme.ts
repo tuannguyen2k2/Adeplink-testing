@@ -17,6 +17,7 @@ const themeColors = {
     900: "#9FC9ED",
     1000: "#1795E0",
     1100: "#F8FBFF",
+    1200: "#E2F0FC",
   },
   black: {
     main: "#000",
@@ -58,6 +59,7 @@ const themeOptions: ThemeOptionsOld = {
       300: "#808080",
       400: "#737B7D",
       500: "#CFD2D5",
+      600: "#9ca3af",
     },
   },
   typography: {

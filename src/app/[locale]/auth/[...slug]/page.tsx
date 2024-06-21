@@ -27,13 +27,13 @@ const AuthPage = ({
       style={{
         backgroundImage: `url('${AuthBackgroundImage.src}')`,
         backgroundRepeat: "no-repeat",
-        backgroundSize: "57% auto",
+        backgroundSize: "72% auto",
         backgroundPosition: "left",
       }}
     >
-      <div className="w-[100%] md:w-[80%] xl:w-1/2 md:rounded-l-[2.5rem] bg-white relative overflow-x-hidden overflow-y-auto">
+      <div className="w-[100%] md:w-[80%] xl:w-[35%] md:rounded-l-[2.5rem] bg-white relative overflow-x-hidden overflow-y-auto">
         <div
-          className={` top-0 bottom-0 w-full h-screen right-0 transition-all duration-300  ${
+          className={`flex justify-center top-0 bottom-0 w-full h-screen right-0 transition-all duration-300  ${
             selectedTab === "signup" ? "translate-x-0" : "translate-x-full"
           } z-10`}
         >

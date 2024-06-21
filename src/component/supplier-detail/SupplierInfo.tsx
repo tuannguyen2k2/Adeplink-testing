@@ -52,6 +52,7 @@ const SupplierInfo = ({ data }: { data: SupplierDetailDto }) => {
                 flexDirection={"column"}
                 justifyContent={"space-between"}
                 ml={"16px"}
+                alignItems={"start"}
               >
                 <Typography
                   fontFamily={theme.fontFamily.secondary}
@@ -64,7 +65,6 @@ const SupplierInfo = ({ data }: { data: SupplierDetailDto }) => {
                   display={"flex"}
                   flexDirection={"column"}
                   justifyContent={"space-between"}
-                  ml={"16px"}
                 >
                   <Box>
                     <Typography

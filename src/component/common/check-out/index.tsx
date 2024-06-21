@@ -1,9 +1,11 @@
 "use client";
+import { useGetCart } from "@/api/cart/query";
+import MasterCard from "@/assets/icons/mastercard.svg";
+import Paypal from "@/assets/icons/paypal.svg";
+import { SUPPLIER_CONTACT } from "@/constant/cookies";
 import { MAX_WIDTH_APP } from "@/constant/css";
+import { SupplierCartType } from "@/interface/common";
 import {
-  Accordion,
-  AccordionDetails,
-  AccordionSummary,
   Box,
   Button,
   Container,
@@ -13,23 +15,15 @@ import {
   Radio,
   TextField,
   Typography,
-  useTheme,
+  useTheme
 } from "@mui/material";
-import { IoIosArrowDown } from "react-icons/io";
-import OrderSuccessfully from "./OrderSuccessfully";
-import { ChangeEvent, useEffect, useState } from "react";
-import { useSelector } from "react-redux";
-import { cartSelector } from "@/store/selector";
-import { SupplierCartType } from "@/interface/common";
-import SupplierAccordion from "./SupplierAccordion";
 import Cookies from "js-cookie";
-import { SUPPLIER_CONTACT } from "@/constant/cookies";
+import Image from "next/image";
+import { ChangeEvent, useEffect, useState } from "react";
 import { Controller, useForm } from "react-hook-form";
 import { SiVisa } from "react-icons/si";
+import SupplierAccordion from "./SupplierAccordion";
 import ShippingAddress from "./shipping/ShippingAddress";
-import Image from "next/image";
-import MasterCard from "@/assets/icons/mastercard.svg";
-import Paypal from "@/assets/icons/paypal.svg";
 interface PaymentForm {
   cardholder: string;
   cardNumber: string;
@@ -39,6 +33,7 @@ interface PaymentForm {
 
 const CheckOut = () => {
   const theme = useTheme();
+  const [paymentMethod, setPaymentMethod] = useState<0 | 1>(0);
   const {
     control,
     handleSubmit,
@@ -50,7 +45,9 @@ const CheckOut = () => {
   >([]);
   const [totalItems, setTotalItems] = useState(0);
   const [totalPrice, setTotalPrice] = useState(0);
-  const cart = useSelector(cartSelector);
+  const { getCart, data: cart } = useGetCart();
+
+
   const [cardNumber, setCardNumber] = useState("");
   const handleChangeCardNumber = (
     event: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
@@ -64,6 +61,9 @@ const CheckOut = () => {
     // Định dạng số thẻ visa với dấu '-' sau mỗi 4 chữ số
     return value.replace(/\s/g, "").replace(/(\d{4})(?=\d)/g, "$1-");
   };
+  useEffect(() => {
+    getCart();
+  }, []);
 
   useEffect(() => {
     if (cart) {
@@ -88,6 +88,12 @@ const CheckOut = () => {
       if (supplierContactIds) {
         const supplierContactIdsParse: string[] =
           JSON.parse(supplierContactIds);
+        console.log(supplierContactIdsParse);
+        console.log(
+          supplierTicked.filter(
+            (item) => !supplierContactIdsParse.includes(item.id)
+          )
+        );
         setSupplierTickedInCart(
           supplierTicked.filter(
             (item) => !supplierContactIdsParse.includes(item.id)
@@ -266,8 +272,16 @@ const CheckOut = () => {
           >
             <FormControlLabel
               sx={{ fontFamily: theme.fontFamily.secondary }}
-              value="female"
-              control={<Radio size="small" />}
+              control={
+                <Radio
+                  size="small"
+                  checked={paymentMethod == 0}
+                  onChange={(
+                    event: ChangeEvent<HTMLInputElement>,
+                    checked: boolean
+                  ) => checked && setPaymentMethod(0)}
+                />
+              }
               label={
                 <Typography
                   sx={{ fontFamily: theme.fontFamily.secondary, fontSize: 14 }}
@@ -318,6 +332,7 @@ const CheckOut = () => {
                 <TextField
                   {...field}
                   size="small"
+                  placeholder="Khoa.nguyen@gmail"
                   sx={{
                     border: `1px solid ${theme.blue[600]}`,
                     width: "100%",
@@ -352,6 +367,7 @@ const CheckOut = () => {
                   {...field}
                   size="small"
                   value={cardNumber}
+                  placeholder="xxxxxxxxxxxx"
                   sx={{
                     border: `1px solid ${theme.blue[600]}`,
                     width: "100%",
@@ -401,6 +417,7 @@ const CheckOut = () => {
                     <TextField
                       {...field}
                       size="small"
+                      placeholder="MM/YY"
                       sx={{
                         border: `1px solid ${theme.blue[600]}`,
                         width: "100%",
@@ -435,6 +452,7 @@ const CheckOut = () => {
                     <TextField
                       {...field}
                       size="small"
+                      placeholder="CVC/CVV"
                       sx={{
                         border: `1px solid ${theme.blue[600]}`,
                         width: "100%",
@@ -459,8 +477,16 @@ const CheckOut = () => {
             >
               <FormControlLabel
                 sx={{ fontFamily: theme.fontFamily.secondary }}
-                value="female"
-                control={<Radio size="small" />}
+                control={
+                  <Radio
+                    size="small"
+                    checked={paymentMethod == 1}
+                    onChange={(
+                      event: ChangeEvent<HTMLInputElement>,
+                      checked: boolean
+                    ) => checked && setPaymentMethod(1)}
+                  />
+                }
                 label={
                   <Typography
                     sx={{
@@ -468,13 +494,21 @@ const CheckOut = () => {
                       fontSize: 14,
                     }}
                   >
-                    Credit or debit card
+                    PayPal
                   </Typography>
                 }
               />
 
               <Image src={Paypal} alt="paypal" width={60} height={60} />
             </Box>
+            <Typography
+              fontFamily={theme.fontFamily.secondary}
+              fontSize={14}
+              my={"20px"}
+            >
+              *By continuing, you consent to data sharing as per our Privacy
+              Policy and confirm reading the Privacy Notice and Terms.
+            </Typography>
             <Button
               sx={{
                 width: "100%",
@@ -488,7 +522,7 @@ const CheckOut = () => {
                 fontFamily: theme.fontFamily.secondary,
               }}
             >
-              Confirm and Place Order
+              Continue
             </Button>
           </form>
         </Box>

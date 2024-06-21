@@ -10,7 +10,7 @@ import {
   useTheme,
 } from "@mui/material";
 import { useSearchParams } from "next/navigation";
-import { useState } from "react";
+import { ChangeEvent, useEffect, useState } from "react";
 import {
   FilterSupplierDto,
   PaginationDto,
@@ -31,6 +31,7 @@ import { SUPPLIER_PATH_URL } from "@/constant/pathUrl";
 import SupplierItemSkeleton from "../common/skeleton/SupplierItemSkeleton";
 import NotFound from "./NotFound";
 import { convertImage } from "@/utils";
+import { useGetSearchSupplier } from "@/api/supplier/query";
 
 const Supplier = () => {
   const { isMobile } = useDevices();
@@ -38,7 +39,9 @@ const Supplier = () => {
   const searchParams = useSearchParams();
   const keyword = searchParams.get("keyword");
   const router = useRouter();
-
+  const page = searchParams.get("page");
+  const LIMIT = 10;
+  const { getSearchSupplier, data: supplierData } = useGetSearchSupplier();
   const [filter, setFilter] = useState<FilterSupplierDto>({
     keyword: keyword ? keyword : "",
     category_ids: [],
@@ -47,26 +50,30 @@ const Supplier = () => {
   const [sortOrder, setSortOrder] = useState<string>(
     SortOption.Newest as string
   );
-  const [pagination, setPagination] = useState<PaginationDto>({
-    page: 1,
-    limit: 5,
-  });
+  useEffect(() => {
+    getSearchSupplier({ limit: LIMIT, page: 1, is_newest: true });
+  }, []);
 
-  const { data: supplierData, isLoading } = useQuery({
-    queryKey: [SUPPLIER_KEY, pagination, filter, sortOrder],
-    queryFn: async () =>
-      await getSearchSupplier(filter, sortOrder, {
-        page: pagination.page,
-        limit: pagination.limit,
-      }).then((response) => {
-        setPagination({
-          ...pagination,
-          totalPage: response.data.metadata.total_page,
-        });
-        return response.data;
-      }),
-  });
+  useEffect(() => {
+    if (page)
+      getSearchSupplier({
+        limit: LIMIT,
+        page: +page,
+        keyword: filter.keyword,
+        category_ids: filter.category_ids,
+        countries: filter.countries,
+        is_newest: sortOrder === SortOption.Newest,
+        is_sorted: sortOrder === SortOption.A_to_Z,
+      });
+  }, [page, filter, sortOrder]);
 
+  const handleChangePage = (event: ChangeEvent<unknown>, page: number) => {
+    const updatedSearchParams = new URLSearchParams(searchParams.toString());
+    updatedSearchParams.set("page", page.toString());
+    router.push(
+      `${SUPPLIER_PATH_URL.SUPPLIER_LIST}?${updatedSearchParams.toString()}`
+    );
+  };
   return (
     <Box
       sx={{
@@ -94,7 +101,7 @@ const Supplier = () => {
           />
         </Box>
         <Box sx={{ paddingLeft: 3, width: "100%" }}>
-          {isLoading || !supplierData ? (
+          {!supplierData ? (
             Array.from(Array(3)).map((_, id) => (
               <SupplierItemSkeleton key={id} />
             ))
@@ -116,7 +123,17 @@ const Supplier = () => {
                       border={`1px solid ${theme.blue[100]}`}
                     >
                       <Box sx={{ display: "flex" }}>
-                        <Box width={88} height={88} position={"relative"}>
+                        <Box
+                          width={88}
+                          height={88}
+                          position={"relative"}
+                          component={"button"}
+                          onClick={() =>
+                            router.push(
+                              `${SUPPLIER_PATH_URL.SUPPLIER_DETAIL}/${supplier.slug}`
+                            )
+                          }
+                        >
                           <Image
                             src={convertImage(supplier.image) ?? NoImage}
                             alt="product"
@@ -126,7 +143,15 @@ const Supplier = () => {
                           />
                         </Box>
 
-                        <Box sx={{ ml: 2 }}>
+                        <Box
+                          sx={{ ml: 2, textAlign: "start" }}
+                          component={"button"}
+                          onClick={() =>
+                            router.push(
+                              `${SUPPLIER_PATH_URL.SUPPLIER_DETAIL}/${supplier.slug}`
+                            )
+                          }
+                        >
                           <Typography
                             color={theme.black[200]}
                             fontWeight={theme.fontWeight.medium}
@@ -219,26 +244,28 @@ const Supplier = () => {
                 )}
               </Box>
 
-              {Number(pagination.totalPage) > 1 && (
-                <Box sx={{ display: "flex", justifyContent: "center" }}>
-                  <Pagination
-                    count={supplierData?.metadata.total_page}
-                    color="primary"
-                    shape="rounded"
-                    page={pagination.page ? pagination.page : 1}
-                    sx={{
-                      justifyContent: "center",
-                      mt: "20px",
-                      "& .Mui-selected": {
-                        borderRadius: "8px",
-                      },
-                    }}
-                    onChange={(event, page) => {
-                      setPagination({ ...pagination, page: page });
-                    }}
-                  />
-                </Box>
-              )}
+              {supplierData &&
+                supplierData.metadata.total_page &&
+                supplierData.metadata.total_page > 1 && (
+                  <Box sx={{ display: "flex", justifyContent: "center" }}>
+                    <Pagination
+                      count={supplierData?.metadata.total_page || 1}
+                      color="primary"
+                      shape="rounded"
+                      page={page ? parseInt(page) : 1}
+                      sx={{
+                        justifyContent: "center",
+                        mt: "20px",
+                        "& .Mui-selected": {
+                          borderRadius: "8px",
+                        },
+                      }}
+                      onChange={(e: ChangeEvent<unknown>, page: number) =>
+                        handleChangePage(e, page)
+                      }
+                    />
+                  </Box>
+                )}
             </>
           )}
         </Box>

@@ -44,6 +44,7 @@ const AccordionComponent = ({ title, children }: AccordionComponentType) => {
           fontWeight: theme.fontWeight.semiBold,
           bgcolor: theme.blue[100],
           height: "45px",
+          minHeight: "45px",
           "&.Mui-expanded": {
             minHeight: "45px",
             height: "45px",

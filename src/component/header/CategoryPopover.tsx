@@ -202,7 +202,13 @@ const CategoryPopover = ({ data }: CategoryPopoverType) => {
                         whiteSpace={"nowrap"}
                         onClick={() =>
                           router.push(
-                            `${PRODUCT_PATH_URL.PRODUCT_LIST}?cate_level1_id=${categoryLevel2.parent_category_id}&cate_level2_id=${categoryLevel2.id}&cate_name=${encodeURIComponent(categoryLevel2?.name)}`
+                            `${PRODUCT_PATH_URL.PRODUCT_LIST}?cate_level1_id=${
+                              categoryLevel2.parent_category_id
+                            }&cate_level2_id=${
+                              categoryLevel2.id
+                            }&cate_name=${encodeURIComponent(
+                              categoryLevel2?.name
+                            )}`
                           )
                         }
                       >
@@ -216,10 +222,27 @@ const CategoryPopover = ({ data }: CategoryPopoverType) => {
                           return (
                             <ListItemButton
                               key={categoryLevel3.id}
-                              sx={{ pl: 0, py: "4px", maxWidth: "150px" }}
+                              sx={{
+                                pl: 0,
+                                py: "4px",
+                                maxWidth: "150px",
+                                "&:hover": {
+                                  bgcolor: "transparent",
+                                },
+                              }}
                               onClick={() =>
                                 router.push(
-                                  `${PRODUCT_PATH_URL.PRODUCT_LIST}?cate_level1_id=${categoryLevel2.parent_category_id}&cate_level2_id=${categoryLevel2.id}&cate_level3_id=${categoryLevel3.id}&cate_name=${encodeURIComponent(categoryLevel3?.name)}`
+                                  `${
+                                    PRODUCT_PATH_URL.PRODUCT_LIST
+                                  }?cate_level1_id=${
+                                    categoryLevel2.parent_category_id
+                                  }&cate_level2_id=${
+                                    categoryLevel2.id
+                                  }&cate_level3_id=${
+                                    categoryLevel3.id
+                                  }&cate_name=${encodeURIComponent(
+                                    categoryLevel3?.name
+                                  )}`
                                 )
                               }
                             >
@@ -231,6 +254,10 @@ const CategoryPopover = ({ data }: CategoryPopoverType) => {
                                       fontWeight: theme.fontWeight.regular,
                                       fontFamily: theme.fontFamily.secondary,
                                       color: theme.black[100],
+                                      "&:hover": {
+                                        color: theme.blue[500],
+                                        fontWeight: theme.fontWeight.semiBold,
+                                      },
                                     }}
                                   >
                                     {categoryLevel3.name}

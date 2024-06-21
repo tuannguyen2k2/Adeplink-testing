@@ -1,7 +1,8 @@
+import { useGetCart } from "@/api/cart/query";
 import { SUPPLIER_CONTACT } from "@/constant/cookies";
 import { CHECKOUT_PATH_URL, SEND_REQUEST_PATH_URL } from "@/constant/pathUrl";
 import { cartSelector, supplierContactSelector } from "@/store/selector";
-import { setSupplierContact } from "@/store/slice/appSlice";
+import { setCart, setSupplierContact } from "@/store/slice/appSlice";
 import {
   Box,
   Button,
@@ -21,7 +22,14 @@ const OrderSummary = () => {
   const dispatch = useDispatch();
   const router = useRouter();
   const supplierContact = useSelector(supplierContactSelector);
+  const { getCart, data, isSuccess: getCartSuccess } = useGetCart();
   const [supplierTicked, setSupplierTicked] = useState<string[]>([]);
+
+  useEffect(() => {
+    if (getCartSuccess && data) {
+      dispatch(setCart(data));
+    }
+  }, [getCartSuccess]);
   const calculateSubTotal = () => {
     if (supplierContact.length > 0) {
       return "To be negotiated";
@@ -259,6 +267,7 @@ const OrderSummary = () => {
             ) {
               router.push(SEND_REQUEST_PATH_URL);
             }
+            getCart();
           }}
         >
           {supplierContact.length == 1 && supplierTicked.length == 1

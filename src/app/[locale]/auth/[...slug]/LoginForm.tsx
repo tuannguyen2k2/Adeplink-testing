@@ -61,7 +61,7 @@ const LoginFormPage = () => {
           {error && <span>Incorrect email address or password.</span>}
         </div>
 
-        <div className="mb-5 h-20 mt-2">
+        <div className="mb-4 h-20 mt-2">
           <h4
             className={`font-medium mb-2 ${
               formState.errors.username && "text-red-500"
@@ -85,7 +85,7 @@ const LoginFormPage = () => {
             </div>
           )}
         </div>
-        <div className="mb-5 h-20">
+        <div className="mb-4 h-20">
           <div className="flex justify-between">
             <h4
               className={`font-medium mb-2 ${
@@ -146,7 +146,7 @@ const LoginFormPage = () => {
           </span>
         </div>
         <button
-          className={`w-full text-white mt-5 px-3 py-2 rounded-lg ${
+          className={`w-full text-white mt-8 px-3 py-2 rounded-lg ${
             formState.isValid
               ? "bg-[#0C71BA]"
               : "bg-[#DBE9FE] cursor-not-allowed"
@@ -157,7 +157,7 @@ const LoginFormPage = () => {
           Log in
         </button>
       </form>
-      <div className="mt-10  relative flex items-center w-full">
+      <div className="mt-8  relative flex items-center w-full">
         <div className="w-full bg-[#E5E7EB] h-[1px]"></div>
         <span className=" bg-white px-4 opacity-60 whitespace-nowrap">
           or continue with
@@ -165,7 +165,7 @@ const LoginFormPage = () => {
         <div className="w-full bg-[#E5E7EB] h-[1px]"></div>
       </div>
       <div
-        className="text-center bg-gray-100 mt-5 flex px-3 py-2 rounded-lg hover:bg-gray-200 hover:cursor-pointer"
+        className="text-center bg-gray-100 mt-8 flex px-3 py-2 rounded-lg hover:bg-gray-200 hover:cursor-pointer"
         title="Login with Google"
       >
         <Image src={GoogleIcon} alt={""} width={30} />

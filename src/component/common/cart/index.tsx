@@ -332,7 +332,8 @@ const Cart = () => {
                       display: "none",
                     },
                     "&.MuiAccordion-root": {
-                      mt: "16px!important",
+                      mt: "0!important",
+                      mb: "16px!important",
                     },
                   }}
                 >
@@ -407,6 +408,7 @@ const Cart = () => {
                     </Box>
                     {supplier.product.map(
                       (product: ProductCartType, indexProduct) => {
+                        console.log(supplier.product.length);
                         return (
                           <Box key={product.id}>
                             <CartItem
@@ -419,9 +421,14 @@ const Cart = () => {
                               rangePrice={product.range_price}
                               supplierId={supplier.id}
                             />
-                            <Divider
-                              sx={{ borderColor: theme.blue[100], mx: "40px" }}
-                            />
+                            {indexProduct != supplier.product.length - 1 && (
+                              <Divider
+                                sx={{
+                                  borderColor: theme.blue[100],
+                                  m: product.variant ? "0 40px" : "0 10px 0 0",
+                                }}
+                              />
+                            )}
                             {product.variant?.map((variant, indexVariant) => {
                               return (
                                 <CartItem
@@ -440,9 +447,7 @@ const Cart = () => {
                                 />
                               );
                             })}
-                            {indexProduct !== 1 && (
-                              <Divider sx={{ borderColor: theme.blue[100] }} />
-                            )}
+                       
                           </Box>
                         );
                       }
@@ -471,7 +476,7 @@ const Cart = () => {
           </Typography>
         </Box>
       )}
-      <Divider sx={{ borderColor: theme.blue[600], my: "20px" }} />
+      <Divider sx={{ borderColor: theme.blue[600], my: "32px" }} />
       <ListProductComponent
         title={"Recommended Products"}
         url={PRODUCT_PATH_URL.PRODUCT_LIST}

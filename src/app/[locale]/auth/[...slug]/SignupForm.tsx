@@ -12,6 +12,7 @@ import {
   checkEmail,
   checkLength,
   checkNumber,
+  checkSpecialChar,
   checkUpper,
 } from "@/constant/regex";
 import { useCountdown } from "@/hook/useCountdown";
@@ -28,9 +29,8 @@ import { MdOutlineKeyboardArrowDown } from "react-icons/md";
 import { Country, State, City } from "country-state-city";
 import { ICountry, IState, ICity } from "country-state-city";
 import { AUTH_PATH_URL, HOME_PATH_URL } from "@/constant/pathUrl";
+import { useGetProvincesVN } from "@/api/country/query";
 const SignupFormPage = () => {
-  const locale = Cookies.get("NEXT_LOCALE");
-  const { Option } = Select;
   const [showPassword, setShowPassword] = useState<{
     password: boolean;
     confirm: boolean;
@@ -63,8 +63,21 @@ const SignupFormPage = () => {
   const { remaining, handleRunCountDown } = useCountdown(60);
   const [isResend, setIsResend] = useState(false);
   const [isChecked, setIsChecked] = useState(false);
-  const { register, handleSubmit, formState, setValue, watch, getValues } =
-    useForm<SignUpBuyerForm>();
+  const [selectedCountry, setSelectedCountry] = useState<string>("");
+  const {
+    register,
+    handleSubmit,
+    formState,
+    setValue,
+    watch,
+    getValues,
+    setError,
+    clearErrors,
+    unregister,
+  } = useForm<SignUpBuyerForm>({
+    mode: "onChange",
+    reValidateMode: "onChange",
+  });
   const onSubmit: SubmitHandler<SignUpBuyerForm> = async (data) => {
     signup({
       email: getValues().email,
@@ -72,10 +85,11 @@ const SignupFormPage = () => {
       name: getValues().fullname,
       company_name: getValues().companyName,
       phone: getValues().phoneNumber,
-      country: getValues().country.name,
+      country: getValues().country,
       is_supplier: false,
     });
   };
+
   useEffect(() => {
     if (isVerifySuccess) {
       setShowValidateEmail(false);
@@ -107,6 +121,38 @@ const SignupFormPage = () => {
     resendOtp(getValues().email);
     setIsResend(true);
     handleRunCountDown();
+    setIsOtpError(false);
+  };
+  const handleBlurEmail = () => {
+    const email = getValues("email");
+    if (!checkEmail.test(email) && email !== "") {
+      setError("email", { message: "Professional email invalid" });
+    } else if (email == "") {
+      setError("email", { message: "Professional email required" });
+    }
+  };
+
+  const handleCheckSpecialCharAndMinCharacter = (
+    fieldName: "companyName" | "fullname"
+  ) => {
+    const value = getValues(fieldName);
+    if (checkSpecialChar.test(value)) {
+      setError(fieldName, {
+        message: `${
+          fieldName == "companyName" ? "Company name" : "Full name"
+        } ${"cannot contain the following special characters"}`,
+      });
+    } else {
+      setError(fieldName, {});
+    }
+  };
+
+  const handleChangePassword = () => {
+    if (watch("confirm") !== watch("password")) {
+      setError("confirm", { message: "The two passwords do not match" });
+    } else {
+      setError("confirm", {});
+    }
   };
 
   const handleValidatePassword = (value: string) => {
@@ -120,8 +166,20 @@ const SignupFormPage = () => {
   };
   const handleEmailChange = () => {
     setIsEmailExisted(false);
+    const email = getValues("email");
+    if (checkEmail.test(email)) {
+      setError("email", {});
+    }
   };
 
+  // console.log(getValues().companyName);
+  // console.log(getValues().confirm);
+  // console.log(getValues().country);
+  // console.log(getValues().email);
+  // console.log(getValues().fullname);
+  // console.log(getValues().password);
+  // console.log(getValues().phoneNumber);
+  console.log(selectedCountry);
   return (
     <React.Fragment>
       <div className="bg-white h-full w-4/5 mx-auto">
@@ -138,7 +196,7 @@ const SignupFormPage = () => {
         <h3 className="font-bold text-2xl text-center">
           <span className="text-[#0C71BA]">Create</span>&nbsp;a new account
         </h3>
-        <h4 className="text-center">
+        <h4 className="text-center mb-6">
           Create your account to explore B2B Marketplace and more.
           <br />
           Already have an account?&nbsp;
@@ -156,20 +214,31 @@ const SignupFormPage = () => {
               <span className="text-red-500 mr-1">*</span>
               <span className="font-medium">Country/Region</span>
             </h4>
-            <div className="col-span-12 h-12 mb-2">
+            <div className="col-span-12 h-12 mb-4">
               <Autocomplete
                 className="col-span-12 border-[1px] border-solid border-gray-400 rounded-lg"
-                options={Country.getAllCountries()}
+                options={countryData}
                 getOptionLabel={(country) => country.name}
                 size="small"
                 renderInput={(params) => <TextField {...params} label="" />}
+                onInputChange={(event, newInputValue, reason) => {
+                  if (newInputValue) {
+                    clearErrors("country");
+                    unregister("country", { keepIsValid: true });
+                    setValue("country", newInputValue);
+                    setSelectedCountry(newInputValue);
+                  }
+                  if (reason === "clear") {
+                    setSelectedCountry("");
+                    setError("country", { message: "Country required" });
+                  }
+                }}
                 popupIcon={
                   <MdOutlineKeyboardArrowDown size={18} color="black" />
                 }
                 {...register("country", {
-                  required: "Country required",
+                  shouldUnregister: true,
                 })}
-                onChange={(e, value) => setValue("country", value as ICountry)}
               />
               {formState.errors.country?.message && (
                 <div className="text-red-500 w-full font-medium text-[13px]">
@@ -179,7 +248,7 @@ const SignupFormPage = () => {
             </div>
             <InputComponent
               title="Full name"
-              className="col-span-12 sm:col-span-6 sm:mr-3 mb-2"
+              className="col-span-12 sm:col-span-6 sm:mr-3 mb-4"
               error={formState.errors.fullname?.message}
             >
               <input
@@ -187,12 +256,18 @@ const SignupFormPage = () => {
                 className="focus:outline-none w-full"
                 {...register("fullname", {
                   required: "Full name required",
+                  minLength: {
+                    value: 3,
+                    message: "Full name must be at least 3 characters long",
+                  },
+                  onChange: () =>
+                    handleCheckSpecialCharAndMinCharacter("fullname"),
                 })}
               />
             </InputComponent>
             <InputComponent
               title="Company Name"
-              className="col-span-12 sm:col-span-6 sm:ml-3 mb-2"
+              className="col-span-12 sm:col-span-6 sm:ml-3 mb-4"
               error={formState.errors.companyName?.message}
             >
               <input
@@ -200,12 +275,14 @@ const SignupFormPage = () => {
                 className="focus:outline-none  w-full"
                 {...register("companyName", {
                   required: "Company name required",
+                  onChange: () =>
+                    handleCheckSpecialCharAndMinCharacter("companyName"),
                 })}
               />
             </InputComponent>
             <InputComponent
               title="Business email address"
-              className="col-span-12 sm:col-span-6 sm:mr-3 mb-2"
+              className="col-span-12 sm:col-span-6 sm:mr-3 mb-4"
               error={
                 isEmailExisted
                   ? "Email already exists"
@@ -217,10 +294,13 @@ const SignupFormPage = () => {
                 placeholder="example@domain.com"
                 className="focus:outline-none w-full"
                 {...register("email", {
-                  required: "Business email required",
+                  required: "Professional email required",
                   pattern: { value: checkEmail, message: "Email invalid" },
+                  onChange: () => {
+                    handleEmailChange();
+                  },
+                  onBlur: () => handleBlurEmail(),
                 })}
-                onChange={handleEmailChange}
               />
             </InputComponent>
 
@@ -240,7 +320,7 @@ const SignupFormPage = () => {
                 /> */}
             <InputComponent
               title="Phone number"
-              className="col-span-12 sm:col-span-6 sm:ml-3 mb-2"
+              className="col-span-12 sm:col-span-6 sm:ml-3 mb-4"
               error={formState.errors.phoneNumber?.message}
             >
               <input
@@ -251,7 +331,7 @@ const SignupFormPage = () => {
                   required: "Phone number required",
                   pattern: {
                     value: new RegExp(/^[0-9]+$/),
-                    message: "Phone number invalid",
+                    message: "Invalid phone number format",
                   },
                 })}
               />
@@ -267,7 +347,7 @@ const SignupFormPage = () => {
             {/* </div> */}
             <InputComponent
               title="Password"
-              className="col-span-12 sm:col-span-6 relative sm:mr-3 mb-2"
+              className="col-span-12 sm:col-span-6 relative sm:mr-3 mb-4"
               error={formState.errors.password?.message}
             >
               <Tooltip
@@ -282,13 +362,14 @@ const SignupFormPage = () => {
                   className="focus:outline-none w-full"
                   {...register("password", {
                     required: "Password required",
+                    onChange: (e) => {
+                      setValue("password", e.target.value);
+                      handleValidatePassword(e.target.value);
+                      handleChangePassword();
+                    },
+                    onBlur: () => setShowValidatePassword(false),
                   })}
-                  onChange={(e) => {
-                    setValue("password", e.target.value);
-                    handleValidatePassword(e.target.value);
-                  }}
                   onFocus={() => setShowValidatePassword(true)}
-                  onBlur={() => setShowValidatePassword(false)}
                 />
               </Tooltip>
               <Icon
@@ -308,7 +389,7 @@ const SignupFormPage = () => {
             </InputComponent>
             <InputComponent
               title="Confirm password"
-              className="col-span-12 sm:col-span-6 relative sm:ml-3 mb-2"
+              className="col-span-12 sm:col-span-6 relative sm:ml-3 mb-4"
               error={formState.errors.confirm?.message}
             >
               <input
@@ -319,7 +400,8 @@ const SignupFormPage = () => {
                   required: "Confirm password required",
                   validate: (value) =>
                     value === watch("password") ||
-                    "Confirm password do not match",
+                    "The two passwords do not match",
+                  onChange: () => handleChangePassword(),
                 })}
               />
               <Icon
@@ -343,7 +425,13 @@ const SignupFormPage = () => {
             <input
               type="checkbox"
               className="w-[18px] h-[18px] cursor-pointer"
-              onChange={() => setIsChecked(!isChecked)}
+              {...register("isCheck", {
+                shouldUnregister: true,
+                onChange: () => {
+                  setIsChecked(!isChecked);
+                  console.log(formState.isValid);
+                },
+              })}
             />
             &nbsp; I agree to your&nbsp;
             <span className="text-[#0C71BA] cursor-pointer">
@@ -356,22 +444,40 @@ const SignupFormPage = () => {
           </div>
 
           <button
-            className={`w-full text-white mt-5 px-3 py-2 rounded-lg ${
-              isChecked ? "bg-[#0C71BA]" : "bg-[#DBE9FE] cursor-not-allowed"
+            className={`w-full text-white mt-6 px-3 py-2 rounded-lg ${
+              isChecked &&
+              formState.isValid &&
+              selectedCountry != "" &&
+              validated.lengthValidated &&
+              validated.numberValidated &&
+              validated.specialValidated &&
+              validated.upperValidated
+                ? "bg-[#0C71BA]"
+                : "bg-[#DBE9FE] cursor-not-allowed"
             }`}
             type="submit"
-            disabled={!isChecked}
+            disabled={
+              !isChecked ||
+              selectedCountry == "" ||
+              !formState.isValid ||
+              !validated.lengthValidated ||
+              !validated.numberValidated ||
+              !validated.specialValidated ||
+              !validated.upperValidated
+            }
           >
             Sign up
           </button>
         </form>
-        <div className="mt-6 border-t-2 relative flex justify-center">
-          <span className="absolute -top-[14px] bg-white px-4 opacity-60">
+        <div className="mt-6 relative flex items-center w-full">
+          <div className="w-full bg-[#E5E7EB] h-[1px]"></div>
+          <span className=" bg-white px-4 opacity-60 whitespace-nowrap">
             or continue with
           </span>
+          <div className="w-full bg-[#E5E7EB] h-[1px]"></div>
         </div>
         <div
-          className="text-center bg-gray-100 mt-5 flex px-3 py-2 rounded-lg hover:bg-gray-200 hover:cursor-pointer"
+          className="text-center bg-gray-100 mt-6 flex px-3 py-2 rounded-lg hover:bg-gray-200 hover:cursor-pointer"
           title="Login with Google"
         >
           <Image src={GoogleIcon} alt={""} width={30} />
@@ -388,8 +494,8 @@ const SignupFormPage = () => {
           }}
           footer={false}
         >
-          <h4 className="text-center text-xl font-semibold font-sans">
-            Email <span className="text-blue-400">verification</span>
+          <h4 className="text-center text-xl font-semibold font-sans mt-6">
+            Email <span className="text-[#0C71BA]">verification</span>
           </h4>
           <div className="text-center mb-2  font-sans">
             A six-digit verification code has been sent to your email address:{" "}
@@ -419,8 +525,8 @@ const SignupFormPage = () => {
               onClick={handleResendCode}
               className={
                 remaining === 0
-                  ? "text-blue-500 font-medium"
-                  : "text-red-400 font-medium"
+                  ? "text-[#0C71BA] font-medium"
+                  : "text-[#DC2626] font-medium"
               }
             >
               Resend Code&nbsp;
@@ -432,7 +538,7 @@ const SignupFormPage = () => {
 
           <div className="w-4/5 mx-auto mt-5">
             <button
-              className={`w-full text-white px-3 py-2 rounded ${
+              className={`w-full text-white px-3 font-sans py-2 rounded-lg ${
                 isValidateOtp
                   ? "bg-[#4285F4]"
                   : "bg-blue-300 cursor-not-allowed"
@@ -451,12 +557,15 @@ const SignupFormPage = () => {
           showSuccessModal={showSuccessModal}
           title={
             <div>
-              <h3 className="font-bold text-2xl text-center font-sans mt-8">
+              <h3 className="font-bold text-2xl text-center font-sans mt-6">
                 Registered <span className="text-[#0C71BA]">successfully</span>!
               </h3>
-              <div className="text-center font-medium font-sans text-[16px] mt-1">
+              <div
+                className="text-center font-medium font-sans text-[16px] mt-1"
+                style={{ whiteSpace: "nowrap" }}
+              >
                 Thank you and Welcome to{" "}
-                <span className="text-[#0C71BA]">AdeptLink!</span>
+                <strong className="text-[#0C71BA]">AdeptLink!</strong>
                 <br /> You will be redirect to Homepage in
               </div>
             </div>
