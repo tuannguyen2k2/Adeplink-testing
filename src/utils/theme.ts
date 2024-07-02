@@ -33,6 +33,7 @@ const themeColors = {
   },
   yellow: {
     100: "#FFAD5F",
+    200: "#ffc439",
   },
   fontWeight: {
     light: 300,

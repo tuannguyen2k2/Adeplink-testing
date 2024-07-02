@@ -1,5 +1,14 @@
 "use client";
-import { MAX_WIDTH_APP } from "@/constant/css";
+import { getSupplierReview } from "@/api/supplier";
+import { getSupplierDetailBySlug } from "@/api/supplier/api";
+import NoImage from "@/assets/images/no-image.png";
+import SupplierBanner from "@/assets/images/supplier-background.png";
+import { MARGIN_BOTTOM_ON_FOOTER, MAX_WIDTH_APP } from "@/constant/css";
+import { RatingOption } from "@/constant/enum";
+import { PRODUCT_PATH_URL } from "@/constant/pathUrl";
+import { SUPPLIER_KEY, SUPPLIER_REVIEW_KEY } from "@/constant/queryKey";
+import { PaginationDto, RatingFilter, SupplierDetailDto } from "@/interface/common";
+import { convertImage } from "@/utils";
 import {
   Box,
   Container,
@@ -8,29 +17,16 @@ import {
   Typography,
   useTheme,
 } from "@mui/material";
-import Image from "next/image";
-import SupplierBanner from "@/assets/images/supplier-background.png";
-import SupplierInfo from "./SupplierInfo";
-import { RatingOption, SortOption } from "@/constant/enum";
 import { useQuery } from "@tanstack/react-query";
-import { SUPPLIER_KEY, SUPPLIER_REVIEW_KEY } from "@/constant/queryKey";
-import { getSupplierReview } from "@/api/supplier";
-import React, { useRef, useState } from "react";
-import { PaginationDto, RatingFilter } from "@/interface/common";
-import ProductOfSupplierList from "./ProductOfSupplierList";
-import { getSupplierDetailBySlug } from "@/api/supplier/api";
-import { PRODUCT_PATH_URL } from "@/constant/pathUrl";
-import Link from "next/link";
 import moment from "moment";
-import { convertImage } from "@/utils";
-import NoImage from "@/assets/images/no-image.png";
-import { useDraggable } from "react-use-draggable-scroll";
+import Image from "next/image";
+import Link from "next/link";
+import React, { useState } from "react";
 import ReviewComponentSkeleton from "../common/skeleton/ReviewComponentSkeleton";
+import ProductOfSupplierList from "./ProductOfSupplierList";
+import SupplierInfo from "./SupplierInfo";
 
 const SupplierDetail = ({ params }: { params: { slug: string } }) => {
-  // const ref = useRef<HTMLDivElement>() as React.MutableRefObject<HTMLInputElement>;
-  // const { events } = useDraggable(ref);
-
   const theme = useTheme();
   const [filterReview, setFilterReview] = useState<string>(RatingOption.All);
 
@@ -38,7 +34,7 @@ const SupplierDetail = ({ params }: { params: { slug: string } }) => {
     PaginationDto & RatingFilter
   >({ star: null, with_media: null, page: 1, limit: 10, totalPage: 0 });
 
-  const { data: supplierData, isLoading: isLoadingData } = useQuery({
+  const { data: supplierData, isLoading: isLoadingData } = useQuery<SupplierDetailDto>({
     queryKey: [SUPPLIER_KEY, params.slug],
     queryFn: async () =>
       await getSupplierDetailBySlug(params.slug).then(
@@ -48,16 +44,20 @@ const SupplierDetail = ({ params }: { params: { slug: string } }) => {
 
   const { data: reviewData, isLoading: isLoadingReview } = useQuery({
     queryKey: [SUPPLIER_REVIEW_KEY, reviewFilter, params],
-    queryFn: async () =>
-      await getSupplierReview(supplierData.company.slug, reviewFilter).then(
-        (response) => {
-          setReviewFilter({
-            ...reviewFilter,
-            totalPage: response.data.review.metadata.total_page,
-          });
-          return response.data;
-        }
-      ),
+    queryFn: async () => {
+      if (supplierData) {
+        const response = await getSupplierReview(
+          supplierData.company.slug,
+          reviewFilter
+        );
+        setReviewFilter({
+          ...reviewFilter,
+          totalPage: response.data.review.metadata.total_page,
+        });
+        return response.data;
+      }
+      return null;
+    },
   });
 
   const handleChangeFilter = (option: string) => {
@@ -94,6 +94,7 @@ const SupplierDetail = ({ params }: { params: { slug: string } }) => {
       }
     }
   };
+  console.log(supplierData);
 
   return (
     <Container
@@ -102,6 +103,7 @@ const SupplierDetail = ({ params }: { params: { slug: string } }) => {
         p: { xs: "20px!important", sm: "0 88px!important" },
         maxWidth: `${MAX_WIDTH_APP}!important`,
         fontFamily: theme.fontFamily.secondary,
+        mb: MARGIN_BOTTOM_ON_FOOTER,
       }}
     >
       <Box
@@ -117,7 +119,7 @@ const SupplierDetail = ({ params }: { params: { slug: string } }) => {
           style={{ borderRadius: "16px", width: "100%", height: "100%" }}
         />
       </Box>
-      <SupplierInfo data={supplierData} />
+      <SupplierInfo data={supplierData as SupplierDetailDto} />
       <Box
         width={"100%"}
         p={"16px"}
@@ -429,7 +431,7 @@ const SupplierDetail = ({ params }: { params: { slug: string } }) => {
         )}
       </Box>
 
-      <ProductOfSupplierList listCategory={supplierData?.category} />
+      <ProductOfSupplierList supplierData={supplierData}/>
     </Container>
   );
 };

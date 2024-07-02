@@ -12,13 +12,15 @@ import {
   checkEmail,
   checkLength,
   checkNumber,
-  checkSpecialChar,
+  checkSpecialChar1,
+  checkSpecialChar2,
   checkUpper,
+  freeEmailDomains,
 } from "@/constant/regex";
 import { useCountdown } from "@/hook/useCountdown";
 import { SignUpBuyerForm } from "@/model/form/AuthForm";
 import { Visibility, VisibilityOff } from "@mui/icons-material";
-import { Autocomplete, Icon, TextField } from "@mui/material";
+import { Autocomplete, Icon, InputAdornment, TextField } from "@mui/material";
 import { Modal, Select, Tooltip } from "antd";
 import Cookies from "js-cookie";
 import Image from "next/image";
@@ -30,6 +32,14 @@ import { Country, State, City } from "country-state-city";
 import { ICountry, IState, ICity } from "country-state-city";
 import { AUTH_PATH_URL, HOME_PATH_URL } from "@/constant/pathUrl";
 import { useGetProvincesVN } from "@/api/country/query";
+import { CountryType } from "@/interface/common";
+import parsePhoneNumber, {
+  CountryCode,
+  ParsedNumber,
+  format,
+  formatNumber,
+  validatePhoneNumberLength,
+} from "libphonenumber-js";
 const SignupFormPage = () => {
   const [showPassword, setShowPassword] = useState<{
     password: boolean;
@@ -63,7 +73,9 @@ const SignupFormPage = () => {
   const { remaining, handleRunCountDown } = useCountdown(60);
   const [isResend, setIsResend] = useState(false);
   const [isChecked, setIsChecked] = useState(false);
-  const [selectedCountry, setSelectedCountry] = useState<string>("");
+  const [selectedCountry, setSelectedCountry] = useState<CountryType | null>(
+    null
+  );
   const {
     register,
     handleSubmit,
@@ -74,6 +86,7 @@ const SignupFormPage = () => {
     setError,
     clearErrors,
     unregister,
+    trigger,
   } = useForm<SignUpBuyerForm>({
     mode: "onChange",
     reValidateMode: "onChange",
@@ -126,29 +139,15 @@ const SignupFormPage = () => {
   const handleBlurEmail = () => {
     const email = getValues("email");
     if (!checkEmail.test(email) && email !== "") {
-      setError("email", { message: "Professional email invalid" });
-    } else if (email == "") {
-      setError("email", { message: "Professional email required" });
-    }
-  };
-
-  const handleCheckSpecialCharAndMinCharacter = (
-    fieldName: "companyName" | "fullname"
-  ) => {
-    const value = getValues(fieldName);
-    if (checkSpecialChar.test(value)) {
-      setError(fieldName, {
-        message: `${
-          fieldName == "companyName" ? "Company name" : "Full name"
-        } ${"cannot contain the following special characters"}`,
-      });
-    } else {
-      setError(fieldName, {});
+      setError("email", { message: "Please enter the correct format" });
     }
   };
 
   const handleChangePassword = () => {
-    if (watch("confirm") !== watch("password")) {
+    if (
+      watch("confirm") !== watch("password") &&
+      getValues("confirm") !== ""
+    ) {
       setError("confirm", { message: "The two passwords do not match" });
     } else {
       setError("confirm", {});
@@ -167,18 +166,41 @@ const SignupFormPage = () => {
   const handleEmailChange = () => {
     setIsEmailExisted(false);
     const email = getValues("email");
-    if (checkEmail.test(email)) {
+
+    if (checkEmail.test(email) && freeEmailDomains.test(email)) {
       setError("email", {});
     }
   };
+  const formatPhoneCode = (phoneCode: string) => {
+    if (!phoneCode) return;
+    if (phoneCode.startsWith("+")) {
+      return phoneCode;
+    } else {
+      // Thêm dấu + vào đầu số điện thoại
+      return `+${phoneCode}`;
+    }
+  };
 
-  // console.log(getValues().companyName);
-  // console.log(getValues().confirm);
-  // console.log(getValues().country);
-  // console.log(getValues().email);
-  // console.log(getValues().fullname);
-  // console.log(getValues().password);
-  // console.log(getValues().phoneNumber);
+  const validatePhoneNumber = (phoneNumber: string) => {
+    if (selectedCountry) {
+      const parsedNumber = parsePhoneNumber(
+        phoneNumber,
+        selectedCountry.isoCode as CountryCode
+      );
+      if (!parsedNumber?.isValid()) {
+        return "Invalid phone number";
+      } else {
+        return true;
+      }
+    }
+  };
+
+  const validateEmail = (email: string) => {
+    if (!freeEmailDomains.test(email)) {
+      return "Professional email required";
+    }
+    return true;
+  };
   return (
     <React.Fragment>
       <div className="bg-white h-full w-4/5 mx-auto">
@@ -216,7 +238,11 @@ const SignupFormPage = () => {
             <div className="col-span-12 h-12 mb-4">
               <Autocomplete
                 className="col-span-12 border-[1px] border-solid border-gray-400 rounded-lg"
-                options={countryData}
+                options={Country.getAllCountries().map((country) => ({
+                  name: country.name,
+                  phoneCode: country.phonecode,
+                  isoCode: country.isoCode,
+                }))}
                 getOptionLabel={(country) => country.name}
                 size="small"
                 renderInput={(params) => <TextField {...params} label="" />}
@@ -225,28 +251,34 @@ const SignupFormPage = () => {
                     clearErrors("country");
                     unregister("country", { keepIsValid: true });
                     setValue("country", newInputValue);
-                    setSelectedCountry(newInputValue);
                   }
                   if (reason === "clear") {
-                    setSelectedCountry("");
+                    setSelectedCountry(null);
                     setError("country", { message: "Country required" });
                   }
                 }}
                 popupIcon={
                   <MdOutlineKeyboardArrowDown size={18} color="black" />
                 }
-
-                onChange={(e, value) => {
-                  if (value) {
-                    setValue("country", value?.name);
-                    setSelectedCountry(value.name);
-                  }
-                }}
-
                 {...register("country", {
                   shouldUnregister: true,
                 })}
-
+                onChange={(e, value) => {
+                  setSelectedCountry(value);
+                  if (value && getValues("phoneNumber")) {
+                    const parsedNumber = parsePhoneNumber(
+                      getValues("phoneNumber"),
+                      value?.isoCode as CountryCode
+                    );
+                    if (!parsedNumber?.isValid()) {
+                      setError("phoneNumber", {
+                        message: "Invalid phone number",
+                      });
+                    } else {
+                      clearErrors("phoneNumber");
+                    }
+                  }
+                }}
               />
               {formState.errors.country?.message && (
                 <div className="text-red-500 w-full font-medium text-[13px]">
@@ -261,15 +293,22 @@ const SignupFormPage = () => {
             >
               <input
                 placeholder="An Nguyen"
-                className="focus:outline-none w-full"
+                className="focus:outline-none w-full py-2 px-3 rounded-lg"
                 {...register("fullname", {
                   required: "Full name required",
-                  minLength: {
-                    value: 3,
-                    message: "Full name must be at least 3 characters long",
+                  pattern: {
+                    value: checkSpecialChar1,
+                    message:
+                      "Full name cannot contain the following special characters",
                   },
-                  onChange: () =>
-                    handleCheckSpecialCharAndMinCharacter("fullname"),
+                  minLength: {
+                    value: 5,
+                    message: "Full name must be at least 5 characters long",
+                  },
+                  maxLength: {
+                    value: 255,
+                    message: "Full name must be less than 255 characters long",
+                  },
                 })}
               />
             </InputComponent>
@@ -280,11 +319,23 @@ const SignupFormPage = () => {
             >
               <input
                 placeholder="Adept Link"
-                className="focus:outline-none  w-full"
+                className="focus:outline-none  w-full py-2 px-3 rounded-lg"
                 {...register("companyName", {
                   required: "Company name required",
-                  onChange: () =>
-                    handleCheckSpecialCharAndMinCharacter("companyName"),
+                  pattern: {
+                    value: checkSpecialChar2,
+                    message:
+                      "Company name cannot contain the following special characters",
+                  },
+                  minLength: {
+                    value: 5,
+                    message: "Company name must be at least 5 characters long",
+                  },
+                  maxLength: {
+                    value: 255,
+                    message:
+                      "Company name must be less than 255 characters long",
+                  },
                 })}
               />
             </InputComponent>
@@ -300,10 +351,14 @@ const SignupFormPage = () => {
               <input
                 type="email"
                 placeholder="example@domain.com"
-                className="focus:outline-none w-full"
+                className="focus:outline-none w-full py-2 px-3 rounded-lg"
                 {...register("email", {
                   required: "Professional email required",
-                  pattern: { value: checkEmail, message: "Email invalid" },
+                  pattern: {
+                    value: checkEmail,
+                    message: "Please enter the correct format",
+                  },
+                  validate: validateEmail,
                   onChange: () => {
                     handleEmailChange();
                   },
@@ -312,47 +367,48 @@ const SignupFormPage = () => {
               />
             </InputComponent>
 
-            {/* <h4>
-                <span className="text-red-500">*</span>
-                Phone number
-              </h4> */}
-            {/* <div className="flex items-center"> */}
-            {/* <Select
-                  defaultValue="+84"
-                  options={phoneNumberData}
-                  className="w-20 h-11 border-2 border-gray-300 rounded-lg"
-                  onSelect={(event, value) =>
-                    console.log("locale", value.value)
-                  }
-                  // onChange={(event, value) => setValue("locale", value.value)}
-                /> */}
             <InputComponent
               title="Phone number"
               className="col-span-12 sm:col-span-6 sm:ml-3 mb-4"
               error={formState.errors.phoneNumber?.message}
             >
-              <input
-                size={14}
+              <TextField
+                size="small"
                 placeholder="Phone number"
                 className="focus:outline-none w-full"
+                inputProps={{ id: "phoneNumber" }}
+                onKeyDown={(e) => {
+                  if (e.key === "e" || e.key === "." || e.key === "-") {
+                    e.preventDefault();
+                  }
+                }}
                 {...register("phoneNumber", {
                   required: "Phone number required",
                   pattern: {
                     value: new RegExp(/^[0-9]+$/),
                     message: "Invalid phone number format",
                   },
+                  validate: validatePhoneNumber,
+                  onChange: (e) => {
+                    if (!selectedCountry) {
+                      setError("country", { message: "Country required" });
+                      setValue("phoneNumber", "");
+                    } else {
+                      const regex = /[^0-9]/g;
+                      e.target.value = e.target.value.replace(regex, "");
+                      setValue("phoneNumber", e.target.value);
+                    }
+                  },
                 })}
+                InputProps={{
+                  startAdornment: selectedCountry?.phoneCode ? (
+                    <InputAdornment position="start">
+                      {formatPhoneCode(selectedCountry.phoneCode)}
+                    </InputAdornment>
+                  ) : null,
+                }}
               />
             </InputComponent>
-            {/* <Input
-                  {...register("phoneNumber", {
-                    required: "Phone required",
-                    // pattern: {value: new RegExp(/^[0-9]{9}$/), message: "Phone number invalid"}
-                  })}
-                  placeholder="123456789"
-                  className="w-48 h-11 border-2 border-gray-300 rounded-md"
-                /> */}
-            {/* </div> */}
             <InputComponent
               title="Password"
               className="col-span-12 sm:col-span-6 relative sm:mr-3 mb-4"
@@ -360,14 +416,14 @@ const SignupFormPage = () => {
             >
               <Tooltip
                 title={<ValidatePasswordForm validated={validated} />}
-                placement="top"
+                placement="bottom"
                 open={showValidatePassword}
                 color="#FFF"
               >
                 <input
                   type={showPassword.password ? "text" : "password"}
                   placeholder="********"
-                  className="focus:outline-none w-full"
+                  className="focus:outline-none w-full py-2 px-3 rounded-lg"
                   {...register("password", {
                     required: "Password required",
                     onChange: (e) => {
@@ -403,7 +459,7 @@ const SignupFormPage = () => {
               <input
                 type={showPassword.confirm ? "text" : "password"}
                 placeholder="********"
-                className="focus:outline-none w-full"
+                className="focus:outline-none w-full py-2 px-3 rounded-lg"
                 {...register("confirm", {
                   required: "Confirm password required",
                   validate: (value) =>
@@ -433,14 +489,10 @@ const SignupFormPage = () => {
             <input
               type="checkbox"
               className="w-[18px] h-[18px] cursor-pointer"
-              onChange={() => {
-                setIsChecked(!isChecked);
-              }}
               {...register("isCheck", {
                 shouldUnregister: true,
                 onChange: () => {
                   setIsChecked(!isChecked);
-                  console.log(formState.isValid);
                 },
               })}
             />
@@ -459,7 +511,6 @@ const SignupFormPage = () => {
               isChecked &&
               formState.isValid &&
               selectedCountry &&
-              selectedCountry != "" &&
               validated.lengthValidated &&
               validated.numberValidated &&
               validated.specialValidated &&
@@ -471,7 +522,7 @@ const SignupFormPage = () => {
             disabled={
               !selectedCountry ||
               !isChecked ||
-              selectedCountry == "" ||
+              !selectedCountry ||
               !formState.isValid ||
               !validated.lengthValidated ||
               !validated.numberValidated ||

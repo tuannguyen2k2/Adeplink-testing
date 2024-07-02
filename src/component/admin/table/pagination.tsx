@@ -47,7 +47,7 @@ const CPagination = ({
       <Box>
         <Typography
           fontFamily={theme.fontFamily.secondary}
-          color={"#0C0C0C"}
+          color={theme.black[200]}
           fontWeight={theme.fontWeight.regular}
           fontSize={14}
         >
@@ -63,12 +63,12 @@ const CPagination = ({
         }}
         sx={{
           "& .MuiButtonBase-root.MuiPaginationItem-root.Mui-selected": {
-            backgroundColor: "#0B7ECA",
+            backgroundColor: theme.palette.primary.main,
             color: "#ffffff",
             borderRadius: "8px",
 
             "&:hover": {
-              backgroundColor: "#0B7ECA",
+              backgroundColor: theme.palette.primary.main,
             },
           },
         }}

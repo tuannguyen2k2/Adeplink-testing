@@ -10,6 +10,7 @@ import { useLocale } from "next-intl";
 import {
   Box,
   Container,
+  IconButton,
   ThemeProvider as MuiThemeProvider,
 } from "@mui/material";
 import { theme } from "@/utils/theme";
@@ -18,13 +19,27 @@ import store from "@/store";
 import { ProgressProvider } from "./AppProvider";
 import { LocalizationProvider } from "@mui/x-date-pickers";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
-
+import { SnackbarKey, SnackbarProvider, useSnackbar } from "notistack";
+import { IoMdClose } from "react-icons/io";
 export default function ReactQueryProvider({
   children,
 }: {
   children: React.ReactNode;
 }) {
   const [queryClient] = useState(() => new QueryClient(queryClientConfig));
+
+  const SnackbarCloseButton = ({
+    snackbarKey,
+  }: {
+    snackbarKey: SnackbarKey | undefined;
+  }) => {
+    const { closeSnackbar } = useSnackbar();
+    return (
+      <IconButton onClick={() => closeSnackbar(snackbarKey)}>
+        <IoMdClose color="white" />
+      </IconButton>
+    );
+  };
   return (
     <QueryClientProvider client={queryClient}>
       <ProgressProvider>
@@ -36,7 +51,18 @@ export default function ReactQueryProvider({
                 enableSystem={false}
                 defaultTheme="light"
               >
-                <TooltipProvider>{children}</TooltipProvider>
+                <SnackbarProvider
+                  maxSnack={5}
+                  anchorOrigin={{
+                    vertical: "top",
+                    horizontal: "right",
+                  }}
+                  action={(snackbarKey) => (
+                    <SnackbarCloseButton snackbarKey={snackbarKey} />
+                  )}
+                >
+                  <TooltipProvider>{children}</TooltipProvider>
+                </SnackbarProvider>
                 <ReactQueryDevtools />
               </ThemeProvider>
             </MuiThemeProvider>

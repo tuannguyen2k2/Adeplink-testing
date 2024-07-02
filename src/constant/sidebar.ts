@@ -2,7 +2,12 @@ import { FaThLarge } from "react-icons/fa";
 import { IoLayersSharp, IoCube, IoSettings, IoLogOut } from "react-icons/io5";
 import { HiUsers } from "react-icons/hi2";
 import { BiSolidLayout } from "react-icons/bi";
-import { ADMIN_PATH_SUPPLIERS_URL } from "./pathUrl";
+import {
+  ACCOUNT_ADDRESS_URL,
+  ACCOUNT_PROFILE_URL,
+  ACCOUNT_SETTINGS_URL,
+  ADMIN_PATH_SUPPLIERS_URL,
+} from "./pathUrl";
 
 export const NAVIGATION = [
   {
@@ -58,5 +63,34 @@ export const NAVIGATION = [
     label: "Logout",
     Icon: IoLogOut,
     path: "/logout",
+  },
+];
+
+export const ACCOUNT_SIDEBAR = [
+  {
+    label: "My Account",
+    path: "/my-account",
+    subItems: [
+      {
+        label: "Public Profile",
+        path: ACCOUNT_PROFILE_URL,
+      },
+      {
+        label: "Account Settings",
+        path: ACCOUNT_SETTINGS_URL,
+      },
+      {
+        label: "Addresses",
+        path: ACCOUNT_ADDRESS_URL,
+      },
+    ],
+  },
+  {
+    label: "My Orders",
+    path: "/my-order",
+  },
+  {
+    label: "My RFQs",
+    path: "/my-rfqs",
   },
 ];

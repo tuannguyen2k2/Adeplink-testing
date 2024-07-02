@@ -88,7 +88,7 @@ const SidebarAdmin = () => {
               }}
             >
               <Typography
-                color={"#0B7ECA"}
+                color={theme.palette.primary.main}
                 fontSize={24}
                 fontWeight={theme.fontWeight.semiBold}
                 fontFamily={theme.fontFamily.secondary}
@@ -97,7 +97,7 @@ const SidebarAdmin = () => {
                 Adeptlink
               </Typography>
               <IconButton onClick={handleDrawerClose}>
-                <IoMdMenu color="#0B7ECA" />
+                <IoMdMenu color={theme.palette.primary.main} />
               </IconButton>
             </Box>
           ) : (

@@ -1,5 +1,5 @@
 "use client";
-import { Box, Button, Divider, Typography, useTheme } from "@mui/material";
+import { Box, Button, Container, Divider, Typography, useTheme } from "@mui/material";
 import Image from "next/image";
 import OrderSuccessfullyImage from "@/assets/images/order_successful.png";
 import ListProductComponent from "../show-list-product/ListProductComponent";
@@ -7,6 +7,7 @@ import { PRODUCT_PATH_URL } from "@/constant/pathUrl";
 import { ProductDto } from "@/interface/common";
 import { useGetAllProductRecommended } from "@/api/product/query";
 import { useEffect } from "react";
+import { MARGIN_BOTTOM_ON_FOOTER, MAX_WIDTH_APP } from "@/constant/css";
 const OrderSuccessfully = () => {
   const theme = useTheme();
   const { getAllProductRecommended, data } = useGetAllProductRecommended();
@@ -14,7 +15,14 @@ const OrderSuccessfully = () => {
     getAllProductRecommended();
   }, []);
   return (
-    <Box>
+    <Container
+      sx={{
+        mt: "184px",
+        p: { xs: "20px!important", md: "0 88px!important" },
+        maxWidth: `${MAX_WIDTH_APP}!important`,
+        mb: MARGIN_BOTTOM_ON_FOOTER,
+      }}
+    >
       <Box
         display={"flex"}
         flexDirection={"column"}
@@ -63,7 +71,7 @@ const OrderSuccessfully = () => {
         url={PRODUCT_PATH_URL.PRODUCT_LIST}
         data={data}
       />
-    </Box>
+    </Container>
   );
 };
 

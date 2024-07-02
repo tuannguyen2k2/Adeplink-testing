@@ -1,10 +1,40 @@
 import axiosConfig from "@/config/axiosConfig";
-import { AddressDto, AddressFormType } from "@/interface/common";
+import { AddressDto, ChangePasswordFormType } from "@/interface/common";
 import { SupplierDto } from "@/interface/user";
 
 export const signUpBecomeSupplier = async (data: SupplierDto) => {
   return await axiosConfig
     .patch("user/supplier", data)
+    .then((response) => response.data)
+    .catch((error) => {
+      throw error;
+    });
+};
+
+export const changePassword = async (data: ChangePasswordFormType) => {
+  return await axiosConfig
+    .patch("user/me/password", { ...data })
+    .then((response) => response.data)
+    .catch((error) => {
+      throw error;
+    });
+};
+
+export const changeEmail = async (email: string) => {
+  return await axiosConfig
+    .post("user/me/change-email", { email })
+    .then((response) => response.data)
+    .catch((error) => {
+      throw error;
+    });
+};
+
+export const verifyChangeEmail = async (data: {
+  email: string;
+  otp: string;
+}) => {
+  return await axiosConfig
+    .post("user/me/change-email/verify", { data })
     .then((response) => response.data)
     .catch((error) => {
       throw error;

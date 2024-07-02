@@ -30,6 +30,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { setCart } from "@/store/slice/appSlice";
 import { cartSelector, userSelector } from "@/store/selector";
 import { AUTH_PATH_URL } from "@/constant/pathUrl";
+import { isEqual } from "lodash";
 
 const useStyles = makeStyles({
   root: {
@@ -67,7 +68,8 @@ const ProductCharacteristics = ({
   const { getCart, data: cartData, isSuccess: getCartSuccess } = useGetCart();
   const [color, setColor] = useState<{ name: string; code: string }[]>();
   const user = useSelector(userSelector);
-
+  const [totalQuantityItemsTemporaryCart, setTotalQuantityItemsTemporaryCart] =
+    useState(0);
   const dispatch = useDispatch();
 
   useEffect(() => {
@@ -175,7 +177,7 @@ const ProductCharacteristics = ({
       temporaryCart.map((item) => {
         totalQuantityTemporaryCart += item.orderQuantity;
       });
-
+      setTotalQuantityItemsTemporaryCart(totalQuantityTemporaryCart);
       const matchingPriceIndex = getMatchingPriceIndexByAmount(
         totalQuantityTemporaryCart + +orderQuantity
       );
@@ -194,8 +196,9 @@ const ProductCharacteristics = ({
 
   const handleOnChangeQuantityInput = (e: ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
+    console.log(value.replace(/^0+/, ""));
     if (parseInt(value) > 0) {
-      setOrderQuantity(value.replace(/^0+/, ""));
+      setOrderQuantity(value);
     } else {
       setOrderQuantity("0");
     }
@@ -238,17 +241,23 @@ const ProductCharacteristics = ({
       });
 
     const dataCartItem = {
-      name: JSON.stringify(data.variant_attributes) === "{}" && data.name,
+      name: JSON.stringify(data.variant_attributes) === "{}" ? data.name : "",
       attributeCartTemporary: attributeCartTemporary,
       orderQuantity: +orderQuantity,
       unitPrice:
         priceSelected !== undefined ? data.price[priceSelected].price : null,
     };
-
     if (temporaryCart) {
       let isDuplicate = false;
       temporaryCart.map((item) => {
-        if (item.name === dataCartItem.name) {
+        if (
+          (JSON.stringify(data.variant_attributes) === "{}" &&
+            item.name === dataCartItem.name) ||
+          isEqual(
+            item.attributeCartTemporary,
+            dataCartItem.attributeCartTemporary
+          )
+        ) {
           isDuplicate = true;
           item.orderQuantity += dataCartItem.orderQuantity;
           item.unitPrice =
@@ -557,13 +566,17 @@ const ProductCharacteristics = ({
               sx={{
                 width: "100%",
                 bgcolor: `${
-                  data?.min_order && +orderQuantity < data?.min_order
+                  data?.min_order &&
+                  +orderQuantity + totalQuantityItemsTemporaryCart <
+                    data?.min_order
                     ? theme.blue[700]
                     : theme.palette.primary.main
                 }!important`,
                 color: "white",
                 pointerEvents:
-                  data?.min_order && +orderQuantity < data?.min_order
+                  data?.min_order &&
+                  +orderQuantity + totalQuantityItemsTemporaryCart <
+                    data?.min_order
                     ? "none"
                     : "auto",
                 borderRadius: "8px",
@@ -575,18 +588,20 @@ const ProductCharacteristics = ({
               {"Add to cart"}
             </Button>
           </Box>
-          {data?.min_order && +orderQuantity < data?.min_order && (
-            <Typography
-              fontFamily={theme.fontFamily.secondary}
-              fontSize={14}
-              fontWeight={theme.fontWeight.medium}
-              color={theme.red[200]}
-              fontStyle={"italic"}
-              mb={"14px"}
-            >
-              Quantity must be higher than MOQ
-            </Typography>
-          )}
+          {data?.min_order &&
+            +orderQuantity + totalQuantityItemsTemporaryCart <
+              data?.min_order && (
+              <Typography
+                fontFamily={theme.fontFamily.secondary}
+                fontSize={14}
+                fontWeight={theme.fontWeight.medium}
+                color={theme.red[200]}
+                fontStyle={"italic"}
+                mb={"14px"}
+              >
+                Quantity must be higher than MOQ
+              </Typography>
+            )}
         </Box>
       </Box>
       <TemporaryCart

@@ -43,7 +43,7 @@ const ForgetPasswordForm = () => {
 
   const { register, handleSubmit, formState, getValues } = useForm<{
     email: string;
-  }>();
+  }>({ mode: "onChange", reValidateMode: "onChange" });
 
   useEffect(() => {
     if (data?.code == 1) {
@@ -102,7 +102,7 @@ const ForgetPasswordForm = () => {
           </h4>
 
           <form onSubmit={handleSubmit(onSubmit)} className="mt-5 w-[80%]">
-            <div className="mb-5 h-20">
+            <div className={`${isEmailNotFound ? "mb-11" : "mb-4"} h-20`}>
               <h4
                 className={`font-medium mb-1 ${
                   formState.errors.email && "text-red-500"
@@ -115,20 +115,20 @@ const ForgetPasswordForm = () => {
                   placeholder="example@domain.com"
                   className="focus:outline-none w-full"
                   {...register("email", {
-                    required: "Email is require",
+                    required: " ",
                     pattern: {
                       value: /^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/g,
-                      message: "email invalid",
+                      message: "Please enter the correct format",
+                    },
+                    onChange: () => {
+                      setIsEmailNotFound(false);
+                      setShowValidateEmail(false);
                     },
                   })}
-                  onChange={() => {
-                    setIsEmailNotFound(false);
-                    setShowValidateEmail(false);
-                  }}
                 />
               </div>
               {formState.errors.email && (
-                <div className="text-red-500">
+                <div className="text-red-500 text-[14px]">
                   {formState.errors.email.message}
                 </div>
               )}
@@ -142,7 +142,7 @@ const ForgetPasswordForm = () => {
             </div>
 
             <button
-              className={`w-full text-white px-3 py-2 mt-2 rounded-lg ${
+              className={`w-full text-white px-3 py-2 rounded-lg ${
                 formState.isValid
                   ? "bg-[#0C71BA]"
                   : "bg-[#DBE9FE] cursor-not-allowed"

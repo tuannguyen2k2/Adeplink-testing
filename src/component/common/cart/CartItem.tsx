@@ -189,6 +189,9 @@ const CartItem = ({
   };
   const handleDecreaseQuantity = () => {
     if (quantity) {
+      if (quantity - 1 <= 0) {
+        handleDeleteCartItem();
+      }
       setQuantity(quantity - 1);
       updateQuantity(quantity - 1);
     }
@@ -214,8 +217,18 @@ const CartItem = ({
   };
 
   const handleOnChangeQuantityInput = (e: ChangeEvent<HTMLInputElement>) => {
+    if (+e.target.value < 0 || e.target.value == "") {
+      setQuantity(0);
+      return;
+    }
     setQuantity(parseInt(e.target.value));
     updateQuantity(parseInt(e.target.value));
+  };
+
+  const handleOnBlurQuantity = () => {
+    if (quantity == 0) {
+      handleDeleteCartItem();
+    }
   };
 
   const handleDeleteCartItem = () => {
@@ -416,6 +429,7 @@ const CartItem = ({
               handleDecreaseQuantity={handleDecreaseQuantity}
               handleIncreaseQuantity={handleIncreaseQuantity}
               handleOnChangeQuantityInput={handleOnChangeQuantityInput}
+              handleOnBlur={handleOnBlurQuantity}
             />
           </Box>
         )}

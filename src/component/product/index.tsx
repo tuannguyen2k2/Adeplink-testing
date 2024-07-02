@@ -3,7 +3,7 @@ import {
   useGetProductByCategory,
   useGetProductSearch,
 } from "@/api/product/query";
-import { MAX_WIDTH_APP } from "@/constant/css";
+import { MARGIN_BOTTOM_ON_FOOTER, MAX_WIDTH_APP } from "@/constant/css";
 import useDevices from "@/hook/useDevices";
 import {
   Box,
@@ -45,6 +45,9 @@ const Product = () => {
   const [data, setData] = useState<ProductSearchResultDto>();
   const [isSuccess, setIsSuccess] = useState(false);
   const [listCountryFilter, setListCountryFilter] = useState<string[]>();
+  const [showMoreCategory, setShowMoreCategory] = useState(false);
+  const [showMoreCountry, setShowMoreCountry] = useState(false);
+  const [invalidPriceFilter, setInvalidPriceFilter] = useState(false);
   const {
     getProductSearch,
     isSuccess: isSuccessProductSearch,
@@ -83,7 +86,7 @@ const Product = () => {
     }
   }, [data]);
 
-  const handleGetProduct = () => {
+  const handleGetProduct = (page: string | null) => {
     if (cate_name) {
       getProductByCategory({
         page: page,
@@ -100,7 +103,11 @@ const Product = () => {
     }
   };
 
-  const handleFilterProduct = (category_ids: string[], countries: string[]) => {
+  const handleFilterProduct = (
+    category_ids: string[],
+    countries: string[],
+    page: string | null
+  ) => {
     if (cate_name) {
       getProductByCategory({
         keyword: keyword_by_category,
@@ -111,6 +118,7 @@ const Product = () => {
         to_price: priceFilter.to_price,
         moq: moq,
         limit: PRODUCT_LIST_LIMIT,
+        page: page,
       });
     } else {
       getProductSearch({
@@ -127,9 +135,8 @@ const Product = () => {
   };
 
   useEffect(() => {
-    handleGetProduct();
+    handleGetProduct("1");
   }, [
-    page,
     keyword_by_category,
     keyword,
     cate_level3_id,
@@ -144,13 +151,17 @@ const Product = () => {
     const updatedList = [...categoryIdCheckedList];
 
     if (isChecked) {
-      handleFilterProduct([...categoryIdCheckedList, id], countryCheckedList);
+      handleFilterProduct(
+        [...categoryIdCheckedList, id],
+        countryCheckedList,
+        page
+      );
       updatedList.push(id);
     } else {
       const index = updatedList.indexOf(id);
       if (index !== -1) {
         updatedList.splice(index, 1);
-        handleFilterProduct([...updatedList], countryCheckedList);
+        handleFilterProduct([...updatedList], countryCheckedList, page);
       }
     }
 
@@ -179,7 +190,7 @@ const Product = () => {
         updatedList.splice(index, 1);
       }
     }
-    handleFilterProduct(categoryIdCheckedList, updatedList);
+    handleFilterProduct(categoryIdCheckedList, updatedList, page);
 
     setCountryCheckedList(updatedList);
     if (page) {
@@ -191,7 +202,17 @@ const Product = () => {
     }
   };
   const handleApply = () => {
-    handleFilterProduct(categoryIdCheckedList, countryCheckedList);
+    if (
+      priceFilter.from_price &&
+      priceFilter.to_price &&
+      +priceFilter.from_price > +priceFilter.to_price
+    ) {
+      setInvalidPriceFilter(true);
+      return;
+    } else {
+      setInvalidPriceFilter(false);
+    }
+    handleFilterProduct(categoryIdCheckedList, countryCheckedList, page);
     if (page) {
       const updatedSearchParams = new URLSearchParams(searchParams.toString());
       updatedSearchParams.delete("page");
@@ -206,12 +227,17 @@ const Product = () => {
     setCountryCheckedList([]);
     setPriceFilter({ from_price: "", to_price: "" });
     setMoq("");
-    handleGetProduct();
+    handleGetProduct(page);
   };
 
   const handleChangePage = (event: ChangeEvent<unknown>, page: number) => {
     const updatedSearchParams = new URLSearchParams(searchParams.toString());
     updatedSearchParams.set("page", page.toString());
+    handleFilterProduct(
+      categoryIdCheckedList,
+      countryCheckedList,
+      page.toString()
+    );
     router.push(
       `${PRODUCT_PATH_URL.PRODUCT_LIST}?${updatedSearchParams.toString()}`
     );
@@ -223,6 +249,7 @@ const Product = () => {
         p: { xs: "20px!important", sm: "0 88px!important" },
         maxWidth: `${MAX_WIDTH_APP}!important`,
         fontFamily: theme.fontFamily.secondary,
+        mb: MARGIN_BOTTOM_ON_FOOTER,
       }}
     >
       {cate_name && <RelevantCategoryFilter />}
@@ -296,25 +323,32 @@ const Product = () => {
                 Matching Products Categories
               </Typography>
               {listCategoryFilter ? (
-                Object.entries(listCategoryFilter).map(([id, name]) => {
-                  return (
-                    <Box display={"flex"} gap={1} mb={2} key={id}>
-                      <CheckboxComponent
-                        id={id}
-                        handleOnCheck={handleOnCheckCategory}
-                        checked={categoryIdCheckedList.includes(id)}
-                      />
-                      <Typography
-                        sx={{
-                          fontFamily: theme.fontFamily.secondary,
-                          fontSize: 14,
-                        }}
-                      >
-                        {name}
-                      </Typography>
-                    </Box>
-                  );
-                })
+                Object.entries(listCategoryFilter)
+                  .slice(
+                    0,
+                    showMoreCategory
+                      ? Object.entries(listCategoryFilter).length
+                      : 5
+                  )
+                  .map(([id, name]) => {
+                    return (
+                      <Box display={"flex"} gap={1} mb={2} key={id}>
+                        <CheckboxComponent
+                          id={id}
+                          handleOnCheck={handleOnCheckCategory}
+                          checked={categoryIdCheckedList.includes(id)}
+                        />
+                        <Typography
+                          sx={{
+                            fontFamily: theme.fontFamily.secondary,
+                            fontSize: 14,
+                          }}
+                        >
+                          {name}
+                        </Typography>
+                      </Box>
+                    );
+                  })
               ) : (
                 <FilterSkeleton />
               )}
@@ -325,8 +359,9 @@ const Product = () => {
                     fontFamily={theme.fontFamily.secondary}
                     fontSize={14}
                     color={theme.palette.primary.main}
+                    onClick={() => setShowMoreCategory(!showMoreCategory)}
                   >
-                    Show more
+                    {showMoreCategory ? "Show less" : "Show more"}
                   </Box>
                 )}
             </Box>
@@ -346,25 +381,27 @@ const Product = () => {
                 Suppliers Country
               </Typography>
               {listCountryFilter ? (
-                listCountryFilter?.map((country) => {
-                  return (
-                    <Box display={"flex"} gap={1} mb={2} key={country}>
-                      <CheckboxComponent
-                        id={country}
-                        handleOnCheck={handleOnCheckCountry}
-                        checked={countryCheckedList.includes(country)}
-                      />
-                      <Typography
-                        sx={{
-                          fontFamily: theme.fontFamily.secondary,
-                          fontSize: 14,
-                        }}
-                      >
-                        {country}
-                      </Typography>
-                    </Box>
-                  );
-                })
+                listCountryFilter
+                  ?.slice(0, showMoreCategory ? listCountryFilter.length : 5)
+                  .map((country) => {
+                    return (
+                      <Box display={"flex"} gap={1} mb={2} key={country}>
+                        <CheckboxComponent
+                          id={country}
+                          handleOnCheck={handleOnCheckCountry}
+                          checked={countryCheckedList.includes(country)}
+                        />
+                        <Typography
+                          sx={{
+                            fontFamily: theme.fontFamily.secondary,
+                            fontSize: 14,
+                          }}
+                        >
+                          {country}
+                        </Typography>
+                      </Box>
+                    );
+                  })
               ) : (
                 <FilterSkeleton />
               )}
@@ -374,8 +411,9 @@ const Product = () => {
                   fontFamily={theme.fontFamily.secondary}
                   fontSize={14}
                   color={theme.palette.primary.main}
+                  onClick={() => setShowMoreCountry(!showMoreCountry)}
                 >
-                  Show more
+                  {showMoreCountry ? "Show less" : "Show more"}
                 </Box>
               )}
             </Box>
@@ -456,6 +494,19 @@ const Product = () => {
                   }}
                 />
               </Box>
+              {invalidPriceFilter && (
+                <Typography
+                  width={"100%"}
+                  textAlign={"center"}
+                  mt={"8px"}
+                  fontFamily={theme.fontFamily.secondary}
+                  fontSize={14}
+                  fontWeight={theme.fontWeight.medium}
+                  color={theme.red[300]}
+                >
+                  Please enter a valid price range
+                </Typography>
+              )}
             </Box>
 
             <Box

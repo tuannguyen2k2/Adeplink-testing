@@ -17,7 +17,12 @@ import {
   Typography,
   useTheme,
 } from "@mui/material";
-import { Controller, SubmitHandler, useForm } from "react-hook-form";
+import {
+  Controller,
+  SubmitHandler,
+  UseFormReturn,
+  useForm,
+} from "react-hook-form";
 import TextFieldComponent from "../../TextFieldComponent";
 import {
   City,
@@ -33,21 +38,26 @@ import { useEditAddress, useSaveAddress } from "@/api/user/query";
 import CheckboxComponent from "../../CheckboxComponent";
 import { countryData } from "@/constant";
 import { useGetDistrictsVN, useGetProvincesVN } from "@/api/country/query";
+import { checkEmail } from "@/constant/regex";
 
 const AddressForm = ({
+  openAddressModal,
   title,
   isSaveAddress,
   onCancel,
   detail,
   onSuccess,
   hasNoAddress,
+  addressForm,
 }: {
+  openAddressModal?: boolean;
   title: string;
   isSaveAddress?: boolean;
   onCancel?: () => void;
   onSuccess?: () => void;
   detail?: AddressType;
   hasNoAddress?: boolean;
+  addressForm: UseFormReturn<AddressFormType, any, undefined>;
 }) => {
   const {
     control,
@@ -56,9 +66,12 @@ const AddressForm = ({
     setValue,
     getValues,
     resetField,
+    unregister,
+    clearErrors,
+    setError,
     register,
     formState: { errors, isValid },
-  } = useForm<AddressFormType>();
+  } = addressForm;
   const theme = useTheme();
   const { saveAddress, isSuccess: saveSuccess } = useSaveAddress();
   const { editAddress, isSuccess: editSuccess } = useEditAddress();
@@ -66,6 +79,8 @@ const AddressForm = ({
   const [selectedState, setSelectedState] = useState<StateType | null>();
   const [selectedCity, setSelectedCity] = useState<CityType | null>();
   const [isSaveAddressForLater, setIsSaveAddressForLater] = useState(false);
+  const { getProvincesVN, data: provincesDataVN } = useGetProvincesVN();
+  const { getDistrictsVN, data: districtsDataVN } = useGetDistrictsVN();
   useEffect(() => {
     if (detail) {
       setValue("company", detail.company);
@@ -78,68 +93,67 @@ const AddressForm = ({
       setValue("last_name", detail.last_name);
       setValue("phone", detail.phone);
       setValue("zipcode", detail.zipcode);
+      setValue("country", detail.country);
+      setValue("state", detail.state);
+      setValue("city", detail.city);
 
-      const country = countryData.find(
-        (country) => country.name == detail.country
-      );
+      const country = Country.getAllCountries()
+        .map((country) => ({
+          name: country.name,
+          phoneCode: country.phonecode,
+          isoCode: country.isoCode,
+        }))
+        .find((country) => country.name == detail.country);
       if (country) {
-        setValue("country", country.name);
         setSelectedCountry(country);
       }
       let state: StateType | undefined;
-      State.getStatesOfCountry(country?.isoCode).forEach((s) => {
-        if (s.name == detail.state) {
-          state = {
-            province_id: s.isoCode,
-            province_name: s.name,
-            province_type: s.name,
-            province_iso_code: s.isoCode,
-          };
-        }
-      });
-      if (state) {
-        setValue("state", state.province_name);
-        setSelectedState(state);
-      }
       let city: CityType | undefined;
-      country &&
-        state &&
-        state.province_iso_code &&
-        City.getCitiesOfState(
-          country?.isoCode,
-          state?.province_iso_code
-        ).forEach((c) => {
-          if (c.name == detail.city) {
-            city = { district_id: c.name, district_name: c.name };
+      if (country?.name !== "Vietnam") {
+        State.getStatesOfCountry(country?.isoCode).forEach((s) => {
+          if (s.name == detail.state) {
+            state = {
+              province_id: s.isoCode,
+              province_name: s.name,
+              province_type: s.name,
+              province_iso_code: s.isoCode,
+            };
           }
         });
-      if (city) {
-        setSelectedCity(city);
-        setValue("city", city.district_name);
+        country &&
+          state &&
+          state.province_iso_code &&
+          City.getCitiesOfState(
+            country?.isoCode,
+            state?.province_iso_code
+          ).forEach((c) => {
+            if (c.name == detail.city) {
+              city = { district_id: c.name, district_name: c.name };
+            }
+          });
+      }
+
+      if (state) {
+        setSelectedState(state);
       }
     } else {
-      setValue("company", "");
-      setValue("address_line1", "");
-      setValue("address_line2", "");
-      setValue("email", "");
-      setValue("first_name", "");
-      setValue("last_name", "");
-      setValue("phone", "");
-      setValue("zipcode", "");
-      setValue("country", "");
-      setSelectedCountry(null);
-      setValue("state", "");
-      setSelectedState(null);
-      setValue("city", "");
-      setSelectedCity(null);
+      reset();
     }
-  }, [detail]);
-  const { getProvincesVN, data: provincesDataVN } = useGetProvincesVN();
-  const { getDistrictsVN, data: districtsDataVN } = useGetDistrictsVN();
+  }, [detail, openAddressModal]);
+
   useEffect(() => {
     getProvincesVN();
   }, []);
-
+  useEffect(() => {
+    let state: StateType | undefined;
+    if (detail && detail?.country == "Vietnam") {
+      provincesDataVN?.forEach((province) => {
+        if (province.province_name == detail.state) {
+          setSelectedState(province);
+        }
+      });
+    }
+  }, [provincesDataVN]);
   useEffect(() => {
     if (selectedState) {
       getDistrictsVN(selectedState.province_id);
@@ -147,9 +161,9 @@ const AddressForm = ({
   }, [selectedState]);
 
   const getOptionsState = () => {
-    if (selectedCountry?.name === "Viet Nam") {
+    if (selectedCountry?.name === "Vietnam") {
       return provincesDataVN;
-    } else if (selectedCountry?.name === "Canada") {
+    } else if (selectedCountry) {
       return State.getStatesOfCountry(selectedCountry?.isoCode).map(
         (state) => ({
           province_id: state.isoCode,
@@ -161,12 +175,9 @@ const AddressForm = ({
     }
   };
   const getOptionsCity = () => {
-    if (selectedCountry?.name === "Viet Nam") {
+    if (selectedCountry?.name === "Vietnam") {
       return districtsDataVN;
-    } else if (
-      selectedCountry?.name === "Canada" &&
-      selectedState?.province_iso_code
-    ) {
+    } else if (selectedCountry?.isoCode && selectedState?.province_iso_code) {
       return City.getCitiesOfState(
         selectedCountry?.isoCode,
         selectedState?.province_iso_code
@@ -179,19 +190,6 @@ const AddressForm = ({
 
   const onSubmit: SubmitHandler<AddressFormType> = async (data) => {
     if (isSaveAddress || isSaveAddressForLater) {
-      const data = {
-        company: getValues().company,
-        email: getValues().email,
-        address_line1: getValues().address_line1,
-        address_line2: getValues().address_line2,
-        first_name: getValues().first_name,
-        last_name: getValues().last_name,
-        country: getValues().country,
-        state: getValues().state,
-        city: getValues().city,
-        phone: getValues().phone,
-        zipcode: getValues().zipcode,
-      };
       if (detail) {
         editAddress({ id: detail.id, data });
       } else {
@@ -199,7 +197,6 @@ const AddressForm = ({
       }
     }
   };
-  console.log(isValid);
 
   useEffect(() => {
     (saveSuccess || editSuccess) && onSuccess && onSuccess();
@@ -226,10 +223,16 @@ const AddressForm = ({
             label="Company Name"
             required
             rules={{ required: "Company required" }}
-            control={control}
             placeholder="AIVision"
             error={errors.company}
             name="company"
+            register={register}
+            clearErrors={() => clearErrors("company")}
+            onChange={(
+              e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+            ) => {
+              setValue("company", e.target.value);
+            }}
           />
           <Box
             display={"flex"}
@@ -241,19 +244,31 @@ const AddressForm = ({
               label="First Name"
               required
               rules={{ required: "First Name required" }}
-              control={control}
               placeholder="AIVision"
               error={errors.first_name}
               name="first_name"
+              register={register}
+              clearErrors={() => clearErrors("first_name")}
+              onChange={(
+                e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+              ) => {
+                setValue("first_name", e.target.value);
+              }}
             />
             <TextFieldComponent
               label="Last Name"
               required
               rules={{ required: "Last Name required" }}
-              control={control}
               placeholder="AIVision"
               error={errors.last_name}
               name="last_name"
+              register={register}
+              clearErrors={() => clearErrors("last_name")}
+              onChange={(
+                e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+              ) => {
+                setValue("last_name", e.target.value);
+              }}
             />
           </Box>
           <Box
@@ -266,34 +281,66 @@ const AddressForm = ({
               label="Phone Number"
               required
               rules={{ required: "Phone Number required" }}
-              control={control}
               placeholder="012392332"
               error={errors.phone}
               name="phone"
+              register={register}
+              clearErrors={() => clearErrors("phone")}
+              onChange={(
+                e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+              ) => {
+                const regex = /[^0-9]/g;
+                e.target.value = e.target.value.replace(regex, "");
+                setValue("phone", e.target.value);
+              }}
             />
             <TextFieldComponent
               label="Email Address"
-              control={control}
               placeholder="anh.mai@aivision.vn"
               error={errors.email}
               name="email"
+              rules={{
+                pattern: {
+                  value: checkEmail,
+                  message: "Please enter the correct format",
+                },
+              }}
+              register={register}
+              clearErrors={() => clearErrors("email")}
+              onChange={(
+                e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+              ) => {
+                setValue("email", e.target.value);
+              }}
             />
           </Box>
           <TextFieldComponent
             label="Address line 1"
             required
             rules={{ required: "Address line 1 required" }}
-            control={control}
             placeholder="202 Le Lai, Pham Ngu Lao Ward, District 1, HCMC"
             error={errors.address_line1}
             name="address_line1"
+            register={register}
+            clearErrors={() => clearErrors("address_line1")}
+            onChange={(
+              e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+            ) => {
+              setValue("address_line1", e.target.value);
+            }}
           />
           <TextFieldComponent
             label="Address line 2"
-            control={control}
             placeholder="202 Le Lai, Pham Ngu Lao Ward, District 1, HCMC"
             error={errors.address_line2}
             name="address_line2"
+            register={register}
+            clearErrors={() => clearErrors("address_line2")}
+            onChange={(
+              e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+            ) => {
+              setValue("address_line2", e.target.value);
+            }}
           />
         </Box>
         <Box
@@ -333,16 +380,29 @@ const AddressForm = ({
                       border: `1px solid ${theme.blue[600]}`,
                       borderRadius: "8px",
                     }}
-                    options={countryData}
+                    options={Country.getAllCountries().map((country) => ({
+                      name: country.name,
+                      phoneCode: country.phonecode,
+                      isoCode: country.isoCode,
+                    }))}
                     getOptionLabel={(country) => country.name}
                     value={selectedCountry}
                     size="small"
                     fullWidth
                     onInputChange={(event, newInputValue, reason) => {
+                      if (newInputValue) {
+                        clearErrors("country");
+                        unregister("country", { keepIsValid: true });
+                        setValue("country", newInputValue);
+                      } else {
+                        setValue("country", "");
+                      }
                       if (reason === "clear") {
+                        setValue("country", "");
                         setSelectedCountry(null);
                         setSelectedState(null);
                         setSelectedCity(null);
+                        setError("country", { message: "Country required" });
                       }
                     }}
                     renderInput={(params) => (
@@ -355,6 +415,10 @@ const AddressForm = ({
                             fontFamily: theme.fontFamily.secondary,
                             fontSize: 16,
                           },
+                        }}
+                        inputProps={{
+                          ...params.inputProps,
+                          value: getValues().country ? getValues().country : "",
                         }}
                       />
                     )}
@@ -385,7 +449,14 @@ const AddressForm = ({
                     }}
                   />
                   {errors.country && (
-                    <FormHelperText error={true}>
+                    <FormHelperText
+                      error={true}
+                      sx={{
+                        fontFamily: theme.fontFamily.secondary,
+                        color: `${theme.red[300]}!important`,
+                        fontSize: 13,
+                      }}
+                    >
                       {errors.country?.message}
                     </FormHelperText>
                   )}
@@ -430,11 +501,17 @@ const AddressForm = ({
                     size="small"
                     disabled={!selectedCountry}
                     onInputChange={(event, newInputValue, reason) => {
+                      if (newInputValue) {
+                        clearErrors("state");
+                        unregister("state", { keepIsValid: true });
+                        setValue("state", newInputValue);
+                      }
                       if (reason === "clear") {
                         setValue("state", "");
                         setSelectedState(null);
                         setValue("city", "");
                         setSelectedCity(null);
+                        setError("state", { message: "State required" });
                       }
                     }}
                     renderInput={(params) => (
@@ -486,8 +563,15 @@ const AddressForm = ({
                     }}
                   />
                   {errors.state && (
-                    <FormHelperText error={true}>
-                      {errors.state?.message}
+                    <FormHelperText
+                      error={true}
+                      sx={{
+                        fontFamily: theme.fontFamily.secondary,
+                        color: `${theme.red[300]}!important`,
+                        fontSize: 13,
+                      }}
+                    >
+                      {errors.country?.message}
                     </FormHelperText>
                   )}
                 </Box>
@@ -535,9 +619,15 @@ const AddressForm = ({
                     options={getOptionsCity() || []}
                     getOptionLabel={(city) => city.district_name}
                     onInputChange={(event, newInputValue, reason) => {
+                      if (newInputValue) {
+                        clearErrors("city");
+                        unregister("city", { keepIsValid: true });
+                        setValue("city", newInputValue);
+                      }
                       if (reason === "clear") {
                         setSelectedCity(null);
                         setValue("city", "");
+                        setError("city", { message: "City required" });
                       }
                     }}
                     fullWidth
@@ -586,8 +676,15 @@ const AddressForm = ({
                     }}
                   />
                   {errors.city && (
-                    <FormHelperText error={true}>
-                      {errors.city?.message}
+                    <FormHelperText
+                      error={true}
+                      sx={{
+                        fontFamily: theme.fontFamily.secondary,
+                        color: `${theme.red[300]}!important`,
+                        fontSize: 13,
+                      }}
+                    >
+                      {errors.country?.message}
                     </FormHelperText>
                   )}
                 </Box>
@@ -596,22 +693,31 @@ const AddressForm = ({
           </Box>
           <TextFieldComponent
             label="ZIP/Postal code"
-            control={control}
             placeholder="700000"
             required
             rules={{ required: "Zip/Postal code required" }}
             error={errors.zipcode}
             name="zipcode"
+            register={register}
+            clearErrors={() => clearErrors("zipcode")}
+            onChange={(
+              e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+            ) => {
+              setValue("zipcode", e.target.value);
+            }}
           />
         </Box>
         {hasNoAddress && (
           <Box display={"flex"} gap={"10px"} alignItems={"start"} mt={"24px"}>
             <CheckboxComponent
-              id={"Check save last use"}
+              id={"is_save_later_use"}
               checked={isSaveAddressForLater}
-              handleOnCheck={(e: ChangeEvent<HTMLInputElement>) =>
-                setIsSaveAddressForLater(!isSaveAddressForLater)
-              }
+              handleOnCheck={(e: ChangeEvent<HTMLInputElement>) => {
+                setIsSaveAddressForLater(!isSaveAddressForLater);
+                setValue("is_save_later_use", e.currentTarget.checked);
+              }}
+              rules={{ shouldUnregister: true }}
+              register={register}
             />
             <Typography fontFamily={theme.fontFamily.secondary} fontSize={14}>
               Save for later use
@@ -636,7 +742,6 @@ const AddressForm = ({
               size="large"
               onClick={() => {
                 onCancel && onCancel();
-                reset();
               }}
             >
               Cancel

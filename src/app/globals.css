@@ -87,3 +87,6 @@ input::-ms-reveal,
 input::-ms-clear {
   display: none;
 }
+.notistack-SnackbarContainer {
+  top: 104px!important;
+}

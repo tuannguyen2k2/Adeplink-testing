@@ -9,21 +9,22 @@ import {
   Typography,
   useTheme,
 } from "@mui/material";
-import { FaAngleUp } from "react-icons/fa6";
-import CAutocomplete, { IOption } from "../autocomplete";
+
 import CSelect from "../select";
 import CDatePicker from "../date-picker";
 import CSearch from "../search";
 import CTable from "../table";
 import { useMemo, useState } from "react";
-import { FilterSupplierDto } from "@/interface/common";
+import { FilterSupplierDto, IOption } from "@/interface/common";
 import { useQuery } from "@tanstack/react-query";
 import { getSearchSupplier } from "@/api/supplier";
 import { SUPPLIER_KEY } from "@/constant/queryKey";
 import CPagination from "../table/pagination";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
-import { HiDotsVertical } from "react-icons/hi";
 import MenuRow from "../menu-row";
+import Link from "next/link";
+import { ADMIN_PATH_SUPPLIERS_PENDING_URL } from "@/constant/pathUrl";
+import CAutocompleteAdmin from "../autocomplete";
 
 const columns = [
   { field: "company_name", headerName: "Company", width: 150, sortable: false },
@@ -78,6 +79,8 @@ const columns = [
 
 const SupplierListPage = () => {
   const theme = useTheme();
+
+  const [expanded, setExpanded] = useState(true);
 
   const [page, setPage] = useState<number>(1);
 
@@ -140,8 +143,6 @@ const SupplierListPage = () => {
     }
   };
 
-  const [expanded, setExpanded] = useState(false);
-
   const handleExpansion = () => {
     setExpanded((prevExpanded) => !prevExpanded);
   };
@@ -163,6 +164,9 @@ const SupplierListPage = () => {
           "&:last-of-type": {
             borderBottomLeftRadius: "16px",
             borderBottomRightRadius: "16px",
+          },
+          "&::before": {
+            height: "0px",
           },
         }}
         expanded={expanded}
@@ -186,19 +190,19 @@ const SupplierListPage = () => {
         <AccordionDetails>
           <Divider
             sx={{
-              borderColor: "#E6EFFB",
+              borderColor: theme.blue[600],
             }}
           />
           <Grid container paddingY={2} spacing={4}>
             <Grid item xs={4}>
-              <CAutocomplete
+              <CAutocompleteAdmin
                 label="Main category"
                 onChange={handelCategory}
                 options={categories}
               />
             </Grid>
             <Grid item xs={4}>
-              <CAutocomplete
+              <CAutocompleteAdmin
                 label="Country/Region"
                 onChange={handelCountry}
                 options={countries}
@@ -240,7 +244,7 @@ const SupplierListPage = () => {
         <Button
           sx={{
             borderRadius: "8px",
-            border: "1px solid #E6EFFB",
+            border: `1px solid ${theme.blue[600]}`,
             padding: "11px 16px",
             fontFamily: theme.fontFamily.secondary,
           }}
@@ -248,42 +252,44 @@ const SupplierListPage = () => {
           Export
         </Button>
         <Box sx={{ display: "flex", gap: "18px" }}>
-          <Box
-            sx={{
-              borderRadius: "8px",
-              border: "1px solid #E6EFFB",
-              padding: "11px 16px",
-              display: "flex",
-              gap: "8px",
-            }}
-          >
-            <Typography
-              fontFamily={theme.fontFamily.secondary}
-              color={"#0B7ECA"}
-              fontSize={14}
-            >
-              Pending Supplier Approvals
-            </Typography>
-            <Typography
-              fontFamily={theme.fontFamily.secondary}
-              color={"#0B7ECA"}
-              fontSize={14}
+          <Link href={ADMIN_PATH_SUPPLIERS_PENDING_URL}>
+            <Box
               sx={{
-                backgroundColor: "#F0F6FF",
-                width: "24px",
-                height: "24px",
-                borderRadius: "100%",
+                borderRadius: "8px",
+                border: `1px solid ${theme.blue[600]}`,
+                padding: "11px 16px",
                 display: "flex",
-                justifyContent: "center",
-                alignItems: "center",
+                gap: "8px",
               }}
             >
-              11
-            </Typography>
-          </Box>
+              <Typography
+                fontFamily={theme.fontFamily.secondary}
+                color={theme.palette.primary.main}
+                fontSize={14}
+              >
+                Pending Supplier Approvals
+              </Typography>
+              <Typography
+                fontFamily={theme.fontFamily.secondary}
+                color={theme.palette.primary.main}
+                fontSize={14}
+                sx={{
+                  backgroundColor: "#F0F6FF",
+                  width: "24px",
+                  height: "24px",
+                  borderRadius: "100%",
+                  display: "flex",
+                  justifyContent: "center",
+                  alignItems: "center",
+                }}
+              >
+                11
+              </Typography>
+            </Box>
+          </Link>
           <CSearch
             width="300px"
-            border="1px solid #E6EFFB"
+            border={`1px solid ${theme.blue[600]}`}
             onChange={handelSearch}
           />
         </Box>

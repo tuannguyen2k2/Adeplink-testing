@@ -39,11 +39,11 @@ const CSelect = ({ label, options }: ICSelect) => {
         value={value}
         onChange={handleChange}
         sx={{
-          border: "1px solid #E6EFFB",
+          border: `1px solid ${theme.blue[600]}`,
           borderRadius: "8px",
 
           "& .MuiSelect-icon": {
-            color: "#0B7ECA",
+            color: theme.palette.primary.main,
             fontSize: "20px",
           },
           "& .MuiSelect-select": {

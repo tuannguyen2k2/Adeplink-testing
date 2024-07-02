@@ -1,0 +1,4 @@
+export const PUBLIC_KEY_STRIPE =
+  "pk_test_51PVQWfKMSiGcbrif3hwmFXNsteNFFmXJZGXUFS8ccf4gWGHf6Rj1B9Ka49n1W0TawivB4BmEZeW8mmSm3ftR5enm00StJZNEge";
+export const SECRET_KEY =
+  "sk_test_51PVQWfKMSiGcbrifcoR1RB8NvP06mECRzKQ2tNHVBZMsuvaI0fesPkeAa1lRVhaM8szXUdOQqMPvYlLy4Y8QwzAv00QwLIEpG2";

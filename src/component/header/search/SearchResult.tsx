@@ -115,6 +115,27 @@ const SearchResult = ({
             component={"button"}
             width={"100%"}
             onClick={() => {
+              let RECENTLY_SEARCH_RESULT;
+              if (selectedSearchOption === "product") {
+                RECENTLY_SEARCH_RESULT = RECENTLY_SEARCH_PRODUCT_RESULT;
+              } else {
+                RECENTLY_SEARCH_RESULT = RECENTLY_SEARCH_SUPPLIER_RESULT;
+              }
+              const searchValue = {
+                keyword: debouncedValue,
+                slug: null,
+              };
+              if (recentlySearchResultParse) {
+                if (recentlySearchResultParse.length === 5) {
+                  recentlySearchResultParse.pop();
+                }
+                Cookies.set(
+                  RECENTLY_SEARCH_RESULT,
+                  JSON.stringify([searchValue, ...recentlySearchResultParse])
+                );
+              } else {
+                Cookies.set(RECENTLY_SEARCH_RESULT, JSON.stringify([searchValue]));
+              }
               router.push(
                 `${PRODUCT_PATH_URL.PRODUCT_LIST}?${
                   isSearchHeader

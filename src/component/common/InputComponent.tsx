@@ -21,7 +21,7 @@ export const InputComponent = ({
       </h4>
       <div
         style={{ fontWeight: "400" }}
-        className="border-[1px] border-solid border-gray-400 rounded-lg w-full px-3 py-2"
+        className="border-[1px] border-solid border-gray-400 rounded-lg w-full "
       >
         {children}
       </div>

@@ -13,7 +13,7 @@ const Footer = () => {
   const { isLaptop } = useDevices();
   const translate = useTranslations();
   return (
-    <footer style={{ marginTop: "100px" }}>
+    <footer>
       <Box
         sx={(theme) => ({
           bgcolor: theme.blue[100],

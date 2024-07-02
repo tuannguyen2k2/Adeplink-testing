@@ -16,18 +16,33 @@ import {
 } from "@mui/material";
 import Image from "next/image";
 import { usePathname } from "next/navigation";
-import { ChangeEvent, useEffect, useState } from "react";
+import {
+  ChangeEvent,
+  Dispatch,
+  SetStateAction,
+  useEffect,
+  useState,
+} from "react";
 import { IoIosArrowDown } from "react-icons/io";
 import LogoShipping from "@/assets/images/logo_shipping.png";
 import ListShippingMethodModal from "./shipping/ListShippingMethodModal";
+import boatIcon from "@/assets/icons/boat.svg";
+import planeIcon from "@/assets/icons/air_plane.svg";
+import landIcon from "@/assets/icons/land_freight.svg";
 const SupplierAccordion = ({
   data,
   totalItem,
   totalPrice,
+  modeReview,
+  setSupplierSent,
+  supplierSent,
 }: {
   data: SupplierCartType;
   totalItem: number;
   totalPrice?: number;
+  modeReview?: boolean;
+  setSupplierSent?: Dispatch<SetStateAction<string[]>>;
+  supplierSent?: string[];
 }) => {
   const [productTickedInCart, setProductTickedInCart] = useState<
     ProductCartType[]
@@ -81,6 +96,7 @@ const SupplierAccordion = ({
           display: "none",
         },
         "&.MuiAccordion-root": {
+          mt: "0!important",
           mb: "16px!important",
         },
       }}
@@ -282,10 +298,23 @@ const SupplierAccordion = ({
             );
           }
         })}
-        <ShippingMethod />
+        <ShippingMethod modeReview={modeReview} />
       </AccordionDetails>
       {pathname == SEND_REQUEST_PATH_URL ? (
-        <SendRequestForm totalItem={totalItem} />
+        <SendRequestForm
+          totalItem={totalItem}
+          supplierName={data.name}
+          isSent={supplierSent ? supplierSent.includes(data.id) : false}
+          handleSendRequest={() => {
+            if (supplierSent) {
+              if (supplierSent.includes(data.id)) {
+                return;
+              } else {
+                setSupplierSent && setSupplierSent([data.id, ...supplierSent]);
+              }
+            }
+          }}
+        />
       ) : (
         <Box
           bgcolor={theme.blue[100]}
@@ -321,12 +350,33 @@ const SupplierAccordion = ({
   );
 };
 
-const ShippingMethod = () => {
+const ShippingMethod = ({ modeReview }: { modeReview?: boolean }) => {
+  const shippingMethod = [
+    {
+      icon: boatIcon,
+      name: "Sea Freight",
+    },
+    {
+      icon: planeIcon,
+      name: "Air Freight",
+    },
+    {
+      icon: landIcon,
+      name: "Land Freight",
+    },
+  ];
   const theme = useTheme();
   const pathname = usePathname();
   const [openListShippingMethodModal, setOpenListShippingMethodModal] =
     useState(false);
-  
+  const [methodChecked, setMethodChecked] = useState<{
+    method: number;
+    item: number;
+  }>({
+    method: 0,
+    item: 0,
+  });
+
   return (
     <Box display={"flex"} flexDirection={"column"}>
       <Typography
@@ -355,12 +405,22 @@ const ShippingMethod = () => {
           mt={"16px"}
         >
           <Box display={"flex"} alignItems={"center"} gap={"10px"}>
-            <Image
-              src={LogoShipping}
-              alt="logo_shipping"
+            <Box
+              bgcolor={theme.blue[1200]}
               width={62}
               height={62}
-            />
+              borderRadius={"4px"}
+              display={"flex"}
+              alignItems={"center"}
+              justifyContent={"center"}
+            >
+              <Image
+                src={shippingMethod[methodChecked.method].icon}
+                alt="logo_shipping"
+                width={32}
+                height={32}
+              />
+            </Box>
             <Box display={"flex"} flexDirection={"column"} gap={"8px"}>
               <Box display={"flex"} gap={"16px"}>
                 <Typography
@@ -370,22 +430,26 @@ const ShippingMethod = () => {
                 >
                   {"FedEx (Standard)"}
                 </Typography>
-                <Box
-                  component={"button"}
-                  fontFamily={theme.fontFamily.secondary}
-                  fontSize={14}
-                  color={theme.palette.primary.main}
-                  onClick={() => {
-                    setOpenListShippingMethodModal(true);
-                  }}
-                >
-                  Change
-                </Box>
+                {!modeReview && (
+                  <Box
+                    component={"button"}
+                    fontFamily={theme.fontFamily.secondary}
+                    fontSize={14}
+                    color={theme.palette.primary.main}
+                    onClick={() => {
+                      setOpenListShippingMethodModal(true);
+                    }}
+                  >
+                    Change
+                  </Box>
+                )}
                 <ListShippingMethodModal
                   openListShippingMethodModal={openListShippingMethodModal}
                   setOpenListShippingMethodModal={
                     setOpenListShippingMethodModal
                   }
+                  setMethodChecked={setMethodChecked}
+                  methodChecked={methodChecked}
                 />
               </Box>
               <Typography fontFamily={theme.fontFamily.secondary} fontSize={14}>
@@ -419,7 +483,17 @@ const ShippingMethod = () => {
   );
 };
 
-const SendRequestForm = ({ totalItem }: { totalItem: number }) => {
+const SendRequestForm = ({
+  totalItem,
+  handleSendRequest,
+  isSent,
+  supplierName,
+}: {
+  totalItem: number;
+  handleSendRequest: () => void;
+  isSent: boolean;
+  supplierName: string;
+}) => {
   const theme = useTheme();
   const [valueInput, setValueInput] = useState("");
   return (
@@ -445,58 +519,66 @@ const SendRequestForm = ({ totalItem }: { totalItem: number }) => {
           Contact
         </Typography>
       </Box>
-      <Box
-        bgcolor={theme.blue[1100]}
-        p={"16px"}
-        display={"flex"}
-        flexDirection={"column"}
-        gap={"16px"}
-        border={"16px"}
-        mt={"40px"}
-      >
-        <Typography fontFamily={theme.fontFamily.secondary} fontSize={14}>
-          *A request for quotation will be send to this supplier and they will
-          get in touch with your order soon!
-        </Typography>
-        <Typography
-          fontFamily={theme.fontFamily.secondary}
-          fontSize={14}
-          fontWeight={theme.fontWeight.medium}
-        >
-          Message
-        </Typography>
-        <TextField
-          rows={5}
-          multiline
-          onChange={(
-            event: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
-          ) => setValueInput(event.target.value)}
-          sx={{
-            width: "100%",
-            bgcolor: "white",
-            border: `1px solid ${theme.blue[600]}`,
-            borderRadius: "8px",
-            "& .MuiOutlinedInput-root": {
-              fontFamily: theme.fontFamily.secondary,
-            },
-          }}
-        />
-        <Button
-          sx={{
-            width: "100%",
-            bgcolor:
-              valueInput == ""
-                ? `${theme.blue[700]}!important`
-                : `${theme.palette.primary.main}!important`,
-            pointerEvents: valueInput == "" ? "none" : "auto",
-            color: "white",
-            borderRadius: "8px",
-            fontFamily: theme.fontFamily.secondary,
-            fontWeight: theme.fontWeight.medium,
-          }}
-        >
-          Send Request for Quotation
-        </Button>
+      <Box bgcolor={theme.blue[1100]} p={"16px"} border={"16px"} mt={"40px"}>
+        {!isSent ? (
+          <Box display={"flex"} flexDirection={"column"} gap={"16px"}>
+            <Typography fontFamily={theme.fontFamily.secondary} fontSize={14}>
+              *A request for quotation will be send to this supplier and they
+              will get in touch with your order soon!
+            </Typography>
+            <Typography
+              fontFamily={theme.fontFamily.secondary}
+              fontSize={14}
+              fontWeight={theme.fontWeight.medium}
+            >
+              Message
+            </Typography>
+            <TextField
+              rows={5}
+              multiline
+              onChange={(
+                event: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+              ) => setValueInput(event.target.value)}
+              sx={{
+                width: "100%",
+                bgcolor: "white",
+                border: `1px solid ${theme.blue[600]}`,
+                borderRadius: "8px",
+                "& .MuiOutlinedInput-root": {
+                  fontFamily: theme.fontFamily.secondary,
+                },
+              }}
+            />
+            <Button
+              onClick={handleSendRequest}
+              sx={{
+                width: "100%",
+                p: "12px 16px",
+                bgcolor:
+                  valueInput == ""
+                    ? `${theme.blue[700]}!important`
+                    : `${theme.palette.primary.main}!important`,
+                pointerEvents: valueInput == "" ? "none" : "auto",
+                color: "white",
+                borderRadius: "8px",
+                fontFamily: theme.fontFamily.secondary,
+                fontWeight: theme.fontWeight.medium,
+              }}
+            >
+              Send Request for Quotation
+            </Button>
+          </Box>
+        ) : (
+          <Typography
+            fontFamily={theme.fontFamily.secondary}
+            color={theme.palette.primary.main}
+            fontWeight={theme.fontWeight.medium}
+            textAlign={"center"}
+            width={"100%"}
+          >
+            {`A request for quotation has been sent to the supplier ${supplierName}, and they will contact you soon regarding your order!`}
+          </Typography>
+        )}
       </Box>
     </Box>
   );

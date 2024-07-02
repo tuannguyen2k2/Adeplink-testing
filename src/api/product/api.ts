@@ -77,18 +77,7 @@ export const getProductByCategory = async (data: FilterProductDto) => {
     });
 };
 
-export const getProductOfSupplier = async (
-  data: FilterProductOfSupplierDto
-) => {
-  const params = new URLSearchParams();
-  data.category_id && params.append("category_id", data.category_id);
-  return await axiosConfig
-    .get(`company/${data.company_slug}/products`, { params: params })
-    .then((response) => response.data.data)
-    .catch((error) => {
-      throw error;
-    });
-};
+
 
 export const getRatingByProductId = async (
   productId: string,

@@ -1,3 +1,4 @@
+import { IOption } from "@/interface/common";
 import {
   Autocomplete,
   FormControl,
@@ -7,24 +8,19 @@ import {
 } from "@mui/material";
 import { IoIosArrowDown } from "react-icons/io";
 
-export interface IOption {
-  id?: any;
-  label: string;
-  value: any;
-}
-interface ICAutocomplete {
+interface ICAutocompleteAdmin {
   label?: string;
   onChange: (value?: any) => void;
   multiple?: boolean;
   options: IOption[];
 }
 
-const CAutocomplete = ({
+const CAutocompleteAdmin = ({
   label,
   onChange,
   multiple,
   options,
-}: ICAutocomplete) => {
+}: ICAutocompleteAdmin) => {
   const theme = useTheme();
 
   const handleAutocompleteChange = (
@@ -61,18 +57,20 @@ const CAutocomplete = ({
           "& .MuiInputBase-root": {
             padding: "7px 8px",
           },
-          border: "1px solid #E6EFFB",
+          border: `1px solid ${theme.blue[600]}`,
           borderRadius: "8px",
 
           "& .MuiAutocomplete-input": {
             fontSize: "14px",
           },
         }}
-        popupIcon={<IoIosArrowDown color="#0B7ECA" size={20} />}
+        popupIcon={
+          <IoIosArrowDown color={theme.palette.primary.main} size={20} />
+        }
         //   {...props}
       />
     </FormControl>
   );
 };
 
-export default CAutocomplete;
+export default CAutocompleteAdmin;

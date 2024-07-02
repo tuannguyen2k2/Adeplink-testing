@@ -26,13 +26,7 @@ interface ISidebarItem {
   subItems?: { label: string; path: string }[];
 }
 
-const SidebarItem = ({
-  open,
-  label,
-  ICon,
-  subItems,
-  url,
-}: ISidebarItem) => {
+const SidebarItem = ({ open, label, ICon, subItems, url }: ISidebarItem) => {
   const theme = useTheme();
   const router = useRouter();
   const pathname = usePathname();
@@ -45,9 +39,9 @@ const SidebarItem = ({
 
   const color = useMemo(() => {
     if (open) {
-      return getActive(url) ? "#ffffff" : "#3F4958";
+      return getActive(url) ? "#ffffff" : theme.black[100];
     } else {
-      return getActive(url) ? "#0B7ECA" : "#3F4958";
+      return getActive(url) ? theme.palette.primary.main : theme.black[100];
     }
   }, [open, url]);
 
@@ -81,12 +75,14 @@ const SidebarItem = ({
               justifyContent: open ? "initial" : "center",
               px: 2.5,
               display: "flex",
-              backgroundColor: open && getActive(url) ? "#0B7ECA" : "",
+              backgroundColor:
+                open && getActive(url) ? theme.palette.primary.main : "",
               padding: open ? "14px 13px" : "",
               borderRadius: "6px",
-              color: open && getActive(url) ? "#ffffff" : "#3F4958",
+              color: open && getActive(url) ? "#ffffff" : theme.black[100],
               "&:hover": {
-                backgroundColor: open && getActive(url) ? "#0B7ECA" : "",
+                backgroundColor:
+                  open && getActive(url) ? theme.palette.primary.main : "",
               },
               "& . MuiListItemButton-root": {},
             }}
@@ -130,10 +126,16 @@ const SidebarItem = ({
             <List component="div" disablePadding>
               {subItems &&
                 subItems.map((item, index) => (
-                  <Link key={index} href={item.path}>
+                  <Link key={`${index}-${item.path}`} href={item.path}>
                     <ListItemButton sx={{ pl: "30px" }}>
                       <ListItemIcon sx={{ minWidth: "24px" }}>
-                        <GoDot />
+                        <GoDot
+                          color={
+                            getActive(item.path)
+                              ? theme.palette.primary.main
+                              : theme.black[100]
+                          }
+                        />
                       </ListItemIcon>
                       <ListItemText
                         primary={item.label}
@@ -142,7 +144,9 @@ const SidebarItem = ({
                             fontFamily: theme.fontFamily.secondary,
                             fontWeight: theme.fontWeight.semiBold,
                             fontSize: "14px",
-                            color: getActive(item.path) ? "#0B7ECA" : "#3F4958",
+                            color: getActive(item.path)
+                              ? theme.palette.primary.main
+                              : theme.black[100],
                           },
                         }}
                       />

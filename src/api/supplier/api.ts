@@ -1,6 +1,6 @@
 import axiosConfig from "@/config/axiosConfig";
 import { SortOption } from "@/constant/enum";
-import { FilterSupplierDto, PaginationDto } from "@/interface/common";
+import { FilterProductOfSupplierDto, FilterSupplierDto, PaginationDto } from "@/interface/common";
 
 export const getSupplierDetailBySlug = async (slug: string) => {
   return await axiosConfig
@@ -8,6 +8,21 @@ export const getSupplierDetailBySlug = async (slug: string) => {
     .then((response) => response.data)
     .catch((error) => {
       throw Error(error);
+    });
+};
+
+export const getProductOfSupplier = async (
+  data: FilterProductOfSupplierDto
+) => {
+  const params = new URLSearchParams();
+  data.category_id && params.append("category_id", data.category_id);
+  data.limit && params.append("limit", data.limit);
+  data.page && params.append("page", data.page);
+  return await axiosConfig
+    .get(`company/${data.company_slug}/products`, { params: params })
+    .then((response) => response.data.data)
+    .catch((error) => {
+      throw error;
     });
 };
 

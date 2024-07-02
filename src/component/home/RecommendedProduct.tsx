@@ -1,18 +1,11 @@
 "use client";
-import { Box, Divider, Grid, Typography, useTheme } from "@mui/material";
-import Image from "next/image";
-import { MdArrowForwardIos } from "react-icons/md";
-import Product2 from "@/assets/images/product2.jpg";
 import { MAX_WIDTH_APP } from "@/constant/css";
+import { Box, useTheme } from "@mui/material";
 
-import useDevices from "@/hook/useDevices";
-import Cookies from "js-cookie";
-import { useRouter } from "next-nprogress-bar";
-import { PRODUCT_PATH_URL } from "@/constant/pathUrl";
-import ListProductComponent from "../common/show-list-product/ListProductComponent";
-import { ProductDto } from "@/interface/common";
 import { useGetAllProductRecommended } from "@/api/product/query";
+import { PRODUCT_PATH_URL } from "@/constant/pathUrl";
 import { useEffect } from "react";
+import ListProductComponent from "../common/show-list-product/ListProductComponent";
 
 
 const RecommendedProduct = () => {

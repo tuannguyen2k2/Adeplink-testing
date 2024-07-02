@@ -13,7 +13,7 @@ import {
 } from "@mui/material";
 import Cookies from "js-cookie";
 import { useRouter } from "next-nprogress-bar";
-import { useEffect, useState } from "react";
+import { ChangeEvent, useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 
 const OrderSummary = () => {
@@ -23,8 +23,9 @@ const OrderSummary = () => {
   const router = useRouter();
   const supplierContact = useSelector(supplierContactSelector);
   const { getCart, data, isSuccess: getCartSuccess } = useGetCart();
+  const [valueMessage, setValueMessage] = useState("");
   const [supplierTicked, setSupplierTicked] = useState<string[]>([]);
-
+  const [sendMessageSuccess, setSendMessageSuccess] = useState(false);
   useEffect(() => {
     if (getCartSuccess && data) {
       dispatch(setCart(data));
@@ -43,23 +44,45 @@ const OrderSummary = () => {
               subTotal += variant.price * variant.quantity;
             }
           });
+        } else if (!product.variant && product.is_tick) {
+          subTotal += product.price * product.quantity;
         }
       });
     });
     return subTotal;
   };
 
+  const calculateTotalItemTicked = () => {
+    let total = 0;
+    cart?.items.forEach((supplier) => {
+      supplier.product.forEach((product) => {
+        if (product.variant) {
+          product.variant.forEach((variant) => {
+            if (variant.is_tick) {
+              total += 1;
+            }
+          });
+        } else if (!product.variant && product.is_tick) {
+          total += 1;
+        }
+      });
+    });
+    return total;
+  };
+
   useEffect(() => {
+    setSendMessageSuccess(false);
     let supplierContactIds: string[] = [];
     let supplierHasTicked: string[] = [];
     cart?.items?.forEach((supplier) => {
       let isProductHasRange = false;
       supplier.product.forEach((product) => {
-        if (isProductHasRange) {
-          return;
-        }
+        // if (isProductHasRange) {
+        //   return;
+        // }
         if (product.is_tick && !product.variant) {
-          supplierHasTicked.push(supplier.id);
+          !supplierHasTicked.includes(supplier.id) &&
+            supplierHasTicked.push(supplier.id);
           product.range_price.map((range) => {
             if (
               +range.min_amount <= product.quantity &&
@@ -69,30 +92,30 @@ const OrderSummary = () => {
             }
           });
           if (!isProductHasRange) {
-            supplierContactIds.push(supplier.id);
-          }
-        } else {
-          if (product.variant) {
-            let isVariantHasRange = false;
-            let totalQuantityVariantTicked = 0;
-            product.variant.map((variant) => {
-              if (variant.is_tick) {
-                !supplierHasTicked.includes(supplier.id) &&
-                  supplierHasTicked.push(supplier.id);
-                totalQuantityVariantTicked += variant.quantity;
-              }
-            });
-            product.range_price.map((range) => {
-              if (
-                +range.min_amount <= totalQuantityVariantTicked &&
-                +range.max_amount >= totalQuantityVariantTicked
-              ) {
-                isVariantHasRange = true;
-              }
-            });
-            if (!isVariantHasRange && totalQuantityVariantTicked > 0) {
+            !supplierContactIds.includes(supplier.id) &&
               supplierContactIds.push(supplier.id);
+          }
+        } else if (product.variant) {
+          let isVariantHasRange = false;
+          let totalQuantityVariantTicked = 0;
+          product.variant.map((variant) => {
+            if (variant.is_tick) {
+              !supplierHasTicked.includes(supplier.id) &&
+                supplierHasTicked.push(supplier.id);
+              totalQuantityVariantTicked += variant.quantity;
             }
+          });
+          product.range_price.map((range) => {
+            if (
+              +range.min_amount <= totalQuantityVariantTicked &&
+              +range.max_amount >= totalQuantityVariantTicked
+            ) {
+              isVariantHasRange = true;
+            }
+          });
+          if (!isVariantHasRange && totalQuantityVariantTicked > 0) {
+            !supplierContactIds.includes(supplier.id) &&
+              supplierContactIds.push(supplier.id);
           }
         }
       });
@@ -124,7 +147,7 @@ const OrderSummary = () => {
           Order summary
         </Typography>
         <Typography fontFamily={theme.fontFamily.secondary} fontSize={14}>
-          Total: {cart?.total_items} items
+          Total: {calculateTotalItemTicked()} items
         </Typography>
       </Box>
       <Divider sx={{ borderColor: theme.blue[600], mt: "10px", mb: "20px" }} />
@@ -210,73 +233,116 @@ const OrderSummary = () => {
         </Box>
         {supplierContact.length == 1 && supplierTicked.length == 1 && (
           <Box>
-            <Typography
-              fontFamily={theme.fontFamily.secondary}
-              color={theme.palette.grey[400]}
-              fontSize={14}
-            >
-              *A request for quotation will be send to this supplier and they
-              will get in touch with your order soon!
-            </Typography>
+            {!sendMessageSuccess ? (
+              <Box>
+                <Typography
+                  fontFamily={theme.fontFamily.secondary}
+                  color={theme.palette.grey[400]}
+                  fontSize={14}
+                >
+                  *A request for quotation will be send to this supplier and
+                  they will get in touch with your order soon!
+                </Typography>
 
-            <Box>
+                <Box>
+                  <Typography
+                    fontFamily={theme.fontFamily.secondary}
+                    fontSize={14}
+                    mb={"6px"}
+                  >
+                    Message
+                  </Typography>
+                  <TextField
+                    rows={4}
+                    multiline
+                    onChange={(
+                      event: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+                    ) => setValueMessage(event.currentTarget.value)}
+                    sx={{
+                      width: "100%",
+                      bgcolor: "white",
+                      border: `1px solid ${theme.blue[600]}`,
+                      borderRadius: "8px",
+                      "& .MuiOutlinedInput-root": {
+                        fontFamily: theme.fontFamily.secondary,
+                      },
+                    }}
+                  />
+                </Box>
+              </Box>
+            ) : (
               <Typography
                 fontFamily={theme.fontFamily.secondary}
-                fontSize={14}
-                mb={"6px"}
+                fontWeight={theme.fontWeight.medium}
+                color={theme.palette.primary.main}
               >
-                Message
+                {` A request for quotation has been sent to the supplier, and they will contact you soon regarding your order!`}
               </Typography>
-              <TextField
-                rows={4}
-                multiline
-                sx={{
-                  width: "100%",
-                  bgcolor: "white",
-                  border: `1px solid ${theme.blue[600]}`,
-                  borderRadius: "8px",
-                  "& .MuiOutlinedInput-root": {
-                    fontFamily: theme.fontFamily.secondary,
-                  },
-                }}
-              />
-            </Box>
+            )}
           </Box>
         )}
-        <Button
-          sx={{
-            bgcolor:
-              calculateSubTotal() == 0
-                ? `${theme.blue[700]}!important`
-                : `${theme.palette.primary.main}!important`,
-            padding: "12px 16px",
-            borderRadius: "8px",
-            color: "white",
-            fontFamily: theme.fontFamily.secondary,
-            fontWeight: theme.fontWeight.medium,
-            width: "100%",
-            pointerEvents: calculateSubTotal() == 0 ? "none" : "auto",
-            boxShadow: "0 4px 4 0 rgba(0, 0, 0, 0.25)",
-          }}
-          onClick={() => {
-            if (supplierContact.length == 0) {
-              router.push(CHECKOUT_PATH_URL);
-            } else if (
-              supplierContact.length > 1 ||
-              supplierTicked.length > 1
-            ) {
-              router.push(SEND_REQUEST_PATH_URL);
-            }
-            getCart();
-          }}
-        >
-          {supplierContact.length == 1 && supplierTicked.length == 1
-            ? "Send Request for Quotation"
-            : "Proceed to Checkout"}
-        </Button>
+        {!sendMessageSuccess && (
+          <Box>
+            {supplierContact.length == 1 && supplierTicked.length == 1 ? (
+              <ButtonSubmit
+                title="Send Request for Quotation"
+                disabled={valueMessage == ""}
+                onClick={() => {
+                  setSendMessageSuccess(true);
+                }}
+              />
+            ) : (
+              <ButtonSubmit
+                title="Proceed to Checkout"
+                disabled={calculateSubTotal() == 0}
+                onClick={() => {
+                  if (supplierContact.length == 0) {
+                    router.push(CHECKOUT_PATH_URL);
+                  } else if (
+                    supplierContact.length > 1 ||
+                    supplierTicked.length > 1
+                  ) {
+                    router.push(SEND_REQUEST_PATH_URL);
+                  }
+                  getCart();
+                }}
+              />
+            )}
+          </Box>
+        )}
       </Box>
     </Box>
   );
 };
 
 export default OrderSummary;
+
+type ButtonSubmitType = {
+  disabled: boolean;
+  onClick: () => void;
+  title: string;
+};
+
+const ButtonSubmit = ({ disabled, onClick, title }: ButtonSubmitType) => {
+  const theme = useTheme();
+  return (
+    <Button
+      sx={{
+        bgcolor: disabled
+          ? `${theme.blue[700]}!important`
+          : `${theme.palette.primary.main}!important`,
+        padding: "12px 16px",
+        borderRadius: "8px",
+        color: "white",
+        fontFamily: theme.fontFamily.secondary,
+        fontWeight: theme.fontWeight.medium,
+        width: "100%",
+        pointerEvents: disabled ? "none" : "auto",
+        boxShadow: "0 4px 4 0 rgba(0, 0, 0, 0.25)",
+      }}
+      onClick={onClick}
+    >
+      {title}
+    </Button>
+  );
+};

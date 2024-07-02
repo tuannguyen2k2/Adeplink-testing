@@ -8,6 +8,16 @@ import landIcon from "@/assets/icons/land_freight.svg";
 type ListShippingMethodModalType = {
   openListShippingMethodModal: boolean;
   setOpenListShippingMethodModal: Dispatch<SetStateAction<boolean>>;
+  methodChecked: {
+    method: number;
+    item: number;
+  };
+  setMethodChecked: Dispatch<
+    SetStateAction<{
+      method: number;
+      item: number;
+    }>
+  >;
 };
 
 const shippingMethod = [
@@ -28,15 +38,10 @@ const shippingMethod = [
 const ListShippingMethodModal = ({
   openListShippingMethodModal,
   setOpenListShippingMethodModal,
+  methodChecked,
+  setMethodChecked
 }: ListShippingMethodModalType) => {
   const theme = useTheme();
-  const [methodChecked, setMethodChecked] = useState<{
-    method: number;
-    item: number;
-  }>({
-    method: 0,
-    item: 0,
-  });
   return (
     <Modal
       open={openListShippingMethodModal}

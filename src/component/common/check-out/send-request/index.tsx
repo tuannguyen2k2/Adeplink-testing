@@ -1,35 +1,25 @@
 "use client";
-import { MAX_WIDTH_APP } from "@/constant/css";
-import {
-  Accordion,
-  AccordionDetails,
-  AccordionSummary,
-  Box,
-  Container,
-  Divider,
-  Typography,
-  useTheme,
-} from "@mui/material";
-import { useEffect, useState } from "react";
-import { useSelector } from "react-redux";
-import { cartSelector, supplierContactSelector } from "@/store/selector";
-import { CartType, SupplierCartType } from "@/interface/common";
-import SupplierAccordion from "../SupplierAccordion";
-import Cookies from "js-cookie";
-import { SUPPLIER_CONTACT } from "@/constant/cookies";
-import { useRouter } from "next-nprogress-bar";
-import { CHECKOUT_PATH_URL } from "@/constant/pathUrl";
 import { useGetCart } from "@/api/cart/query";
+import { SUPPLIER_CONTACT } from "@/constant/cookies";
+import { MARGIN_BOTTOM_ON_FOOTER, MAX_WIDTH_APP } from "@/constant/css";
+import { SupplierCartType } from "@/interface/common";
+import { Box, Container, Typography, useTheme } from "@mui/material";
+import Cookies from "js-cookie";
+import { useRouter } from "next-nprogress-bar";
+import { useEffect, useState } from "react";
+import SupplierAccordion from "../SupplierAccordion";
+import OrderSummary from "./OrderSummary";
 
 const SendRequest = () => {
   const theme = useTheme();
   const router = useRouter();
+  const [supplierSent, setSupplierSent] = useState<string[]>([]);
   const [supplierTickedInCart, setSupplierTickedInCart] = useState<
     SupplierCartType[]
   >([]);
   const [totalItems, setTotalItems] = useState(0);
   const { getCart, data: cart } = useGetCart();
-
+  const [isAllSendRequest, setIsAllSendRequest] = useState(false);
   useEffect(() => {
     getCart();
   }, []);
@@ -50,18 +40,21 @@ const SendRequest = () => {
                 break;
               }
             }
-          break;
         }
       }
       const supplierContactIds = Cookies.get(SUPPLIER_CONTACT);
       if (supplierContactIds) {
         const supplierContactIdsParse: string[] =
           JSON.parse(supplierContactIds);
+        console.log(supplierContactIdsParse);
         setSupplierTickedInCart(
           supplierTicked.filter((item) =>
             supplierContactIdsParse.includes(item.id)
           )
         );
+        if (supplierContactIdsParse.length == supplierTicked.length) {
+          setIsAllSendRequest(true);
+        }
       }
     }
   }, [cart]);
@@ -90,6 +83,7 @@ const SendRequest = () => {
         mt: "184px",
         p: { xs: "20px!important", md: "0 88px!important" },
         maxWidth: `${MAX_WIDTH_APP}!important`,
+        mb: MARGIN_BOTTOM_ON_FOOTER,
       }}
     >
       <Typography
@@ -120,62 +114,17 @@ const SendRequest = () => {
                 key={data.id}
                 data={data}
                 totalItem={totalItem}
+                setSupplierSent={setSupplierSent}
+                supplierSent={supplierSent}
               />
             );
           })}
         </Box>
-        <Box
-          width={"32%"}
-          p={"16px"}
-          borderRadius={"8px"}
-          border={`1px solid ${theme.blue[100]}`}
-          boxShadow={`0px 4px 20px 2px rgba(0, 0, 0, 0.1)`}
-          height={"fit-content"}
-        >
-          <Box
-            display={"flex"}
-            alignItems={"center"}
-            justifyContent={"space-between"}
-          >
-            <Typography
-              fontFamily={theme.fontFamily.secondary}
-              color={theme.black[200]}
-              fontWeight={theme.fontWeight.semiBold}
-              fontSize={20}
-            >
-              Order summary
-            </Typography>
-            <Typography fontFamily={theme.fontFamily.secondary} fontSize={14}>
-              Total: {totalItems} items
-            </Typography>
-          </Box>
-          <Divider
-            sx={{ borderColor: theme.blue[600], mt: "10px", mb: "20px" }}
-          />
-          <Typography fontFamily={theme.fontFamily.secondary} fontSize={14}>
-            Please complete your quote requests to proceed to the checkout page.
-          </Typography>
-          <Box
-            fontFamily={theme.fontFamily.secondary}
-            fontSize={14}
-            textAlign={"center"}
-            my={"20px"}
-          >
-            or
-            <Typography
-              component={"strong"}
-              fontFamily={theme.fontFamily.secondary}
-              fontSize={14}
-              color={theme.palette.primary.main}
-              fontWeight={theme.fontWeight.medium}
-              onClick={() => router.push(CHECKOUT_PATH_URL)}
-              sx={{ cursor: "pointer" }}
-            >
-              &nbsp;Skip to Checkout&nbsp;
-            </Typography>
-            now
-          </Box>
-        </Box>
+        <OrderSummary
+          totalItems={totalItems}
+          hasCheckOut={!isAllSendRequest}
+          isAllSupplierSent={supplierSent.length == supplierTickedInCart.length}
+        />
       </Box>
     </Container>
   );

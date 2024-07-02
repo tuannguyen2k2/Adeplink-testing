@@ -1,6 +1,6 @@
 "use client";
 import useDevices from "@/hook/useDevices";
-import { MAX_WIDTH_APP } from "@/constant/css";
+import { MARGIN_BOTTOM_ON_FOOTER, MAX_WIDTH_APP } from "@/constant/css";
 import {
   Box,
   Button,
@@ -53,23 +53,35 @@ const Supplier = () => {
   useEffect(() => {
     getSearchSupplier({ limit: LIMIT, page: 1, is_newest: true });
   }, []);
-
   useEffect(() => {
-    if (page)
-      getSearchSupplier({
-        limit: LIMIT,
-        page: +page,
-        keyword: filter.keyword,
-        category_ids: filter.category_ids,
-        countries: filter.countries,
-        is_newest: sortOrder === SortOption.Newest,
-        is_sorted: sortOrder === SortOption.A_to_Z,
-      });
-  }, [page, filter, sortOrder]);
+    getSearchSupplier({
+      limit: LIMIT,
+      page: 1,
+      keyword: filter.keyword,
+      category_ids: filter.category_ids,
+      countries: filter.countries,
+      is_newest: sortOrder === SortOption.Newest,
+      is_sorted: sortOrder === SortOption.A_to_Z,
+    });
+    const updatedSearchParams = new URLSearchParams(searchParams.toString());
+    updatedSearchParams.delete("page");
+    router.push(
+      `${SUPPLIER_PATH_URL.SUPPLIER_LIST}?${updatedSearchParams.toString()}`
+    );
+  }, [filter, sortOrder]);
 
   const handleChangePage = (event: ChangeEvent<unknown>, page: number) => {
     const updatedSearchParams = new URLSearchParams(searchParams.toString());
     updatedSearchParams.set("page", page.toString());
+    getSearchSupplier({
+      limit: LIMIT,
+      page: page,
+      keyword: filter.keyword,
+      category_ids: filter.category_ids,
+      countries: filter.countries,
+      is_newest: sortOrder === SortOption.Newest,
+      is_sorted: sortOrder === SortOption.A_to_Z,
+    });
     router.push(
       `${SUPPLIER_PATH_URL.SUPPLIER_LIST}?${updatedSearchParams.toString()}`
     );
@@ -82,6 +94,7 @@ const Supplier = () => {
         p: isMobile ? "20px!important" : "0 88px!important",
         maxWidth: `${MAX_WIDTH_APP}!important`,
         fontFamily: theme.fontFamily.secondary,
+        mb: MARGIN_BOTTOM_ON_FOOTER,
       }}
     >
       <Box display={"flex"} justifyContent={"space-between"}>

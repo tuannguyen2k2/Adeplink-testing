@@ -1,11 +1,14 @@
 import { useMutation } from "@tanstack/react-query";
 import {
+  changeEmail,
+  changePassword,
   deleteAddress,
   editAddress,
   getAddresses,
   saveAddress,
   setDefaultAddress,
   signUpBecomeSupplier,
+  verifyChangeEmail,
 } from "./api";
 import { useDispatch } from "react-redux";
 import Cookies from "js-cookie";
@@ -28,6 +31,46 @@ export const useSignUpBecomeSupplier = () => {
     },
   });
   return { signUpBecomeSupplier: mutate, isPending, isSuccess, error };
+};
+
+
+export const useChangeEmail = () => {
+  const { error, isPending, mutate, isSuccess, reset } = useMutation({
+    mutationFn: changeEmail,
+    onSuccess: (data) => {},
+    onError: (err) => {
+      setTimeout(() => {
+        reset();
+      }, 2000);
+    },
+  });
+  return { changeEmail: mutate, isPending, isSuccess, error };
+};
+
+export const useChangePassword = () => {
+  const { error, isPending, mutate, isSuccess, reset } = useMutation({
+    mutationFn: changePassword,
+    onSuccess: (data) => {},
+    onError: (err) => {
+      setTimeout(() => {
+        reset();
+      }, 2000);
+    },
+  });
+  return { changePassword: mutate, isPending, isSuccess, error };
+};
+
+export const useVerifyChangeEmail = () => {
+  const { error, isPending, mutate, isSuccess, reset } = useMutation({
+    mutationFn: verifyChangeEmail,
+    onSuccess: (data) => {},
+    onError: (err) => {
+      setTimeout(() => {
+        reset();
+      }, 2000);
+    },
+  });
+  return { verifyChangeEmail: mutate, isPending, isSuccess, error };
 };
 
 export const useSaveAddress = () => {

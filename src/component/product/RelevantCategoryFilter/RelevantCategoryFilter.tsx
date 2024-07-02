@@ -270,7 +270,11 @@ const RelevantCategoryFilter = () => {
             onMouseEnter={() => setCategoryLevel2Hovered("all")}
             onClick={() => {
               router.push(
-                `${PRODUCT_PATH_URL.PRODUCT_LIST}?cate_level1_id=${cate_level1_id}&cate_name=${data?.name && encodeURIComponent(data?.name)}`
+                `${
+                  PRODUCT_PATH_URL.PRODUCT_LIST
+                }?cate_level1_id=${cate_level1_id}&cate_name=${
+                  data?.name && encodeURIComponent(data?.name)
+                }`
               );
             }}
           >
@@ -318,7 +322,11 @@ const RelevantCategoryFilter = () => {
                 }}
                 onClick={() =>
                   router.push(
-                    `${PRODUCT_PATH_URL.PRODUCT_LIST}?cate_level1_id=${categoryLevel2.parent_category_id}&cate_level2_id=${categoryLevel2.id}&cate_name=${encodeURIComponent(categoryLevel2?.name)}`
+                    `${PRODUCT_PATH_URL.PRODUCT_LIST}?cate_level1_id=${
+                      categoryLevel2.parent_category_id
+                    }&cate_level2_id=${
+                      categoryLevel2.id
+                    }&cate_name=${encodeURIComponent(categoryLevel2?.name)}`
                   )
                 }
               >
@@ -382,41 +390,64 @@ const RelevantCategoryFilter = () => {
             },
           }}
         >
-          {categoryLevel3List.length <= 10 ? (
-            <Box width={"100%"}>
-              <Grid container spacing={10} width={"100%"} marginLeft={0}>
-                {categoryLevel3List.map((categoryLevel3) => (
-                  <Grid
-                    item
-                    xs={12}
-                    sm={6}
-                    md={4}
-                    lg={12 / 5}
-                    xl={12 / 5}
-                    key={categoryLevel3.id}
-                    sx={{
-                      display: "flex",
-                      justifyContent: "center",
-                      paddingLeft: "0!important",
-                      paddingTop: "32px!important",
-                    }}
-                  >
-                    <CategoryItemLevel3 categoryLevel3={categoryLevel3} />
-                  </Grid>
-                ))}
-              </Grid>
+          {categoryLevel2Hovered === "all" && (
+            <Box
+              width={"100%"}
+              height={"100%"}
+              display={"flex"}
+              justifyContent={"center"}
+              alignItems={"center"}
+            >
+              <Typography fontFamily={theme.fontFamily.secondary}>
+                Explore all products from all categories in&nbsp;
+                <Typography
+                  component={"strong"}
+                  fontFamily={theme.fontFamily.secondary}
+                  fontWeight={theme.fontWeight.semiBold}
+                >
+                  {cate_name}
+                </Typography>
+              </Typography>
             </Box>
-          ) : (
-            <SliderContent settings={settings}>
-              {categoryLevel3List.map((categoryLevel3) => {
-                return (
-                  <Box key={categoryLevel3.id} width={"20%!important"}>
-                    <CategoryItemLevel3 categoryLevel3={categoryLevel3} />
-                  </Box>
-                );
-              })}
-            </SliderContent>
           )}
+          {categoryLevel3List.length <= 10 &&
+            categoryLevel2Hovered !== "all" && (
+              <Box width={"100%"}>
+                <Grid container spacing={10} width={"100%"} marginLeft={0}>
+                  {categoryLevel3List.map((categoryLevel3) => (
+                    <Grid
+                      item
+                      xs={12}
+                      sm={6}
+                      md={4}
+                      lg={12 / 5}
+                      xl={12 / 5}
+                      key={categoryLevel3.id}
+                      sx={{
+                        display: "flex",
+                        justifyContent: "center",
+                        paddingLeft: "0!important",
+                        paddingTop: "32px!important",
+                      }}
+                    >
+                      <CategoryItemLevel3 categoryLevel3={categoryLevel3} />
+                    </Grid>
+                  ))}
+                </Grid>
+              </Box>
+            )}
+          {categoryLevel3List.length > 10 &&
+            categoryLevel2Hovered !== "all" && (
+              <SliderContent settings={settings}>
+                {categoryLevel3List.map((categoryLevel3) => {
+                  return (
+                    <Box key={categoryLevel3.id} width={"20%!important"}>
+                      <CategoryItemLevel3 categoryLevel3={categoryLevel3} />
+                    </Box>
+                  );
+                })}
+              </SliderContent>
+            )}
         </Box>
       </Collapse>
     </Box>

@@ -15,9 +15,9 @@ const SuccessModal = ({ showSuccessModal, title }: SuccessModalType) => {
   const { remaining, handleRunCountDown } = useCountdown(5, () =>
     router.replace(HOME_PATH_URL)
   );
-  // useEffect(() => {
-  //   handleRunCountDown();
-  // }, []);
+  useEffect(() => {
+    handleRunCountDown();
+  }, []);
   return (
     <Modal
       open={showSuccessModal}

@@ -2,7 +2,7 @@
 import { useTickAllCartItem, useTickCartItem } from "@/api/cart/query";
 import { useGetAllProductRecommended } from "@/api/product/query";
 import CartEmpty from "@/assets/images/cart_empty.png";
-import { MAX_WIDTH_APP } from "@/constant/css";
+import { MARGIN_BOTTOM_ON_FOOTER, MAX_WIDTH_APP } from "@/constant/css";
 import { PRODUCT_PATH_URL } from "@/constant/pathUrl";
 import {
   ProductCartType,
@@ -305,6 +305,7 @@ const Cart = () => {
         mt: "184px",
         p: { xs: "20px!important", md: "0 88px!important" },
         maxWidth: `${MAX_WIDTH_APP}!important`,
+        mb: MARGIN_BOTTOM_ON_FOOTER,
       }}
     >
       <Typography

@@ -10,6 +10,8 @@ import React, { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import SupplierSignUpModal from "../home/supplierRegister/SupplierSignUpModal";
 import { userSelector } from "@/store/selector";
+import { useRouter } from "next-nprogress-bar";
+import { ACCOUNT_PROFILE_URL, HOME_PATH_URL } from "@/constant/pathUrl";
 
 type AccountMenuType = {
   open: boolean;
@@ -30,10 +32,12 @@ const AccountMenu = ({
   const { logout } = useLogout();
   const dispatch = useDispatch();
   const user = useSelector(userSelector);
+  const router = useRouter();
   const handleSignOut = async () => {
     logout();
     dispatch(setUser(null));
     Cookies.remove("user");
+    router.push(HOME_PATH_URL);
   };
   return (
     <>
@@ -103,7 +107,10 @@ const AccountMenu = ({
           mb={"4px"}
         />
         <MenuItem
-          onClick={handleCloseMenu}
+          onClick={() => {
+            router.push(ACCOUNT_PROFILE_URL);
+            handleCloseMenu();
+          }}
           sx={[
             {
               "&:hover": {

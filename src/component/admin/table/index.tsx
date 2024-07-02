@@ -65,7 +65,7 @@ const CTable = ({
               fontWeight: 600,
               //   textAlign: "center",
               width: "100%",
-              color: "#0B7ECA",
+              color: theme.palette.primary.main,
             },
           "& .MuiDataGrid-virtualScrollerRenderZone": {
             "& .MuiDataGrid-row": {

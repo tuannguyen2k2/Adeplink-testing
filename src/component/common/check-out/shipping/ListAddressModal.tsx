@@ -1,12 +1,18 @@
 /* eslint-disable react/no-unescaped-entities */
 import { useDeleteAddress, useSetDefaultAddress } from "@/api/user/query";
-import { AddressType, ListAddressesType } from "@/interface/common";
+import {
+  AddressFormType,
+  AddressType,
+  ListAddressesType,
+} from "@/interface/common";
 import { Box, Divider, Radio, Typography, useTheme } from "@mui/material";
 import { UseMutateFunction } from "@tanstack/react-query";
 import { Modal } from "antd";
 import { Dispatch, SetStateAction, useEffect, useState } from "react";
 import { CgTrashEmpty } from "react-icons/cg";
 import AddressForm from "./AddressForm";
+import { useForm } from "react-hook-form";
+import ConfirmDelete from "@/component/my-account/address/confirm";
 
 type ListAddressModalType = {
   openListAddressModal: boolean;
@@ -27,8 +33,12 @@ const ListAddressModal = ({
     undefined
   );
   const { deleteAddress, isSuccess: deleteSuccess } = useDeleteAddress();
+  const [openDeleteModal, setOpenDeleteModal] = useState(false);
   const { setDefaultAddress } = useSetDefaultAddress();
-
+  const shippingAddressForm = useForm<AddressFormType>({
+    mode: "onChange",
+    reValidateMode: "onChange",
+  });
   useEffect(() => {
     data &&
       data.addresses.forEach((address, index) => {
@@ -179,6 +189,7 @@ const ListAddressModal = ({
                         height={"fit-content"}
                         onClick={() => {
                           setOpenAddressModal(true);
+                          console.log(address);
                           setDetailAddress(address);
                           setOpenListAddressModal(false);
                         }}
@@ -191,11 +202,16 @@ const ListAddressModal = ({
                         fontSize={14}
                         fontWeight={theme.fontWeight.medium}
                         height={"fit-content"}
-                        onClick={() => deleteAddress(address.id)}
+                        onClick={() => setOpenDeleteModal(true)}
                       >
                         <CgTrashEmpty size={18} />
                       </Box>
                     </Box>
+                    <ConfirmDelete
+                      open={openDeleteModal}
+                      onClose={() => setOpenDeleteModal(false)}
+                      handleDeleteSubmit={() => deleteAddress(address.id)}
+                    />
                   </Box>
                 );
               })}
@@ -221,7 +237,10 @@ const ListAddressModal = ({
       >
         <Box width={836}>
           <AddressForm
-            title="New shipping address"
+            openAddressModal={openAddressModal}
+            title={
+              detailAddress ? "Edit shipping address" : "New shipping address"
+            }
             isSaveAddress
             onCancel={onCancel}
             detail={detailAddress}
@@ -229,6 +248,7 @@ const ListAddressModal = ({
               getAddresses();
               onCancel();
             }}
+            addressForm={shippingAddressForm}
           />
         </Box>
       </Modal>

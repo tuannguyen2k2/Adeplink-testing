@@ -1,9 +1,11 @@
-import { TextField } from "@mui/material";
+import { useTheme } from "@mui/material";
 import { DatePicker } from "@mui/x-date-pickers";
 import dayjs from "dayjs";
 import { HiOutlineCalendar } from "react-icons/hi";
 
 const CDatePicker = () => {
+  const theme = useTheme();
+
   return (
     <>
       <DatePicker
@@ -20,9 +22,9 @@ const CDatePicker = () => {
             padding: "10px",
           },
           borderRadius: "8px",
-          border: "1px solid #E6EFFB",
+          border: `1px solid ${theme.blue[600]}`,
           "& .MuiIconButton-root": {
-            color: "#0B7ECA",
+            color: theme.palette.primary.main,
             fontSize: "20px",
           },
         }}

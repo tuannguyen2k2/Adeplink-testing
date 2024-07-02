@@ -47,8 +47,15 @@ const ChangePasswordFormPage = () => {
   const email = searchParams.get("email") ?? "";
   const otp = searchParams.get("otp") ?? "";
   const locale = Cookies.get("NEXT_LOCALE");
-  const { register, handleSubmit, formState, setValue, watch, getValues } =
-    useForm<ChangePasswordForm>();
+  const {
+    register,
+    handleSubmit,
+    formState,
+    setValue,
+    watch,
+    getValues,
+    clearErrors,
+  } = useForm<ChangePasswordForm>();
   const { resetPassword, isPending, error, isSuccess } = useResetPassword();
   const onSubmit: SubmitHandler<{
     password: string;
@@ -111,7 +118,7 @@ const ChangePasswordFormPage = () => {
                   <input
                     type={showPassword.password ? "text" : "password"}
                     placeholder="********"
-                    className="focus:outline-none w-full"
+                    className="focus:outline-none w-full py-2 px-3 rounded-lg"
                     {...register("password", {
                       required: "Password required",
                     })}
@@ -140,13 +147,13 @@ const ChangePasswordFormPage = () => {
               </InputComponent>
               <InputComponent
                 title="Confirm new password"
-                className="  relative mb-2"
+                className="  relative"
                 error={formState.errors.confirmPassword?.message}
               >
                 <input
                   type={showPassword.confirm ? "text" : "password"}
                   placeholder="********"
-                  className="focus:outline-none w-full"
+                  className="focus:outline-none w-full py-2 px-3 rounded-lg"
                   {...register("confirmPassword", {
                     required: "Confirm password required",
                     validate: (value) =>
@@ -154,6 +161,10 @@ const ChangePasswordFormPage = () => {
                       "Confirm password do not match",
                   })}
                   onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
+                    if (event.target.value === watch("password")) {
+                      clearErrors("confirmPassword");
+                    }
+                    
                     if (event.target.value !== "") {
                       setHasConfirmPassword(true);
                     } else {

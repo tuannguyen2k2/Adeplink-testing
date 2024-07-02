@@ -24,6 +24,7 @@ type QuantityComponentType = {
   handleIncreaseQuantity: () => void;
   handleDecreaseQuantity: () => void;
   handleOnChangeQuantityInput: (e: ChangeEvent<HTMLInputElement>) => void;
+  handleOnBlur?: () => void;
 };
 
 const QuantityComponent = ({
@@ -31,6 +32,7 @@ const QuantityComponent = ({
   handleIncreaseQuantity,
   handleDecreaseQuantity,
   handleOnChangeQuantityInput,
+  handleOnBlur,
 }: QuantityComponentType) => {
   const theme = useTheme();
   const classes = useStyles();
@@ -63,8 +65,9 @@ const QuantityComponent = ({
         id="quantity-component"
         type="number"
         className={classes.root}
-        value={quantity}
+        value={quantity ? quantity?.toString().replace(/^0+/, "") : quantity}
         onChange={handleOnChangeQuantityInput}
+        onBlur={handleOnBlur}
         sx={{
           width: "70px",
           "& .MuiInputBase-input": {

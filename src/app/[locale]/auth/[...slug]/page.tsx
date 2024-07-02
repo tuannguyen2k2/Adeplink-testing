@@ -31,7 +31,7 @@ const AuthPage = ({
         backgroundPosition: "left",
       }}
     >
-      <div className="w-[100%] md:w-[80%] xl:w-[35%] md:rounded-l-[2.5rem] bg-white relative overflow-x-hidden overflow-y-auto">
+      <div className="w-[100%] md:w-[80%] xl:w-[45%] md:rounded-l-[24px] bg-white relative overflow-x-hidden overflow-y-auto">
         <div
           className={`flex justify-center top-0 bottom-0 w-full h-screen right-0 transition-all duration-300  ${
             selectedTab === "signup" ? "translate-x-0" : "translate-x-full"

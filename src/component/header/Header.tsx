@@ -49,7 +49,7 @@ const Header = () => {
         bgcolor: "transparent",
         alignItems: "center",
         boxShadow: `0px 6px 4px ${theme.blue[300]}`,
-        zIndex: 100,
+        zIndex: 110,
       }}
       elevation={0}
     >

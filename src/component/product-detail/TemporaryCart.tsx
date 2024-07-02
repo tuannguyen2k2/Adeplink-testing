@@ -48,6 +48,8 @@ const TemporaryCart = ({
 }) => {
   const theme = useTheme();
   let [totalPrice, setTotalPrice] = useState<number | null>(null);
+  const [valueMessage, setValueMessage] = useState("");
+  const [sendMessageSuccess, setSendMessageSuccess] = useState(false);
   const getMatchingPriceByAmount = (amount: number) => {
     const sortedPriceList = data?.price.sort(
       (a, b) => parseInt(a.min_amount) - parseInt(b.min_amount)
@@ -64,7 +66,10 @@ const TemporaryCart = ({
   };
 
   const handleDecreaseQuantity = (index: number) => {
-    if (temporaryCart[index].orderQuantity - 1 < 0) {
+    if (temporaryCart[index].orderQuantity - 1 <= 0) {
+      temporaryCart.splice(index, 1);
+      setTemporaryCart([...temporaryCart]);
+      temporaryCart.length < 1 && handleCloseCart();
       return;
     }
     temporaryCart[index].orderQuantity -= 1;
@@ -91,6 +96,11 @@ const TemporaryCart = ({
     e: ChangeEvent<HTMLInputElement>,
     index: number
   ) => {
+    if (+e.target.value < 0 || e.target.value == "") {
+      temporaryCart[index].orderQuantity = 0;
+      setTemporaryCart([...temporaryCart]);
+      return;
+    }
     temporaryCart[index].orderQuantity = parseInt(e.target.value);
     let totalOrderQuantity = 0;
     temporaryCart.forEach((item, indexTemporary) => {
@@ -105,6 +115,7 @@ const TemporaryCart = ({
   };
 
   useEffect(() => {
+    setSendMessageSuccess(false);
     let totalQuantity = 0;
     temporaryCart.map((item) => {
       totalQuantity += item.orderQuantity;
@@ -137,6 +148,13 @@ const TemporaryCart = ({
       }
     });
     return name;
+  };
+  const handleOnBlurQuantity = (index: number) => {
+    if (temporaryCart[index].orderQuantity == 0) {
+      temporaryCart.splice(index, 1);
+      setTemporaryCart([...temporaryCart]);
+      temporaryCart.length < 1 && handleCloseCart();
+    }
   };
   return (
     <>
@@ -179,7 +197,7 @@ const TemporaryCart = ({
           sx: { borderTopLeftRadius: "16px", borderBottomLeftRadius: "16px" },
         }}
       >
-        <Box sx={{ width: 600, px: 2, py: 3 }}>
+        <Box sx={{ width: 600, px: 2, py: 3, height: "96%" }}>
           <Box
             sx={{
               display: "flex",
@@ -217,318 +235,366 @@ const TemporaryCart = ({
           </Box>
           <Divider sx={{ mt: 2 }} />
 
-          <Box>
-            <TableContainer
-              sx={{ height: `calc(100vh - 390px )`, overflowY: "scroll" }}
-            >
-              <Table
-                stickyHeader
-                sx={{
-                  [`& .${tableCellClasses.root}`]: {
-                    borderBottom: "none",
-                  },
-                }}
+          <Box
+            display={"flex"}
+            flexDirection={"column"}
+            justifyContent={"space-between"}
+            height={"100%"}
+          >
+            <Box>
+              <TableContainer
+                sx={{ height: `calc(100vh - 390px )`, overflowY: "scroll" }}
               >
-                <TableHead>
-                  <TableRow>
-                    <TableCell
-                      align="left"
-                      sx={{
-                        px: 0,
-                        fontFamily: theme.fontFamily.secondary,
-                        fontWeight: theme.fontWeight.semiBold,
-                        fontSize: 14,
-                        width: "212px",
-                      }}
-                    >
-                      Item
-                    </TableCell>
-                    <TableCell
-                      align="left"
-                      sx={{
-                        px: 0,
-                        fontFamily: theme.fontFamily.secondary,
-                        fontWeight: theme.fontWeight.semiBold,
-                        fontSize: 14,
-                        width: "96px",
-                      }}
-                    >
-                      Unit Price
-                    </TableCell>
-                    <TableCell
-                      align="center"
-                      sx={{
-                        px: 0,
-                        fontFamily: theme.fontFamily.secondary,
-                        fontWeight: theme.fontWeight.semiBold,
-                        fontSize: 14,
-                        width: "132px",
-                      }}
-                    >
-                      Order Quantity
-                    </TableCell>
-                    <TableCell
-                      align="center"
-                      sx={{
-                        px: 0,
-                        fontFamily: theme.fontFamily.secondary,
-                        fontWeight: theme.fontWeight.semiBold,
-                        fontSize: 14,
-                        width: "20px",
-                      }}
-                    />
-                  </TableRow>
-                </TableHead>
-                <TableBody>
-                  {temporaryCart.map((item, index) => (
-                    <TableRow key={index}>
+                <Table
+                  stickyHeader
+                  sx={{
+                    [`& .${tableCellClasses.root}`]: {
+                      borderBottom: "none",
+                    },
+                  }}
+                >
+                  <TableHead>
+                    <TableRow>
                       <TableCell
                         align="left"
-                        component="th"
-                        scope="row"
                         sx={{
                           px: 0,
                           fontFamily: theme.fontFamily.secondary,
-                          fontWeight: theme.fontWeight.regular,
+                          fontWeight: theme.fontWeight.semiBold,
                           fontSize: 14,
-                          color: "black",
-                          display: "-webkit-box",
-                          WebkitBoxOrient: "vertical",
-                          WebkitLineClamp: 3,
-                          overflow: "hidden",
                           width: "212px",
                         }}
                       >
-                        {item.name ||
-                          revertNameVariant(item.attributeCartTemporary)}
+                        Item
                       </TableCell>
                       <TableCell
                         align="left"
                         sx={{
                           px: 0,
                           fontFamily: theme.fontFamily.secondary,
-                          fontWeight: theme.fontWeight.regular,
+                          fontWeight: theme.fontWeight.semiBold,
                           fontSize: 14,
-                          color: "black",
+                          width: "96px",
                         }}
                       >
-                        {temporaryCart[0].unitPrice
-                          ? `$${temporaryCart[0].unitPrice}`
-                          : "To be negotiated"}
+                        Unit Price
                       </TableCell>
                       <TableCell
+                        align="center"
                         sx={{
                           px: 0,
                           fontFamily: theme.fontFamily.secondary,
-                          fontWeight: theme.fontWeight.regular,
+                          fontWeight: theme.fontWeight.semiBold,
                           fontSize: 14,
-                          color: "black",
-                          textAlign: "center",
+                          width: "132px",
                         }}
                       >
-                        <Box
+                        Order Quantity
+                      </TableCell>
+                      <TableCell
+                        align="center"
+                        sx={{
+                          px: 0,
+                          fontFamily: theme.fontFamily.secondary,
+                          fontWeight: theme.fontWeight.semiBold,
+                          fontSize: 14,
+                          width: "20px",
+                        }}
+                      />
+                    </TableRow>
+                  </TableHead>
+                  <TableBody>
+                    {temporaryCart.map((item, index) => (
+                      <TableRow key={index}>
+                        <TableCell
+                          align="left"
+                          component="th"
+                          scope="row"
                           sx={{
-                            height: 42,
-                            width: 132,
-                            display: "flex",
-                            marginLeft: "28px",
+                            px: 0,
+                            fontFamily: theme.fontFamily.secondary,
+                            fontWeight: theme.fontWeight.regular,
+                            fontSize: 14,
+                            color: "black",
+                            display: "-webkit-box",
+                            WebkitBoxOrient: "vertical",
+                            WebkitLineClamp: 3,
+                            overflow: "hidden",
+                            width: "212px",
                           }}
                         >
-                          <QuantityComponent
-                            quantity={item.orderQuantity}
-                            handleDecreaseQuantity={() =>
-                              handleDecreaseQuantity(index)
-                            }
-                            handleIncreaseQuantity={() =>
-                              handleIncreaseQuantity(index)
-                            }
-                            handleOnChangeQuantityInput={(
-                              e: ChangeEvent<HTMLInputElement>
-                            ) => handleOnChangeQuantityInput(e, index)}
-                          />
-                        </Box>
-                      </TableCell>
-                      <TableCell
-                        align="right"
+                          {item.name ||
+                            revertNameVariant(item.attributeCartTemporary)}
+                        </TableCell>
+                        <TableCell
+                          align="left"
+                          sx={{
+                            px: 0,
+                            fontFamily: theme.fontFamily.secondary,
+                            fontWeight: theme.fontWeight.regular,
+                            fontSize: 14,
+                            color: "black",
+                          }}
+                        >
+                          {temporaryCart[0].unitPrice
+                            ? `$${temporaryCart[0].unitPrice}`
+                            : "To be negotiated"}
+                        </TableCell>
+                        <TableCell
+                          sx={{
+                            px: 0,
+                            fontFamily: theme.fontFamily.secondary,
+                            fontWeight: theme.fontWeight.regular,
+                            fontSize: 14,
+                            color: "black",
+                            textAlign: "center",
+                          }}
+                        >
+                          <Box
+                            sx={{
+                              height: 42,
+                              width: 132,
+                              display: "flex",
+                              marginLeft: "28px",
+                            }}
+                          >
+                            <QuantityComponent
+                              quantity={item.orderQuantity}
+                              handleDecreaseQuantity={() =>
+                                handleDecreaseQuantity(index)
+                              }
+                              handleIncreaseQuantity={() =>
+                                handleIncreaseQuantity(index)
+                              }
+                              handleOnChangeQuantityInput={(
+                                e: ChangeEvent<HTMLInputElement>
+                              ) => handleOnChangeQuantityInput(e, index)}
+                              handleOnBlur={() => handleOnBlurQuantity(index)}
+                            />
+                          </Box>
+                        </TableCell>
+                        <TableCell
+                          align="right"
+                          sx={{
+                            px: 0,
+                            fontFamily: theme.fontFamily.secondary,
+                            fontWeight: theme.fontWeight.regular,
+                            fontSize: 14,
+                            color: "black",
+                            pr: "6px",
+                          }}
+                        >
+                          <IconButton
+                            onClick={() => handleDeleteItemCart(index)}
+                          >
+                            <Icon
+                              component={Clear}
+                              sx={{ color: theme.blue[900] }}
+                            />
+                          </IconButton>
+                        </TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+              </TableContainer>
+            </Box>
+
+            {totalPrice ? (
+              <Box
+                sx={{
+                  backgroundColor: theme.blue[1100],
+                  padding: "16px",
+                  borderRadius: "8px",
+                }}
+              >
+                <Box
+                  sx={{
+                    display: "flex",
+                    justifyContent: "space-between",
+                    mb: 2,
+                  }}
+                >
+                  <Typography
+                    sx={{
+                      fontFamily: theme.fontFamily.secondary,
+                      fontSize: 14,
+                      fontWeight: theme.fontWeight.regular,
+                      color: "black",
+                    }}
+                  >
+                    Item subtotal
+                  </Typography>
+                  <Typography
+                    sx={{
+                      fontFamily: theme.fontFamily.secondary,
+                      fontSize: 14,
+                      fontWeight: theme.fontWeight.regular,
+                      color: "black",
+                    }}
+                  >
+                    {totalPrice.toLocaleString("en-US", {
+                      style: "currency",
+                      currency: "USD",
+                      minimumFractionDigits: 2,
+                      maximumFractionDigits: 2,
+                    })}
+                  </Typography>
+                </Box>
+                <Box
+                  sx={{
+                    display: "flex",
+                    justifyContent: "space-between",
+                    mb: 2,
+                  }}
+                >
+                  <Typography
+                    sx={{
+                      fontFamily: theme.fontFamily.secondary,
+                      fontSize: 14,
+                      fontWeight: theme.fontWeight.regular,
+                      color: "black",
+                    }}
+                  >
+                    Shipping fee
+                  </Typography>
+                  <Typography
+                    sx={{
+                      fontFamily: theme.fontFamily.secondary,
+                      fontSize: 14,
+                      fontWeight: theme.fontWeight.regular,
+                      color: "black",
+                    }}
+                  >
+                    $100.00
+                  </Typography>
+                </Box>
+                <Divider sx={{ mb: 2 }} />
+                <Box
+                  sx={{
+                    display: "flex",
+                    justifyContent: "space-between",
+                    mb: 2,
+                  }}
+                >
+                  <Typography
+                    sx={{
+                      fontFamily: theme.fontFamily.secondary,
+                      fontSize: 16,
+                      fontWeight: theme.fontWeight.semiBold,
+                    }}
+                  >
+                    Subtotal
+                  </Typography>
+                  <Typography
+                    sx={{
+                      fontFamily: theme.fontFamily.secondary,
+                      fontSize: 16,
+                      fontWeight: theme.fontWeight.semiBold,
+                    }}
+                  >
+                    {(totalPrice + 100).toLocaleString("en-US", {
+                      style: "currency",
+                      currency: "USD",
+                      minimumFractionDigits: 2,
+                      maximumFractionDigits: 2,
+                    })}
+                  </Typography>
+                </Box>
+                <Button
+                  sx={{
+                    width: "100%",
+                    bgcolor: `${theme.palette.primary.main}!important`,
+                    color: "white",
+                    borderRadius: "8px",
+                    py: "12px",
+                  }}
+                >
+                  Proceed to Checkout
+                </Button>
+              </Box>
+            ) : (
+              <Box
+                sx={{
+                  backgroundColor: theme.blue[1100],
+                  padding: "16px",
+                  borderRadius: "8px",
+                }}
+              >
+                {!sendMessageSuccess ? (
+                  <Box>
+                    <Typography
+                      sx={{
+                        fontFamily: theme.fontFamily.secondary,
+                        fontSize: 14,
+                        fontWeight: theme.fontWeight.regular,
+                        color: theme.palette.grey[400],
+                      }}
+                    >
+                      *A request for quotation will be send to this supplier and
+                      they will get in touch with your order soon!
+                    </Typography>
+
+                    <Box sx={{ my: 2 }}>
+                      <Typography
                         sx={{
-                          px: 0,
                           fontFamily: theme.fontFamily.secondary,
-                          fontWeight: theme.fontWeight.regular,
                           fontSize: 14,
+                          fontWeight: theme.fontWeight.regular,
                           color: "black",
-                          pr: "6px",
+                          mb: 1,
                         }}
                       >
-                        <IconButton onClick={() => handleDeleteItemCart(index)}>
-                          <Icon
-                            component={Clear}
-                            sx={{ color: theme.blue[900] }}
-                          />
-                        </IconButton>
-                      </TableCell>
-                    </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
-            </TableContainer>
+                        Message
+                      </Typography>
+                      <TextField
+                        multiline
+                        minRows={4}
+                        onChange={(
+                          event: ChangeEvent<
+                            HTMLInputElement | HTMLTextAreaElement
+                          >
+                        ) => setValueMessage(event.currentTarget.value)}
+                        sx={{
+                          border: "1px solid #E6EFFB",
+                          width: "100%",
+                          backgroundColor: "white",
+                          borderRadius: "8px",
+                        }}
+                      />
+                    </Box>
+
+                    <Button
+                      sx={{
+                        width: "100%",
+                        bgcolor: `${
+                          valueMessage == ""
+                            ? theme.blue[700]
+                            : theme.palette.primary.main
+                        }!important`,
+                        color: "white",
+                        borderRadius: "8px",
+                        pointerEvents: valueMessage == "" ? "none" : "auto",
+                      }}
+                      onClick={() => setSendMessageSuccess(true)}
+                    >
+                      Send Request for Quotation
+                    </Button>
+                  </Box>
+                ) : (
+                  <Typography
+                    fontFamily={theme.fontFamily.secondary}
+                    fontWeight={theme.fontWeight.medium}
+                    color={theme.palette.primary.main}
+                  >
+                    {` A request for quotation has been sent to the supplier
+                    ${data?.supplier.company_name}, and they will contact you soon regarding
+                    your order!`}
+                  </Typography>
+                )}
+              </Box>
+            )}
           </Box>
-
-          {totalPrice ? (
-            <Box
-              sx={{
-                backgroundColor: theme.blue[1100],
-                padding: "16px",
-                borderRadius: "8px",
-              }}
-            >
-              <Box
-                sx={{ display: "flex", justifyContent: "space-between", mb: 2 }}
-              >
-                <Typography
-                  sx={{
-                    fontFamily: theme.fontFamily.secondary,
-                    fontSize: 14,
-                    fontWeight: theme.fontWeight.regular,
-                    color: "black",
-                  }}
-                >
-                  Item subtotal
-                </Typography>
-                <Typography
-                  sx={{
-                    fontFamily: theme.fontFamily.secondary,
-                    fontSize: 14,
-                    fontWeight: theme.fontWeight.regular,
-                    color: "black",
-                  }}
-                >
-                  {totalPrice.toLocaleString("en-US", {
-                    style: "currency",
-                    currency: "USD",
-                    minimumFractionDigits: 2,
-                    maximumFractionDigits: 2,
-                  })}
-                </Typography>
-              </Box>
-              <Box
-                sx={{ display: "flex", justifyContent: "space-between", mb: 2 }}
-              >
-                <Typography
-                  sx={{
-                    fontFamily: theme.fontFamily.secondary,
-                    fontSize: 14,
-                    fontWeight: theme.fontWeight.regular,
-                    color: "black",
-                  }}
-                >
-                  Shipping fee
-                </Typography>
-                <Typography
-                  sx={{
-                    fontFamily: theme.fontFamily.secondary,
-                    fontSize: 14,
-                    fontWeight: theme.fontWeight.regular,
-                    color: "black",
-                  }}
-                >
-                  $100.00
-                </Typography>
-              </Box>
-              <Divider sx={{ mb: 2 }} />
-              <Box
-                sx={{ display: "flex", justifyContent: "space-between", mb: 2 }}
-              >
-                <Typography
-                  sx={{
-                    fontFamily: theme.fontFamily.secondary,
-                    fontSize: 16,
-                    fontWeight: theme.fontWeight.semiBold,
-                  }}
-                >
-                  Subtotal
-                </Typography>
-                <Typography
-                  sx={{
-                    fontFamily: theme.fontFamily.secondary,
-                    fontSize: 16,
-                    fontWeight: theme.fontWeight.semiBold,
-                  }}
-                >
-                  {(totalPrice + 100).toLocaleString("en-US", {
-                    style: "currency",
-                    currency: "USD",
-                    minimumFractionDigits: 2,
-                    maximumFractionDigits: 2,
-                  })}
-                </Typography>
-              </Box>
-              <Button
-                sx={{
-                  width: "100%",
-                  bgcolor: `${theme.palette.primary.main}!important`,
-                  color: "white",
-                  borderRadius: "8px",
-                  py: "12px",
-                }}
-              >
-                Proceed to Checkout
-              </Button>
-            </Box>
-          ) : (
-            <Box
-              sx={{
-                backgroundColor: theme.blue[1100],
-                padding: "16px",
-                borderRadius: "8px",
-              }}
-            >
-              <Typography
-                sx={{
-                  fontFamily: theme.fontFamily.secondary,
-                  fontSize: 14,
-                  fontWeight: theme.fontWeight.regular,
-                  color: theme.palette.grey[400],
-                }}
-              >
-                *A request for quotation will be send to this supplier and they
-                will get in touch with your order soon!
-              </Typography>
-
-              <Box sx={{ my: 2 }}>
-                <Typography
-                  sx={{
-                    fontFamily: theme.fontFamily.secondary,
-                    fontSize: 14,
-                    fontWeight: theme.fontWeight.regular,
-                    color: "black",
-                  }}
-                >
-                  Message
-                </Typography>
-                <TextField
-                  multiline
-                  minRows={4}
-                  sx={{
-                    border: "1px solid #E6EFFB",
-                    width: "100%",
-                    backgroundColor: "white",
-                    borderRadius: "8px",
-                  }}
-                />
-              </Box>
-
-              <Button
-                sx={{
-                  width: "100%",
-                  bgcolor: `${theme.palette.primary.main}!important`,
-                  color: "white",
-                  borderRadius: "8px",
-                }}
-              >
-                Send Request for Quotation
-              </Button>
-            </Box>
-          )}
         </Box>
       </Drawer>
     </>

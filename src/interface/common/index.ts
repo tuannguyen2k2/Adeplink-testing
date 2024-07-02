@@ -354,9 +354,9 @@ export type AddressFormType = {
   first_name: string;
   last_name: string;
   phone: string;
-  email: string;
+  email?: string;
   address_line1: string;
-  address_line2: string;
+  address_line2?: string;
   city: string;
   state: string;
   country: string;
@@ -365,6 +365,7 @@ export type AddressFormType = {
   street_number: string;
   id: string;
   is_default: boolean;
+  is_save_later_use?: boolean;
 };
 
 export type ListAddressesType = {
@@ -406,61 +407,52 @@ export type AddressType = {
   state: string;
   country: string;
   zipcode: string;
-  street?: string;
-  street_number?: string;
   is_default?: boolean;
   id: string;
 };
 
-export type OrderFormType = {
+export type SupplierOrderType = SupplierCartType & {
   shipping_method: {
     name: string;
     price: string;
+  };
+};
+
+export type OrderFormType = {
+  link: {
+    success: string;
+    failure: string;
   };
   shipping_address: {
     first_name: string;
     last_name: string;
     phone: string;
-    email: string;
+    email?: string;
     address_line1: string;
-    address_line2: string;
+    address_line2?: string;
     country: string;
     state: string;
     city: string;
     zipcode: string;
+    company: string;
   };
   billing_address: {
     first_name: string;
     last_name: string;
     phone: string;
-    email: string;
+    email?: string;
     address_line1: string;
-    address_line2: string;
+    address_line2?: string;
     country: string;
     state: string;
     city: string;
     zipcode: string;
+    company: string;
   };
   total_price: number;
   total_item: number;
-  items: {
-    supplier_id: string;
-    supplier_name: string;
-    product: [
-      {
-        id: string;
-        name: string;
-        variant: [
-          {
-            id: string;
-            name: string;
-            price: number;
-            quantity: number;
-          }
-        ];
-      }
-    ];
-  };
+  fee: number;
+  items: SupplierOrderType[];
 };
 
 export type OrderResponseType = {
@@ -485,4 +477,47 @@ export type StateType = {
 export type CityType = {
   district_id: string;
   district_name: string;
+};
+
+export interface IFormInputComponentRef {
+  blur: () => void;
+  focus: () => void;
+}
+
+export interface IFormInputComponentProps<T = any> {
+  id?: string;
+  name?: string;
+  value?: T | null;
+  onChange?: (value: T) => void;
+  onBlur?: () => void;
+  disabled?: boolean;
+  error?: boolean;
+  helperText?: string;
+  onFocus?: () => void;
+}
+
+export interface IOption {
+  id?: any;
+  label: string;
+  value: any;
+}
+
+export type OrderReviewType = OrderFormType & {
+  check_same_billing_address: boolean;
+  payment_method: 0 | 1;
+  card_information: PaymentForm;
+};
+
+export interface PaymentForm {
+  cardholder: string;
+  cardNumber: string;
+  expiryDate: string;
+  securityCode: number;
+  amount: number;
+}
+
+export type ChangePasswordFormType = {
+  old_password: string;
+  new_password: string;
+  confirmed_password: string;
 };

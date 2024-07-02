@@ -1,6 +1,6 @@
 "use client";
-import { useGetProductDetailBySlug } from "@/api/product/query";
-import { MAX_WIDTH_APP } from "@/constant/css";
+import { useGetAllProductRecommended, useGetProductDetailBySlug } from "@/api/product/query";
+import { MARGIN_BOTTOM_ON_FOOTER, MAX_WIDTH_APP } from "@/constant/css";
 import { PRODUCT_PATH_URL, SUPPLIER_PATH_URL } from "@/constant/pathUrl";
 import { ProductDto } from "@/interface/common";
 import { Box, Container, Divider, useTheme } from "@mui/material";
@@ -12,7 +12,10 @@ import SupplierInfo from "./SupplierInfo";
 
 const ProductDetail = ({ slug }: { slug: string }) => {
   const { getProductDetailBySlug, data } = useGetProductDetailBySlug();
-
+  const { getAllProductRecommended, data: productRecommended } = useGetAllProductRecommended();
+  useEffect(() => {
+    getAllProductRecommended();
+  }, []);
   useEffect(() => {
     getProductDetailBySlug(slug);
   }, [slug]);
@@ -25,6 +28,7 @@ const ProductDetail = ({ slug }: { slug: string }) => {
         p: { xs: "20px!important", sm: "0 88px!important" },
         maxWidth: `${MAX_WIDTH_APP}!important`,
         fontFamily: theme.fontFamily.secondary,
+        mb: MARGIN_BOTTOM_ON_FOOTER,
       }}
     >
       
@@ -46,7 +50,7 @@ const ProductDetail = ({ slug }: { slug: string }) => {
         <ListProductComponent
           title={"Recommended Products"}
           url={PRODUCT_PATH_URL.PRODUCT_LIST}
-          data={data?.recommend_products as ProductDto[]}
+          data={productRecommended}
         />
       </Box>
     </Container>

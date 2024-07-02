@@ -4,16 +4,14 @@ import {
   Badge,
   Box,
   IconButton,
-  TextField,
   Typography,
   useTheme,
 } from "@mui/material";
 import { GrLanguage } from "react-icons/gr";
-import { IoMdNotificationsOutline, IoMdSearch } from "react-icons/io";
+import { IoMdNotificationsOutline } from "react-icons/io";
 
 import Avatar from "@/assets/images/avatar_user.png";
 import Image from "next/image";
-import { useTranslations } from "next-intl";
 import CSearch from "../search";
 
 const HeaderAdmin = () => {

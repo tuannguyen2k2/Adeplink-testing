@@ -19,6 +19,7 @@ export const ValidatePasswordForm = ({
       display={"flex"}
       flexDirection={"column"}
       gap={1}
+      bgcolor={"white"}
     >
       <Typography
         whiteSpace={"nowrap"}
